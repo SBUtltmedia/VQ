@@ -1,0 +1,25 @@
+[23-Oct-2017 11:46:10] PHP Parse error:  syntax error, unexpected ',' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list2.php on line 25
+[25-Oct-2017 15:50:13] PHP Parse error:  syntax error, unexpected '[' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 47
+[25-Oct-2017 15:50:15] PHP Parse error:  syntax error, unexpected '[' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 47
+[25-Oct-2017 15:50:33] PHP Parse error:  syntax error, unexpected '[' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 47
+[25-Oct-2017 15:50:53] PHP Parse error:  syntax error, unexpected '[' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 47
+[25-Oct-2017 15:50:54] PHP Parse error:  syntax error, unexpected '[' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 47
+[25-Oct-2017 15:51:18] PHP Parse error:  syntax error, unexpected '[' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 47
+[25-Oct-2017 15:51:31] PHP Parse error:  syntax error, unexpected '[' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 47
+[25-Oct-2017 15:51:32] PHP Parse error:  syntax error, unexpected '[' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 47
+[25-Oct-2017 15:51:36] PHP Parse error:  syntax error, unexpected '[' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 47
+[25-Oct-2017 15:51:37] PHP Parse error:  syntax error, unexpected '[' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 47
+[25-Oct-2017 15:53:56] PHP Parse error:  syntax error, unexpected '[' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 47
+[25-Oct-2017 15:54:18] PHP Parse error:  syntax error, unexpected T_ARRAY in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 47
+[25-Oct-2017 15:54:43] PHP Parse error:  syntax error, unexpected T_ARRAY in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 47
+[25-Oct-2017 15:54:51] PHP Notice:  Undefined variable: vqList in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 52
+[25-Oct-2017 15:55:14] PHP Notice:  Undefined variable: vqList in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 53
+[25-Oct-2017 15:56:11] PHP Notice:  Undefined variable: vqList in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 53
+[25-Oct-2017 16:05:36] PHP Parse error:  syntax error, unexpected '}' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 26
+[25-Oct-2017 16:05:50] PHP Parse error:  syntax error, unexpected '}' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 26
+[25-Oct-2017 16:05:57] PHP Parse error:  syntax error, unexpected '}' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 26
+[25-Oct-2017 16:06:09] PHP Parse error:  syntax error, unexpected '}' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 26
+[25-Oct-2017 16:06:20] PHP Parse error:  syntax error, unexpected '}' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 26
+[25-Oct-2017 16:06:57] PHP Parse error:  syntax error, unexpected '}' in /home1/tltsecure/apache2/htdocs/vq/vqLib/list3.php on line 28
+[01-Nov-2017 14:27:14] PHP Fatal error:  Call to undefined function rsearch() in /home1/tltsecure/apache2/htdocs/vq/vqLib/getScores.php on line 6
+[01-Nov-2017 14:31:49] PHP Fatal error:  Call to undefined function rsearch() in /home1/tltsecure/apache2/htdocs/vq/vqLib/getScores.php on line 6

@@ -1,0 +1,20 @@
+/*
+	Date:	Fall 2017
+	Author:	Anthony John Ripa
+*/
+
+@font-face {
+    font-family: "FuturaDemi";
+    src: url(/fonts/FuturaPTDemi.otf);
+}
+
+* {
+    background-color: black;
+    color: dimgray;
+    font-family: "FuturaDemi";
+}
+
+* {
+    padding: 0%;
+    margin: 0%;
+}

@@ -1,0 +1,7 @@
+{"Host":"apps.tlt.stonybrook.edu","Authorization":"OAuth realm=\"\",oauth_version=\"1.0\",oauth_nonce=\"b43700c30e7139c5251982a030284c6f\",oauth_timestamp=\"1507922026\",oauth_consumer_key=\"anythingKey\",oauth_body_hash=\"VeoLGOyV6PSqRMhJQS0bHfCE7%2Bg%3D\",oauth_signature_method=\"HMAC-SHA1\",oauth_signature=\"Ao5stp9NHX8CchB4d9pCTnZkTdE%3D\""}
+"GET"
+[]
+[]
+[]
+null
+""

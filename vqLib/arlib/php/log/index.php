@@ -1,0 +1,15 @@
+<?php
+	file_put_contents('log.txt',json_encode(getallheaders()));
+	file_put_contents('log.txt',"\n",FILE_APPEND);
+	file_put_contents('log.txt',json_encode($_SERVER['REQUEST_METHOD']),FILE_APPEND);
+	file_put_contents('log.txt',"\n",FILE_APPEND);
+	file_put_contents('log.txt',json_encode($_GET),FILE_APPEND);
+	file_put_contents('log.txt',"\n",FILE_APPEND);
+	file_put_contents('log.txt',json_encode($_POST),FILE_APPEND);
+	file_put_contents('log.txt',"\n",FILE_APPEND);
+	file_put_contents('log.txt',json_encode($_REQUEST),FILE_APPEND);
+	file_put_contents('log.txt',"\n",FILE_APPEND);
+	file_put_contents('log.txt',json_encode($_RAW_POST_DATA),FILE_APPEND);
+	file_put_contents('log.txt',"\n",FILE_APPEND);
+	file_put_contents('log.txt',json_encode(file_get_contents('php://input')),FILE_APPEND);
+?>

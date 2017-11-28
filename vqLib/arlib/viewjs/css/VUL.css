@@ -1,0 +1,26 @@
+/*
+	Date:		Fall 2017
+	Authors:	James Palmeri
+				Rahul Sondhi
+				Anthony John Ripa
+*/
+
+#VUL li {
+    background-image: url(../img/hex_check_gray.svg);
+    background-repeat: no-repeat;
+    background-position: left;
+}
+
+#VUL li.selected {
+    background-image: url(../img/hex_check_green.svg);
+    background-repeat: no-repeat;
+    background-position: left;
+}
+
+#VUL li {
+    padding-left: 20%;
+}
+
+#VUL li.selected {		/* Tony */
+    color: lightgreen;	/* Rahul */
+}
