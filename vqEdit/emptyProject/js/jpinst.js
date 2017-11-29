@@ -505,7 +505,9 @@ function selectAnswer(n) {	// Called by 1 function: initAnswerClickEvent()
                 $("#expoText").text(questions.questions[currentQuestion].expoText[n]);
             }
         }
+        setTimeout(function () {
         $("#expoBox").addClass("anim_expoFadeIn");
+      },600);
 
         saveWatchData();
     }
@@ -534,7 +536,7 @@ function answerCorrect(n) {	// Called by 3 functions: selectAnswer(), submitFill
     if (checkFinished()) {
         setTimeout(function () {
             completeQuiz();
-        }, 1000);
+        }, 1200);
     }
     $("#expoTitle").text("Correct");
     $("#expoButtonReview").css("visibility", "hidden");

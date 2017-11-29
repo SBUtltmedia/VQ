@@ -6,6 +6,17 @@
 				Paul St. Denis
 */
 
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+var author= getParameterByName("author") || "me";
 class Model {
 	constructor(d) {
 		this.ids = d.id;
@@ -29,7 +40,7 @@ class ViewModelTable {
 }
 $.ajax({
 	dataType: "json",
-	url: 'DAL?author=me',
+	url: 'DAL?author='+author,
 	success: function init(data) {
 		var model = new Model(data);
 		var vTable = new VTable('#gallery', new ViewModelTable(model));
