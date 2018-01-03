@@ -17,6 +17,11 @@
 		function db() {
 			return self::root() . 'users/';
 		}
+		
+		//	Called by DBAL::setCache
+		function cache() {
+			return 'cache';
+		}
 	}
 
 ?>

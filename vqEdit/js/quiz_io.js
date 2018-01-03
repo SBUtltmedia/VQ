@@ -1,21 +1,29 @@
+function Video__Quizindex(quizindex, callback) {		//	Tony
+	$.ajax({url: "../vqLib/DAL?video&quizindex="+quizindex}).done(callback).fail(function(e){console.log('quiz_io.js Video__Quizindex() : ' + e)})
+}
+
 function loadExistingQuiz(id) {
     loadPermissions(id, true);
 }
 
 function reallyLoadQuiz(id) {
     print("Really load quiz " + id);
-	console.log(userData.quizData[id].relativePath)
     var qp = userData.quizData[id].relativePath + "/json/quiz.json";
+	console.log('quiz_io.js reallyLoadQuiz() : ' + qp + ' , ' + qp.split('/')[1] + ' , ' + qp.split('/')[2])	//	Tony
     currentQuiz = id;
     $.ajax({
-        url: "loadQuiz.php",
+        url: "../vqLib/DAL",			//	Tony
+        //url: "loadQuiz.php",			//	Remove Jim's path-depended loader.	-Tony
         dataType: "json",
         data: {
-            quizPath: qp
+            //quizPath: qp,				//	Remove Jim's legacy quizPath.		-Tony
+			'author': qp.split('/')[1],	//	Tony
+			'quizid': qp.split('/')[2]	//	Tony
         }
     }).done(function (data) {
         // Load data
-        quizData = JSON.parse(data);
+        //quizData = JSON.parse(data);	//	Remove Jim's 2nd JSON decode of loadQuiz.php's doubly encoded file.	-Tony
+        quizData = data;				//	Tony
         videoToLoad = quizData.videoPath;
         // Fix for portability
 		console.log(quizData)
@@ -31,7 +39,8 @@ function reallyLoadQuiz(id) {
         resetMarkers();
         instantHideSaveButton();
         $("#quizTitleInput").val(quizData.title);
-        loadVideo(videoPath);
+        //loadVideo(videoPath);		//	Remove Jim's path-dependent loader	-Tony
+        loadVideo__Quizindex(id);	//	Tony
         quizLink = userData.serverPath + videoPath.substr(3, videoPath.length).split("media")[0];
         if (currentQuizAuthor == "" || currentQuizAuthor == userData.netID) {
             $("#copyLinkBubbleText").val(quizLink);
@@ -210,15 +219,21 @@ function saveQuiz() {
         "questions": questions
     };
     jsonPath = videoPath.split("media")[0] + "json/quiz.json";
+	console.log('quiz_io.js saveQuiz() : ' + jsonPath.split('/')[1] + ' , ' + jsonPath.split('/')[2])	//	Tony
     var jsonString = JSON.stringify(toSend);
     $.ajax({
-        type: "POST",
-        url: "saveQuiz.php",
+        //type: "POST",
+        url: "../vqLib/DAL",					//	Tony
+        //url: "saveQuiz.php",					//	Remove Jim's path-depended loader.		-Tony
         data: {
-            'path': jsonPath,
-            'jsonData': jsonString
+            //'path': jsonPath,					//	Remove Jim's legacy path				-Tony
+			'author': jsonPath.split('/')[1],	//	Tony
+			'quizid': jsonPath.split('/')[2],	//	Tony
+            'quiz': jsonString					//	Tony
+            //'jsonData': jsonString			//	Remove Jim's indescript payload name	-Tony
         }
     }).done(function (data) {
+		console.log(data);
         hideSaveButton();
     }).fail(function () {
         console.log("Uh oh! Something went wrong!");
@@ -347,11 +362,16 @@ function deleteVideo() {
 
 function loadFilter(id) {
     var qp = userData.quizData[id].relativePath + "/json/filters.json";
+	console.log('quiz_io.js loadFilter() : ' + qp.split('/')[1] + ' , ' + qp.split('/')[2])	//	Tony
     $.ajax({
-        url: "loadQuiz.php",
+        url: "../vqLib/DAL",					//	Tony
+        //url: "loadQuiz.php",					//	Remove Jim's path-depended loader.	-Tony
         dataType: "json",
         data: {
-            quizPath: qp
+            //quizPath: qp,						//	Remove Jim's legacy quizPath.		-Tony
+			author: qp.split('/')[1],			//	Tony
+			quizid: qp.split('/')[2],			//	Tony
+			filter: ''							//	Tony
         }
     }).done(function (data) {
         // Load data
@@ -401,115 +421,120 @@ function refreshFilterList() {
 
 function loadPermissions(id, isInitial) {
     var qp = userData.quizData[id].relativePath + "/json/permissions.json";
+	console.log('quiz_io.js loadPermissions() : ' + qp.split('/')[1] + ' , ' + qp.split('/')[2])	//	Tony
     $.ajax({
-        url: "loadQuiz.php",
-        dataType: "json",
+        url: "../vqLib/DAL",						//	Tony
+        //url: "loadQuiz.php",						//	Remove Jim's path-depended loader.	-Tony
+        //dataType: "json",							//	Remove Jim's double JSON decode of loadQuiz.php's doubly encoded file.	-Tony
         data: {
-            quizPath: qp
+            //quizPath: qp,							//	Remove Jim's legacy quizPath.		-Tony
+			'author': qp.split('/')[1],				//	Tony
+			'quizid': qp.split('/')[2],			//	Tony
+			'permission': ''						//	Tony
         }
     }).done(function (data) {
-        if (data !== "{}") {
-            // Load data
-            var jsonData = JSON.parse(data);
-            var canAccessData = jsonData.canAccessData;
-            var str = "";
-            for (var i = 0; i < canAccessData.length; i++) {
-                str += canAccessData[i] + (i < canAccessData.length - 1 ? "\n" : "");
-            }
-            var canViewData = jsonData.canViewQuiz;
-            var viewStr = "";
-            if (canViewData != null && canViewData != undefined) {
-                for (var i = 0; i < canViewData.length; i++) {
-                    viewStr += canViewData[i] + (i < canViewData.length - 1 ? "\n" : "");
-                }
-            }
-            $("#permissionsReportInput").val(str);
-            $("#permissionsViewInput").val(viewStr);
-            var isPublic = jsonData.isPublic;
-            var isPrivate = jsonData.isPrivate;
-            if (!(isPublic == true)) {
-                enablePublicMode = false;
-                $("#publicCheckbox").removeClass("anim_checkboxOn");
-                $("#publicCheckbox").addClass("anim_checkboxOff");
-            } else {
-                enablePublicMode = true;
-                $("#publicCheckbox").removeClass("anim_checkboxOff");
-                $("#publicCheckbox").addClass("anim_checkboxOn");
-            }
-            if (!(isPrivate == true)) {
-                enablePrivateMode = false;
-                $("#privateCheckbox").removeClass("anim_checkboxOn");
-                $("#privateCheckbox").addClass("anim_checkboxOff");
-            } else {
-                enablePrivateMode = true;
-                $("#privateCheckbox").removeClass("anim_checkboxOff");
-                $("#privateCheckbox").addClass("anim_checkboxOn");
-            }
-            // Set netID to loan input placeholder
-            $("#optionsLoanInput").attr("placeholder", userData.netID);
-            var editorText = jsonData.editor;
-            if (editorText != null && editorText != undefined) {
-                $("#optionsLoanInput").val(editorText);
-            } else {
-                $("#optionsLoanInput").val("");
-            }
-            // Get editor data
-            currentQuizEditor = "";
-            currentQuizEditCode = "";
-            currentQuizAuthor = "";
-            currentQuizEditCode = "";
-            if (jsonData.editor != null && jsonData.editor != undefined) {
-                currentQuizEditor = jsonData.editor;
-            }
-            if (jsonData.editCode != null && jsonData.editCode != undefined) {
-                currentQuizEditCode = jsonData.editCode;
-            }
-            if (jsonData.author != null && jsonData.author != undefined) {
-                currentQuizAuthor = jsonData.author;
-            }
-            if (jsonData.quizCode != null && jsonData.quizCode != undefined) {
-                currentQuizCode = jsonData.quizCode;
-            }
-            // Show "unsaved changes" warning if there are unsaved changes
-            if (showingSaveButton) {
-                $("#optionsLoanWarning").css("opacity", 1);
-            } else {
-                $("#optionsLoanWarning").css("opacity", 0);
-            }
-            // Set quiz link URL
-            if (jsonData.author != null && jsonData.author != undefined) {
-                $("#copyLinkBubbleText").val(userData.serverPath + jsonData.author + "/" + jsonData.quizCode + "/");
-            } else {
+		if (data !== "" && data !== "{}") {			//	Check for no data					-Tony
+			// Load data
+			var jsonData = JSON.parse(data);
+			var canAccessData = jsonData.canAccessData;
+			var str = "";
+			for (var i = 0; i < canAccessData.length; i++) {
+				str += canAccessData[i] + (i < canAccessData.length - 1 ? "\n" : "");
+			}
+			var canViewData = jsonData.canViewQuiz;
+			var viewStr = "";
+			if (canViewData != null && canViewData != undefined) {
+				for (var i = 0; i < canViewData.length; i++) {
+					viewStr += canViewData[i] + (i < canViewData.length - 1 ? "\n" : "");
+				}
+			}
+			$("#permissionsReportInput").val(str);
+			$("#permissionsViewInput").val(viewStr);
+			var isPublic = jsonData.isPublic;
+			var isPrivate = jsonData.isPrivate;
+			if (!(isPublic == true)) {
+				enablePublicMode = false;
+				$("#publicCheckbox").removeClass("anim_checkboxOn");
+				$("#publicCheckbox").addClass("anim_checkboxOff");
+			} else {
+				enablePublicMode = true;
+				$("#publicCheckbox").removeClass("anim_checkboxOff");
+				$("#publicCheckbox").addClass("anim_checkboxOn");
+			}
+			if (!(isPrivate == true)) {
+				enablePrivateMode = false;
+				$("#privateCheckbox").removeClass("anim_checkboxOn");
+				$("#privateCheckbox").addClass("anim_checkboxOff");
+			} else {
+				enablePrivateMode = true;
+				$("#privateCheckbox").removeClass("anim_checkboxOff");
+				$("#privateCheckbox").addClass("anim_checkboxOn");
+			}
+			// Set netID to loan input placeholder
+			$("#optionsLoanInput").attr("placeholder", userData.netID);
+			var editorText = jsonData.editor;
+			if (editorText != null && editorText != undefined) {
+				$("#optionsLoanInput").val(editorText);
+			} else {
+				$("#optionsLoanInput").val("");
+			}
+			// Get editor data
+			currentQuizEditor = "";
+			currentQuizEditCode = "";
+			currentQuizAuthor = "";
+			currentQuizEditCode = "";
+			if (jsonData.editor != null && jsonData.editor != undefined) {
+				currentQuizEditor = jsonData.editor;
+			}
+			if (jsonData.editCode != null && jsonData.editCode != undefined) {
+				currentQuizEditCode = jsonData.editCode;
+			}
+			if (jsonData.author != null && jsonData.author != undefined) {
+				currentQuizAuthor = jsonData.author;
+			}
+			if (jsonData.quizCode != null && jsonData.quizCode != undefined) {
+				currentQuizCode = jsonData.quizCode;
+			}
+			// Show "unsaved changes" warning if there are unsaved changes
+			if (showingSaveButton) {
+				$("#optionsLoanWarning").css("opacity", 1);
+			} else {
+				$("#optionsLoanWarning").css("opacity", 0);
+			}
+			// Set quiz link URL
+			if (jsonData.author != null && jsonData.author != undefined) {
+				$("#copyLinkBubbleText").val(userData.serverPath + jsonData.author + "/" + jsonData.quizCode + "/");
+			} else {
 
-            }
-            if (isInitial) {
-                reallyLoadQuiz(id);
-            } else {
-                showPermissionsView();
-            }
-        } else {
-            $(".permissionsInput").val("");
-            $("#optionsLoanInput").val("");
-            enablePrivateMode = false;
-            $("#privateCheckbox").removeClass("anim_checkboxOn");
-            $("#privateCheckbox").addClass("anim_checkboxOff");
-            enablePublicMode = false;
-            $("#publicCheckbox").removeClass("anim_checkboxOn");
-            $("#publicCheckbox").addClass("anim_checkboxOff");
-            $("#optionsLoanInput").attr("placeholder", userData.netID);
-            // No permissions, no editor
-            currentQuizEditor = "";
-            currentQuizEditCode = "";
-            currentQuizAuthor = "";
-            currentQuizEditCode = "";
-            if (isInitial) {
-                reallyLoadQuiz(id);
-            } else {
-                showPermissionsView();
-            }
-        }
-    }).fail(function () {
-        console.log("Permission loading failed");
+			}
+			if (isInitial) {
+				reallyLoadQuiz(id);
+			} else {
+				showPermissionsView();
+			}
+		} else {
+			$(".permissionsInput").val("");
+			$("#optionsLoanInput").val("");
+			enablePrivateMode = false;
+			$("#privateCheckbox").removeClass("anim_checkboxOn");
+			$("#privateCheckbox").addClass("anim_checkboxOff");
+			enablePublicMode = false;
+			$("#publicCheckbox").removeClass("anim_checkboxOn");
+			$("#publicCheckbox").addClass("anim_checkboxOff");
+			$("#optionsLoanInput").attr("placeholder", userData.netID);
+			// No permissions, no editor
+			currentQuizEditor = "";
+			currentQuizEditCode = "";
+			currentQuizAuthor = "";
+			currentQuizEditCode = "";
+			if (isInitial) {
+				reallyLoadQuiz(id);
+			} else {
+				showPermissionsView();
+			}
+		}
+    }).fail(function (d) {
+        console.log("Permission loading failed: " + JSON.stringify(d));
     });
 }
 
@@ -569,11 +594,15 @@ function savePermissions(id) {
     updatePermissionLocks();
     // Save permissions
     $.ajax({
-        type: "POST",
-        url: "saveQuiz.php",
+        //type: "POST",
+        url: "../vqLib/DAL",					//	Tony
+        //url: "saveQuiz.php",					//	Remove Jim's path-depended loader.		-Tony
         data: {
-            'path': jsonPath,
-            'jsonData': jsonString
+            //'path': jsonPath,					//	Remove Jim's legacy path				-Tony
+			'author': jsonPath.split('/')[1],	//	Tony
+			'quizid': jsonPath.split('/')[2],	//	Tony
+			'permission': jsonString			//	Tony
+            //'jsonData': jsonString			//	Remove Jim's indescript payload name	-Tony
         }
     }).done(function (data) {
 

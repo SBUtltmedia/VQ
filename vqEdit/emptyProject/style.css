@@ -1371,7 +1371,7 @@ input:focus {
     background-image: url(img/button_play.svg);
 }
 
-.pauseState {
+.playPause:not(.playState) {	/*  Tony  */
     background-image: url(img/button_pause.svg);
 }
 
@@ -1494,6 +1494,20 @@ input:focus {
     background-image: url(img/button_unmute.svg);
     border-radius: 50%;
 }
+
+#cc {							/*	Tony	*/
+    width: 3.75%;
+    height: 100%;
+    left: 83.75%;
+    top: 90%;
+    position: absolute;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(img/cc.svg);
+}
+
+#cc.on { border-bottom: thin solid red; }
 
 #volumeSlider {
     width: 9.5%;
@@ -1913,7 +1927,7 @@ input[type=range]:focus {
 #expoText::-webkit-scrollbar-thumb,
 #questionText::-webkit-scrollbar-thumb {
 	background-color: #404040;
-  border-radius: 20px;
+	border-radius: 20px;
 	background-image: -webkit-linear-gradient(45deg,rgba(255, 255, 255, .2) 25%,
 											  transparent 25%,
 											  transparent 50%,
@@ -1921,4 +1935,13 @@ input[type=range]:focus {
 											  rgba(255, 255, 255, .2) 75%,
 											  transparent 75%,
 											  transparent)
+}
+
+#bigPlay {							/*  Tony  */
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	opacity: .5;
+    background-repeat: no-repeat;
+    background-position: center;
 }

@@ -18,14 +18,37 @@ function getParameterByName(name, url) {
 
 var author= getParameterByName("author") || "me";
 class Model {
-	constructor(d) {
+	constructor() { this.listeners = []; }
+	setjson(d) {alert(d)
 		this.ids = d.id;
 		this.usage = d.data.map(x=>{
-			function fixtime(t) { t = Math.round(t / 60); var m = t % 60; t = t - m; return 'H:M ' + (t/60) + ':' + m; }
+			function fixtime(t) { t = Math.round(t / 60); var m = t % 60; t = t - m; return (t/60) + ':' + (m>9?m:'0'+m); }
+			//function fixtime(t) { var date = new Date(null); date.setSeconds(t); return date.toISOString().substr(11,8); }
 			return [fixtime(x.data.reduce((sum,y)=>sum+y))]
 		});
 		//this.usage = d.data.map(s=>[new Date(s*1000).toISOString().substr(11,8)]);
-		this.listeners = [];
+	}
+	setcsv(str) {
+		var d = str == '' ? [] : str.split('\n').map(x=>x.split(','));
+		this.ids = d.map(x=>x[0]);
+		this.usage = d.map(x=>x[1]).map(x=>{
+			function fixtime(t) { t = Math.round(t / 60); var m = t % 60; t = t - m; return (t/60) + ':' + (m>9?m:'0'+m); }
+			//function fixtime(t) { var date = new Date(null); date.setSeconds(t); return date.toISOString().substr(11,8); }
+			return [fixtime(x)]
+		});
+		//this.usage = d.data.map(s=>[new Date(s*1000).toISOString().substr(11,8)]);
+	}
+	refresh() {
+		$.ajax({
+			dataType: "text",
+			url: 'DAL?new&author='+author,
+			success: (data) => {
+				this.setcsv(data);
+				this.update();
+				resizeWindow();
+			},
+			error: function e(resp){alert(JSON.stringify(resp))}
+		});
 	}
 	getIds() { return this.ids; }
 	getUsage() { return this.usage; }
@@ -36,14 +59,36 @@ class ViewModelTable {
 	constructor(model) { this.model = model; }
 	grid() { return this.model.getUsage(); }
 	col0() { return this.model.getIds(); }
-	row0() { return ['VideoId','Usage']; }
+	row0() { return ['VideoId','H:MM']; }
+}
+class ViewModelButton {
+	constructor(model) { this.model = model; }
+	text() { return 'Refresh'; }
+	click() { model.refresh(); }
+}
+class ViewModelLink {
+	constructor(model) { this.model = model; }
+	text() { return 'Download'; }
+	download() { return 'Progress'; }
+	href() {
+		var col0 = this.model.getIds();
+		var grid = this.model.getUsage();
+		var csv = grid.length==0 ? '' : math.transpose([col0,grid.map(x=>x[0])]).map(x=>x.join(',')).join('\n');
+		return window.URL.createObjectURL(new Blob([csv],{type:'text/plain'})) 
+	}
 }
 $.ajax({
-	dataType: "json",
+	//dataType: "json",
+	dataType: "text",
+	//url: 'DAL?json&author='+author,
 	url: 'DAL?author='+author,
 	success: function init(data) {
-		var model = new Model(data);
-		var vTable = new VTable('#gallery', new ViewModelTable(model));
+		model = new Model();
+		//model.setjson(data);
+		model.setcsv(data);
+		new VButton('#refresh', new ViewModelButton(model));
+		new VLink('#link', new ViewModelLink(model));
+		new VTable('#gallery', new ViewModelTable(model));
 		resizeWindow();
 	},
 	error: function e(resp){alert(JSON.stringify(resp))}

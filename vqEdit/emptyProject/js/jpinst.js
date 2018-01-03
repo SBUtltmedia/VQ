@@ -2,6 +2,7 @@
 	Date:		Fall 2017
 	Authors:	James Palmeri
 				Anthony John Ripa
+				Paul St. Denis
 */
 var quizfile = "json/quiz.json";
 var mediaDir = "media/";
@@ -30,10 +31,10 @@ var permissionData = {};
 var canView = false;
 var userScore = 0;
 
-try{
-  var urlVars = getUrlVars();
-  var progress = new Progress(urlVars["local"]);
-}catch(e){
+try {
+	var urlVars = getUrlVars();
+	var progress = new Progress(urlVars["local"]);
+} catch(e) {
   // console.log(e);
 }
 
@@ -52,11 +53,11 @@ var userData = {
 $(document).ready(function () {
     getPermissions();
     resizeWindow();
-});
-
-$(function () {
-    resizeWindow();
-
+//});												//	Continue $()	-Tony
+//
+//$(function () {									//	Combine $()		-Tony
+//    resizeWindow();								//	Remove Resize.	-Tony
+//
     $("#fullScreenButton").click(function() {
       setTimeout(function () {
           resizeWindow();
@@ -69,7 +70,7 @@ function getPermissions() {	// Called by 1 function: onload()
         dataType: "json",
         url: "json/permissions.json",
         data: "",
-        success: function (data) {
+        success: function (data) {console.log(data.isPublic)
             permissionData = data;
             if (permissionData.isPublic) {
                 // Quiz is public
@@ -187,20 +188,6 @@ function loadButtons() {	// Called by 2 functions: getPermissions() & getUserDat
         url: quizfile,
         data: "",
         success: function (data) {
-			//function spaceout(times) {												//	Tony
-			//	if (times.length<=1) return times;										//	Tony
-			//	for(var i = 1; i < times.length; i++)									//	Tony
-			//		if (times[i]-times[i-1] < 1)										//	Tony
-			//			times[i] = times[i-1] + 1;										//	Tony
-			//	return times;															//	Tony
-			//}																			//	Tony
-			//function settimes(questions, times) {										//	Tony
-			//	for (var i = 0; i < questions.questions.length; i++)					//	Tony
-			//		questions.questions[i].startTime = times[i];						//	Tony
-			//	return questions;														//	Tony
-			//}																			//	Tony
-			//var times = spaceout(questions.questions.map(x=>Number(x.startTime)));	//	Tony
-			//questions = settimes(questions, times);									//	Tony
             questions = data;
             if(userData.answerData.length<questions.questions.length || userData.answerData.length>questions.questions.length){
 				updateUser();
@@ -232,10 +219,15 @@ function loadButtons() {	// Called by 2 functions: getPermissions() & getUserDat
 
             // Video controls
             video = $("#videoBox")[0];
-			$('#videoBox').click(playPause);	//	Tony
-			$('#quizBank').hide();				//	Tony
+			video.addEventListener("loadedmetadata", cconce);						//	Tony
+			if (video.readyState >= 2) cconce(); // Tony https://stackoverflow.com/questions/33116067/addeventlistenerloadedmetadata-fun-doesnt-run-correctly-firefox-misses-eve
+			$('#cc')[0].addEventListener('click', togglecc);						//	Tony
+				
+			$('#bigPlay').click(playPause);											//	Paul
+			$('#quizBank').hide();													//	Tony
             $("#videoPlayPause").click(function () {
                 playPause();
+				//video.textTracks[0].mode = "showing";	//	Tony
             });
             $("#seekSlider").change(function () {
                 vidSeek();
@@ -305,7 +297,7 @@ function loadButtons() {	// Called by 2 functions: getPermissions() & getUserDat
             // Check if video has loaded
             if (canView) {
                 if (video.readyState == 4) {
-                    setTimeout(playPause, 20);
+					// setTimeout(playPause, 20);	//	Paul
                     metadataLoaded();
                 } else {
                     video.addEventListener('loadeddata', function () {
@@ -428,6 +420,28 @@ function loadButtons() {	// Called by 2 functions: getPermissions() & getUserDat
             updateScore();
         }
     });
+}
+
+function togglecc() {			//	Tony
+	$('#cc').toggleClass('on');
+	$("video")[0].textTracks[0].mode = $("#cc").hasClass('on') ? 'showing' : 'hidden';
+}
+
+function cconce() {				//	Tony
+	//	https://iandevlin.com/blog/2015/02/javascript/dynamically-adding-text-tracks-to-html5-video/
+	track = document.createElement("track");
+	track.default = "default";
+	track.kind = "captions";
+	track.label = "English";
+	track.srclang = "en";
+	track.src = "media/video.vtt";																	//	Tony
+	var video_author = window.location.toString().split('/').reverse();									//	Tony
+	//track.src = "../../../vqLib/DAL/?vtt&author=" + video_author[2] + "&videoid=" + video_author[1];	//	Tony
+	//track.addEventListener("load", function() {
+	//	this.mode = "showing";
+	//	video.textTracks[0].mode = "showing"; // thanks Firefox 35.0.1
+	//});
+	$("video")[0].appendChild(track);
 }
 
 function metadataLoaded() {	// Called by 1 function: loadButtons()
@@ -1002,17 +1016,20 @@ function initQuestionClickEvent(i) {	// Called by 1 function: makeQuestionButton
 }
 
 function playPause() {	// Called by 2 functions: loadButtons() & hideQuestions()
-    if (video.paused) {
-        playVideo();
+	if (video.paused) {
+		playVideo();
     } else {
-        pauseVideo();
+		if (Date.now() - playPause.lastTime > 700)		//	Tony
+			pauseVideo();
     }
+	playPause.lastTime = Date.now();					//	Tony
 }
 
 function playVideo() {	// Called by 3 functions: questionReview(), questionContinue() & playPause()
     video.play();
+    $("#bigPlay").removeClass("playState");				//	Tony
     $("#videoPlayPause").removeClass("playState");
-    $("#videoPlayPause").addClass("pauseState");
+    //$("#videoPlayPause").addClass("pauseState");		//	Tony
     if (showingQuestion) {
         hideQuestionPanel();
     }
@@ -1020,7 +1037,8 @@ function playVideo() {	// Called by 3 functions: questionReview(), questionConti
 
 function pauseVideo() {	// Called by 4 functions: setQuestion(), initQuestionClickEvent(), playPause() & videoEnded()
     video.pause();
-    $("#videoPlayPause").removeClass("pauseState");
+    $("#bigPlay").addClass("playState");				//	Tony
+    //$("#videoPlayPause").removeClass("pauseState");	//	Tony
     $("#videoPlayPause").addClass("playState");
     // Record end time
     recordTimeWatched();
@@ -1199,7 +1217,7 @@ function hideQuestions() {	// Called by 1 function: loadButtons()
     if (showingQuestion) {
         hideQuestionPanel();
         if (video.paused) {
-            playPause();
+			playPause();
         }
     }
 }

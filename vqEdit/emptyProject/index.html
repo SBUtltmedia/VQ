@@ -26,8 +26,11 @@
                     <source src="media/video.mp4" type="video/mp4">
                     <source src="media/video.m4v" type="video/mp4">
                     <p class="text fs-20">Loading video...</p>
-					<track src='media/video.vtt' default>
+					<!--<track src='../../../vqLib/DAL/?author=towan&videoid=4&vtt' default>-->
+					<!--<track src='media/video.vtt'>-->
+					<!--<track default>-->
                 </video>
+				<div id='bigPlay' class='playState'></div>	<!-- Tony -->
             </div>
             <div id="quizTitle" class="text fs-30"></div>
             <div id="toggleQuestionButton" class="btn"></div>
@@ -116,7 +119,7 @@
                 </div>
             </div>
             <div id="videoControls">
-                <div id="videoPlayPause" class="playState btn"></div>
+                <div id="videoPlayPause" class="playPause playState btn"></div>
                 <input id="seekSlider" type="range" min="0" max="100" value="0" step="0.05">
                 <div id="seekSliderBG" class="fakeSlider">
                     <div id="seekSliderTrack">
@@ -136,6 +139,7 @@
                         <option value="2">2x</option>
                     </select>
                 </div>
+				<div id='cc' class = 'on btn'></div> <!-- Tony -->
                 <div id="muteButton" class="btn"></div>
                 <input id="volumeSlider" type="range" min="0" max="100" value="100" step="1">
                 <div id="volumeSliderBG" class="fakeSlider">

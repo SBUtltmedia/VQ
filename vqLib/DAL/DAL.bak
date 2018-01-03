@@ -1,0 +1,150 @@
+<?
+
+	/*
+		Date:	Fall 2017
+		Author:	Anthony John Ripa
+	*/
+
+	require_once ('DBAL.php');
+	
+	class DAL extends DBAL {
+	
+		//	Called by DAL::Videos
+		function Authors__VideoCount($n) {
+			$ret = array();
+			$allAuthors = DBAL::Authors();
+			for ( $i = 0 ; $i < count($allAuthors) ; $i++ ) {
+				if (count(DBAL::Videoids__Author($allAuthors[$i])) >= $n)
+					$ret []= $allAuthors[$i];
+			}
+			return $ret;
+		}
+
+		//	Called by index.php
+		function Video__Author_Videoid($author, $videoid) {
+			$video = DBAL::Video__Author_Videoid($author, $videoid);
+			$video->videoid = $videoid;
+			$video->title = isset($video->title) ? $video->title : 'NoName';
+			$video->duration = isset($video->duration) ? $video->duration : 0;
+			return $video;
+			#$duration = isset($video->duration) ? $video->duration : 0;
+			#$title = isset($video->title) ? $video->title : 'NoName';
+			#return json_decode('{"videoid":"' . $videoid . '" , "title":"' . $title . '" , "duration":"' . $duration . '"}');
+		}
+		
+		//	Called by DAL::Videos
+		function Videos__Author($author) {
+			$ret = array();
+			foreach(DBAL::Videoids__Author($author) as $videoid) {
+				$ret []= DAL::Video__Author_Videoid($author, $videoid);
+			}
+			return $ret;
+		}
+		
+		//	Called by index.php
+		function Videos() {
+			$ret = array();
+			foreach(DAL::Authors__VideoCount(3) as $author) {
+				$ret[$author]= DAL::Videos__Author($author);
+			}
+			return $ret;
+		}
+		
+		//	Orphan. Previously called by DAL::getVideoLen__Author_Videoid
+		function VideoLen__Author_Videoid($author, $videoid) {
+			$duration = DBAL::VideoLen__Author_Videoid($author, $videoid);
+			$ret = strtotime("1970-01-01 $duration UTC");
+			DBAL::setCache("duration/$author$videoid",$ret);
+			return $ret;
+		}
+		
+		//	Called by DAL::UsageLen__Author_Videoid_Consumer
+		function getVideoLen__Author_Videoid($author, $videoid) {
+			$cache = DBAL::getCache("duration/$author$videoid");
+			if ($cache) return $cache;
+			$ret = DAL::VideoLen__Author_Videoid($author,$videoid);
+			return $ret;
+		}
+
+		//	Called by DAL::UsageLen__Author_Consumer	
+		function UsageLen__Author_Videoid_Consumer($author, $videoid, $consumer) {
+			$usage = DBAL::Usage__Author_Videoid_Consumer($author, $videoid, $consumer);
+			if ($usage === NULL) return 0;
+			$watchData = $usage['watchData'];
+			if (count($watchData) === 0) return 0;
+			return array_sum($watchData);
+			#$percent = array_sum($watchData) / count($watchData);
+			#$duration = DAL::getVideoLen__Author_Videoid($author, $videoid);
+			#return round($percent * $duration);
+		}
+
+		//	Called by DAL::UsageLen__Author	
+		function UsageLen__Author_Consumer($author, $consumer) {
+			#$ret = 0;
+			#$ret = array();
+			#$ret = new ArrayObject();
+			$ret = array('id'=>array(),'data'=>array());
+			foreach(DBAL::Videoids__Author($author) as $videoid) {
+				$usagelen = DAL::UsageLen__Author_Videoid_Consumer($author, $videoid, $consumer);
+				#$ret+= $usagelen;
+				$ret['id'][] = $videoid ;
+				$ret['data'][] = $usagelen ;
+				#if ($usagelen>0) $ret[$videoid] = $usagelen ;
+			}
+			return $ret;
+		}
+	
+		//	Called by DAL::UsageLenJSON__Author	
+		function Consumers__Author($author) {
+			$ret = array();
+			foreach(DBAL::Videoids__Author($author) as $videoid)
+				$ret = array_merge($ret, DBAL::Consumers__Author_Videoid($author, $videoid));
+			sort($ret);
+			return array_values(array_unique($ret));
+		}
+		
+		//	Called by DAL::UsageLen__Author	
+		function UsageLenJSON__Author($author) {
+			if ($author === 'me') $author = $_SERVER['cn'];
+			//session_save_path('temp'); session_start();
+			//if (isset($_SESSION[$author])) return $_SESSION[$author];
+			$ret = array('id'=>array(),'data'=>array());
+			foreach(DAL::Consumers__Author($author) as $consumer) {
+				array_push($ret['id'] , $consumer );
+				array_push($ret['data'] , DAL::UsageLen__Author_Consumer($author, $consumer) );
+				#$ret[$consumer]= DAL::UsageLen__Author_Consumer($author, $consumer);
+			}
+			#$_SESSION[$author] = $ret;
+			return $ret;
+		}
+	
+		//	Called by DAL::getUsageLen__Author	
+		function UsageLen__Author($author) {
+			if ($author === 'me') $author = $_SERVER['cn'];
+			#session_save_path('temp'); session_start();
+			#if (isset($_SESSION[$author])) return $_SESSION[$author];
+			#$ret = array('id'=>array(),'data'=>array());
+			$idsdata = DAL::UsageLenJSON__Author($author);
+			$ids = $idsdata['id'];
+			$data = $idsdata['data'];#return json_encode($idsdata);
+			$ret = '';
+			for($i=0; $i<count($ids); $i++) {
+				$ret = $ret . $ids[$i] . ',' . array_sum($data[$i]['data']) . "\n";
+			}
+			#$_SESSION[$author] = $ret;
+			$ret = trim($ret);
+			DBAL::setCache("consumption/$author",$ret);
+			return $ret;
+		}
+	
+		function getUsageLen__Author($author) {
+			if ($author === 'me') $author = $_SERVER['cn'];
+			$cache = DBAL::getCache("consumption/$author");
+			if (True || $cache) return $cache;
+			$ret = DAL::UsageLen__Author($author);
+			return $ret;
+		}
+	
+	}
+
+?>

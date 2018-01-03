@@ -178,14 +178,14 @@ body {
 
 .quizIncompleteIcon,
 #menu li {
-    background-image: url(../img/hex_check_gray.svg);
+    background-image: url(../arlib/viewjs/img/hex_check_gray.svg);
     background-repeat: no-repeat;
     background-position: left;
 }
 
 .quizCompleteIcon,
 #menu li.selected {
-    background-image: url(../img/hex_check_green.svg);
+    background-image: url(../arlib/viewjs/img/hex_check_green.svg);
     background-repeat: no-repeat;
     background-position: left;
 }

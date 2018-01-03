@@ -1642,6 +1642,10 @@ function loadVideo(src) {
     }
 }
 
+function loadVideo__Quizindex(quizindex) {		//	-Tony
+	Video__Quizindex(quizindex, loadVideo);
+}
+
 function cleanQuiz(save) {
     // Remove empty questions
     var removedQuestions = false;
@@ -2268,7 +2272,7 @@ function initFolderControls() {
             moveQuizToFolder(folderSelected.id, newVal);
         }
     });
-    $("#folderInfoSubmit").click(function () {alert()
+    $("#folderInfoSubmit").click(function () {//alert()
         if (folderSelected.type == "quiz") {
             saveFolders();
             // Check permissions

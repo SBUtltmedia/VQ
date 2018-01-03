@@ -71,19 +71,20 @@ foreach($directories as $dir) {
 
 // Look in ALL directories, and add quiz data if the user has permissions for it
 $allDirs = glob('../*/*' , GLOB_ONLYDIR);
-		       foreach($allDirs as $dir) {
-		       if (!(strpos($dir, 'vqEdit') !== false) && !(strpos($dir, $netID) !== false)) {
-// Check permissions
-$permissionsPath = $dir . "/json/permissions.json";
-if (file_exists($permissionsPath)) {
-$permissions = file_get_json($permissionsPath);
+foreach($allDirs as $dir) {
+	if (!(strpos($dir, 'vqEdit') !== false) && !(strpos($dir, $netID) !== false)) {
+		// Check permissions
+		$permissionsPath = $dir . "/json/permissions.json";
+		if (file_exists($permissionsPath)) {
+			$permissions = file_get_json($permissionsPath);
 
-if (is_array($permissions -> canAccessData) && in_array($netID, $permissions -> canAccessData)) {
-array_push($allQuizData, addQuizData($dir, false));
-array_push($ownedDirs, $dir);
-}
-}
-}
+			if (isset($permissions -> canAccessData))	//	This check is intended to fix "Notice:  Undefined property: stdClass::$canAccessData in /home1/tltsecure/apache2/htdocs/vq/vqEdit/login.php on line 81"	-Tony
+				if (is_array($permissions -> canAccessData) && in_array($netID, $permissions -> canAccessData)) {
+					array_push($allQuizData, addQuizData($dir, false));
+					array_push($ownedDirs, $dir);
+				}
+		}
+	}
 }
 
 

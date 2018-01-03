@@ -19,7 +19,8 @@ class Model {
 			dataType: 'json',
 			url: 'DAL?author=' + this.getAuthors()[this.index] + '&consumer=me',
 			success: data => {
-				function fixtime(t) { t = Math.round(t / 60); var m = t % 60; t = t - m; return 'H:M ' + (t/60) + ':' + m; }
+				function fixtime(t) { t = Math.round(t / 60); var m = t % 60; t = t - m; return (t/60) + ':' + (m>9?m:'0'+m); }
+				//function fixtime(t) { var date = new Date(null); date.setSeconds(t); return date.toISOString().substr(11,8); }
 				watch = data.data.map(seconds=>[fixtime(seconds)]);
 			},
 			async: false
@@ -56,12 +57,12 @@ class ViewModelUL {
 class ViewModelTable {
 	constructor(model) { this.model = model; }
 	grid() { return this.model.getUsage(); }
-	row0() { return ['VideoId','Usage']; }
+	row0() { return ['VideoId','H:MM']; }
 	col0() { return this.model.getIds(); }
 }
 $.ajax({
 	dataType: 'json',
-	url: 'DAL?author=',
+	url: 'DAL?authors=',
 	success: function init(data) {
 		var model = new Model(data);
 		var viewtitle = new VTitle('#head', new ViewModelTitle(model));
