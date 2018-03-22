@@ -69,12 +69,12 @@ class ViewModelButton {
 class ViewModelLink {
 	constructor(model) { this.model = model; }
 	text() { return 'Download'; }
-	download() { return 'Progress'; }
+	download() { return 'Progress.csv'; }
 	href() {
 		var col0 = this.model.getIds();
 		var grid = this.model.getUsage();
 		var csv = grid.length==0 ? '' : math.transpose([col0,grid.map(x=>x[0])]).map(x=>x.join(',')).join('\n');
-		return window.URL.createObjectURL(new Blob([csv],{type:'text/plain'})) 
+		return window.URL.createObjectURL(new Blob([csv],{type:'text/csv'})) 
 	}
 }
 $.ajax({

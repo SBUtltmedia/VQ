@@ -52,11 +52,11 @@ body {
 }
 
 #menu {
-    height: 60%;
-    top: 30%;
-    width: 15%;
-    /* overflow-y: auto; */ /* Tony Removed */
-    /* overflow-x: hidden; */ /* Tony Removed */
+    height: 80%;
+    top: 10%;
+    width: 20%;
+    overflow-y: auto;
+    overflow-x: hidden;
     background-color: black;
 }
 

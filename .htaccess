@@ -1,13 +1,13 @@
 RewriteBase /vq
 Header always unset X-Frame-Options
-AuthType shibboleth
-ShibRequestSetting requireSession 1
-require valid-user
+#AuthType shibboleth
+#ShibRequestSetting requireSession 1
+#require valid-user
 #RewriteEngine On
 #RewriteCond %{HTTPS} off
 #RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
 #For now, we comment out that we require our visitor be a student of stony brook university.
- require affiliation student@stonybrook.edu
+# require affiliation student@stonybrook.edu
  DirectoryIndex index.html index.php
  
  
@@ -23,7 +23,7 @@ RewriteCond %{ENV:REDIRECT_STATUS} 200
 RewriteRule ^ - [L]
 RewriteRule ^/?index.html$ - [L]
 RewriteRule ^/?$ - [L]
-RewriteCond %{REQUEST_URI} !(^$|users|vqEdit|vqLib).*
+RewriteCond %{REQUEST_URI} !(^$|users|vqEdit|vqLib|vqPlayer).*
 RewriteRule (.*) users/$1 [R,L]
 
 # Paul

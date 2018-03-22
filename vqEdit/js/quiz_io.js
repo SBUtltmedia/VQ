@@ -12,21 +12,21 @@ function reallyLoadQuiz(id) {
 	console.log('quiz_io.js reallyLoadQuiz() : ' + qp + ' , ' + qp.split('/')[1] + ' , ' + qp.split('/')[2])	//	Tony
     currentQuiz = id;
     $.ajax({
-        url: "../vqLib/DAL",			//	Tony
-        //url: "loadQuiz.php",			//	Remove Jim's path-depended loader.	-Tony
+        //url: "../vqLib/DAL",			//	Tony
+        url: "loadQuiz.php",			//	Remove Jim's path-depended loader.	-Tony
         dataType: "json",
         data: {
-            //quizPath: qp,				//	Remove Jim's legacy quizPath.		-Tony
-			'author': qp.split('/')[1],	//	Tony
-			'quizid': qp.split('/')[2]	//	Tony
+        quizPath: qp,				//	Remove Jim's legacy quizPath.		-Tony
+			//'author': qp.split('/')[1],	//	Tony
+			//'quizid': qp.split('/')[2]	//	Tony
         }
     }).done(function (data) {
         // Load data
-        //quizData = JSON.parse(data);	//	Remove Jim's 2nd JSON decode of loadQuiz.php's doubly encoded file.	-Tony
-        quizData = data;				//	Tony
+        quizData = JSON.parse(data);	//	Remove Jim's 2nd JSON decode of loadQuiz.php's doubly encoded file.	-Tony
+        //quizData = data;				//	Tony Broke the site
         videoToLoad = quizData.videoPath;
         // Fix for portability
-		console.log(quizData)
+				console.log(quizData,  videoToLoad)
         var videoExtension = quizData.videoPath.split("/media/")[1];
         videoPath = userData.quizData[id].relativePath + "/media/" + videoExtension;
         questions = quizData.questions;
@@ -222,15 +222,15 @@ function saveQuiz() {
 	console.log('quiz_io.js saveQuiz() : ' + jsonPath.split('/')[1] + ' , ' + jsonPath.split('/')[2])	//	Tony
     var jsonString = JSON.stringify(toSend);
     $.ajax({
-        //type: "POST",
-        url: "../vqLib/DAL",					//	Tony
-        //url: "saveQuiz.php",					//	Remove Jim's path-depended loader.		-Tony
+        type: "POST",
+        //url: "../vqLib/DAL",					//	Tony
+        url: "saveQuiz.php",					//	Remove Jim's path-depended loader.		-Tony
         data: {
-            //'path': jsonPath,					//	Remove Jim's legacy path				-Tony
-			'author': jsonPath.split('/')[1],	//	Tony
-			'quizid': jsonPath.split('/')[2],	//	Tony
-            'quiz': jsonString					//	Tony
-            //'jsonData': jsonString			//	Remove Jim's indescript payload name	-Tony
+            'path': jsonPath,					//	Remove Jim's legacy path				-Tony
+			//'author': jsonPath.split('/')[1],	//	Tony
+			//'quizid': jsonPath.split('/')[2],	//	Tony
+            //'quiz': jsonString					//	Tony
+          'jsonData': jsonString			//	Remove Jim's indescript payload name	-Tony
         }
     }).done(function (data) {
 		console.log(data);
@@ -364,14 +364,14 @@ function loadFilter(id) {
     var qp = userData.quizData[id].relativePath + "/json/filters.json";
 	console.log('quiz_io.js loadFilter() : ' + qp.split('/')[1] + ' , ' + qp.split('/')[2])	//	Tony
     $.ajax({
-        url: "../vqLib/DAL",					//	Tony
-        //url: "loadQuiz.php",					//	Remove Jim's path-depended loader.	-Tony
+      //  url: "../vqLib/DAL",					//	Tony
+      url: "loadQuiz.php",					//	Remove Jim's path-depended loader.	-Tony
         dataType: "json",
         data: {
-            //quizPath: qp,						//	Remove Jim's legacy quizPath.		-Tony
-			author: qp.split('/')[1],			//	Tony
-			quizid: qp.split('/')[2],			//	Tony
-			filter: ''							//	Tony
+          quizPath: qp,						//	Remove Jim's legacy quizPath.		-Tony
+			//author: qp.split('/')[1],			//	Tony
+			//quizid: qp.split('/')[2],			//	Tony
+			//filter: ''							//	Tony
         }
     }).done(function (data) {
         // Load data
@@ -423,14 +423,14 @@ function loadPermissions(id, isInitial) {
     var qp = userData.quizData[id].relativePath + "/json/permissions.json";
 	console.log('quiz_io.js loadPermissions() : ' + qp.split('/')[1] + ' , ' + qp.split('/')[2])	//	Tony
     $.ajax({
-        url: "../vqLib/DAL",						//	Tony
-        //url: "loadQuiz.php",						//	Remove Jim's path-depended loader.	-Tony
-        //dataType: "json",							//	Remove Jim's double JSON decode of loadQuiz.php's doubly encoded file.	-Tony
+      //  url: "../vqLib/DAL",						//	Tony
+        url: "loadQuiz.php",						//	Remove Jim's path-depended loader.	-Tony
+        dataType: "json",							//	Remove Jim's double JSON decode of loadQuiz.php's doubly encoded file.	-Tony
         data: {
-            //quizPath: qp,							//	Remove Jim's legacy quizPath.		-Tony
-			'author': qp.split('/')[1],				//	Tony
-			'quizid': qp.split('/')[2],			//	Tony
-			'permission': ''						//	Tony
+          quizPath: qp,							//	Remove Jim's legacy quizPath.		-Tony
+			//'author': qp.split('/')[1],				//	Tony
+			//'quizid': qp.split('/')[2],			//	Tony
+			//'permission': ''						//	Tony
         }
     }).done(function (data) {
 		if (data !== "" && data !== "{}") {			//	Check for no data					-Tony
@@ -595,14 +595,14 @@ function savePermissions(id) {
     // Save permissions
     $.ajax({
         //type: "POST",
-        url: "../vqLib/DAL",					//	Tony
-        //url: "saveQuiz.php",					//	Remove Jim's path-depended loader.		-Tony
+      //  url: "../vqLib/DAL",					//	Tony
+      url: "saveQuiz.php",					//	Remove Jim's path-depended loader.		-Tony
         data: {
-            //'path': jsonPath,					//	Remove Jim's legacy path				-Tony
-			'author': jsonPath.split('/')[1],	//	Tony
-			'quizid': jsonPath.split('/')[2],	//	Tony
-			'permission': jsonString			//	Tony
-            //'jsonData': jsonString			//	Remove Jim's indescript payload name	-Tony
+          'path': jsonPath,					//	Remove Jim's legacy path				-Tony
+			//'author': jsonPath.split('/')[1],	//	Tony
+			//'quizid': jsonPath.split('/')[2],	//	Tony
+		//	'permission': jsonString			//	Tony
+          'jsonData': jsonString			//	Remove Jim's indescript payload name	-Tony
         }
     }).done(function (data) {
 

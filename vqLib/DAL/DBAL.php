@@ -14,20 +14,20 @@
 		
 		/*	Public Functions (All Called by index.php) */
 
-			public function VTT__Author_Quizid($a, $q) { return self::Data__Author_Quizid_Fname($a, $q, 'media/video.vtt'); }
-			public function Filter__Author_Quizid($a, $q) { return self::Data__Author_Quizid_Fname($a, $q, 'json/filters.json'); }
-			public function Perm__Author_Quizid($a, $q) { return self::Data__Author_Quizid_Fname($a, $q, 'json/permissions.json'); }
-			public function Quiz__Author_Quizid($a, $q) { return self::Data__Author_Quizid_Fname($a, $q, 'json/quiz.json'); }
+			function Quiz__Author_Quizid($a, $q) { return self::Data__Author_Quizid_Fname($a, $q, 'json/quiz.json'); }
+			function Perm__Author_Quizid($a, $q) { return self::Data__Author_Quizid_Fname($a, $q, 'json/permissions.json'); }
+			function Filter__Author_Quizid($a, $q) { return self::Data__Author_Quizid_Fname($a, $q, 'json/filters.json'); }
+			function VTT__Author_Quizid($a, $q) { return self::Data__Fnames(array("$a/$q/media/video.vtt", "$a/$q/media/autosub.vtt")); }
 		
-			public function Perm_Author_Quizid($d, $a, $q) { return self::Data_Author_Quizid_Fname($d, $a, $q, 'json/permissions.json'); }
-			public function Quiz_Author_Quizid($d, $a, $q) { return self::Data_Author_Quizid_Fname($d, $a, $q, 'json/quiz.json'); }
+			function Perm_Author_Quizid($d, $a, $q) { return self::Data_Author_Quizid_Fname($d, $a, $q, 'json/permissions.json'); }
+			function Quiz_Author_Quizid($d, $a, $q) { return self::Data_Author_Quizid_Fname($d, $a, $q, 'json/quiz.json'); }
 			
-			public function Author() { return $_SERVER['cn']; }
+			function Author() { return $_SERVER['cn']; }
 
 			//	Called by DAL::Authors__QuizCount
 			//	Called by DAL::Consumers__Author
 			//	Called by DAL::Quiz__Author
-			public function Quizids__Author($author) {
+			function Quizids__Author($author) {
 				if ($author === 'me') $author = $_SERVER['cn'];
 				//static $quizids; if (isset($quizids[$author])) return $quizids[$author];											//	cache
 				$dirs = array_filter(glob(Dir::db() . "$author/*"),'is_dir');
@@ -70,38 +70,44 @@
 			}
 			
 			//	Called by DAL::UsageLen__Author
-			protected function setCache($key, $value) {
-				file_put_contents(Dir::cache() . "/$key.txt", $value);
-				#$out = fopen(Dir::cache() . "/$key.txt", 'w');
-				#fwrite($out,$value);
-				#fclose($out);
-			}
+			protected function setCache($key, $value) { file_put_contents(Dir::cache() . "/$key.txt", $value); }
 			
 			//	Called by DAL::UsageLen__Author
 			protected function getCache($key) {
 				$path = Dir::cache() . "/$key.txt";
 				if (!file_exists($path)) return False;
 				return file_get_contents($path);
-				#return $ret;
 			}
 		
 		/* Private Functions (All Called by DBAL or uncalled) */
 		
-			//	Called by self::VTT__Author_Quizid
-			//	Called by self::Filter__Author_Quizid
-			//	Called by self::Perm__Author_Quizid
-			//	Called by self::Quiz__Author_Quizid
-			private function Data__Author_Quizid_Fname($author, $quizid, $filename) {
-				//static $quiz; if (isset($quiz[$author . $quizid])) return $quiz[$author . $quizid];							//	cache
-				$fullname = Dir::db() . "{$author}/{$quizid}/$filename";
+			//	Called by self::Data__Fnames
+			//	Called by self::Data__Author_Quizid_Fname
+			private function Data__Fname($filename) {
+				$fullname = Dir::db() . $filename;
 				if (!file_exists($fullname)) return '';
-				$quiz[$author . $quizid] = file_get_contents($fullname);
-				return $quiz[$author . $quizid];
+				return file_get_contents($fullname);
 			}
 			
-			public function Data_Author_Quizid_Fname($file, $author, $quizid, $fname) {
+			//	Called by self::VTT__Author_Quizid
+			private function Data__Fnames($filenames) {
+				foreach ($filenames as $filename) {
+					$data = self::Data__Fname($filename);
+					if ($data) return $data;
+				}
+				return $data;
+			}
+
+			//	Called by self::Quiz__Author_Quizid
+			//	Called by self::Perm__Author_Quizid
+			//	Called by self::Filter__Author_Quizid
+			private function Data__Author_Quizid_Fname($author, $quizid, $fname) { return self::Data__Fname("$author/$quizid/$fname"); }
+			
+			//	Called by self::Perm_Author_Quizid
+			//	Called by self::Quiz_Author_Quizid
+			public function Data_Author_Quizid_Fname($data, $author, $quizid, $fname) {
 				$fullname = Dir::db() . "{$author}/{$quizid}/{$fname}";
-				$success = file_put_contents($fullname, $file);
+				$success = file_put_contents($fullname, $data);
 				return $success ? 'Data saved' : 'Data not saved';
 			}
 			
