@@ -196,7 +196,7 @@ input:focus {
     width: 15%;
     height: 4%;
     left: 52.5%;
-    top: 0.5%;
+    top: 87%;
     position: absolute;
     opacity: 0;
     overflow: hidden;
@@ -221,8 +221,8 @@ input:focus {
 #resetQuestionButton {
     width: 5%;
     height: 4%;
-    left: 47.5%;
-    top: 0.5%;
+	left: 48%;
+    top: 87%;
     position: absolute;
     background-size: contain;
     background-repeat: no-repeat;
@@ -236,7 +236,7 @@ input:focus {
     width: 15%;
     height: 4%;
     left: 52.5%;
-    top: 0.5%;
+    top: 87%;
     position: absolute;
     opacity: 0;
     overflow: hidden;
@@ -667,6 +667,7 @@ input:focus {
     left: 10%;
     top: 37.5%;
     position: absolute;
+    overflow: hidden;
 }
 
 .fillInPanel {
@@ -1491,9 +1492,20 @@ input:focus {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url(img/button_unmute.svg);
     border-radius: 50%;
 }
+
+.muteOff{
+    background-image: url(img/button_unmute.svg);
+}
+
+.muteOn{
+
+
+    background-image: url(img/button_mute.svg)!important;
+}
+
+
 
 #cc {							/*	Tony	*/
     width: 3.75%;
@@ -1621,6 +1633,7 @@ input:focus {
     position: absolute;
     text-align: center;
     color: #696969;
+    display:none;
 }
 
 /* Input slider */
@@ -1944,4 +1957,8 @@ input[type=range]:focus {
 	opacity: .025;
     background-repeat: no-repeat;
     background-position: center;
+}
+
+.srFix{
+    height: 70% !important;
 }

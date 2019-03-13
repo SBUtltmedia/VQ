@@ -1,9 +1,4 @@
-/*
-	Date:		Fall 2017
-	Authors:	James Palmeri
-				Anthony John Ripa
-				Paul St. Denis
-*/
+document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
 var quizfile = "json/quiz.json";
 var mediaDir = "media/";
 var ogfile = mediaDir + "video.ogv";
@@ -35,7 +30,6 @@ try {
 	var urlVars = getUrlVars();
 	var progress = new Progress(urlVars["local"]);
 } catch(e) {
-  // console.log(e);
 }
 
 // Watch data
@@ -70,7 +64,7 @@ function getPermissions() {	// Called by 1 function: onload()
         dataType: "json",
         url: "json/permissions.json",
         data: "",
-        success: function (data) {console.log(data.isPublic)
+        success: function (data) {
             permissionData = data;
             if (permissionData.isPublic) {
                 // Quiz is public
@@ -219,6 +213,7 @@ function loadButtons() {	// Called by 2 functions: getPermissions() & getUserDat
 
             // Video controls
             video = $("#videoBox")[0];
+	    video.addEventListener('onchange',function(evt){console.log(evt)})
 			video.addEventListener("loadedmetadata", cconce);						//	Tony
 			if (video.readyState >= 2) cconce(); // Tony https://stackoverflow.com/questions/33116067/addeventlistenerloadedmetadata-fun-doesnt-run-correctly-firefox-misses-eve
 			$('#cc')[0].addEventListener('click', togglecc);						//	Tony
@@ -745,6 +740,15 @@ function exitButton(i, delay) {	// Called by 1 function: completeQuiz()
     }, delay);
 }
 
+function urlify(text) {
+    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlRegex, function(url) {
+        return '<a href="' + url + '">' + url + '</a>';
+    })
+    // or alternatively
+    // return text.replace(urlRegex, '<a href="$1">$1</a>')
+}
+
 function setQuestion(n) {	// Called by 2 functions: questionRetry() & initQuestionClickEvent
     if (!userData.answerData[n].correct && showingQuestions) {
         // Hide expository text
@@ -762,7 +766,7 @@ function setQuestion(n) {	// Called by 2 functions: questionRetry() & initQuesti
         pauseVideo();
         currentQuestion = n;
         //$("#questionText").text(questions.questions[n].questionText);
-        $("#questionText").text((n+1) + '. ' + questions.questions[n].questionText);	//	Tony
+        $("#questionText").html(urlify((n+1) + '. ' + questions.questions[n].questionText));	//	Tony
         $("#smallQuestionText").text(questions.questions[n].questionText);
         //        $(".answerIcon").removeClass("anim_spinCorrect");
         //        $(".answerIcon").removeClass("anim_spinWrong");
@@ -773,6 +777,10 @@ function setQuestion(n) {	// Called by 2 functions: questionRetry() & initQuesti
         clearInterval(letterFlipInterval);
         $(".anim_letterPanelSpin").removeClass("anim_letterPanelSpin");
         var t = questions.questions[n].type;
+
+				//Dynamic Size Fixes
+				$("#questionText").removeClass("srFix");
+
         if (t == "mc") {
             $(".fillInPanel").css("opacity", 0);
             $(".fillInPanel").css("pointer-events", "none");
@@ -868,6 +876,7 @@ function setQuestion(n) {	// Called by 2 functions: questionRetry() & initQuesti
             $("#fillInAnswer").css("opacity", 1);
             $("#fillInAnswer").css("pointer-events", "auto");
             $("#fillInAnswer").removeClass("anim_quickFadeOut");
+						$("#questionText").addClass("srFix");
         }
     }
 }
@@ -1039,7 +1048,7 @@ function playPause() {	// Called by 2 functions: loadButtons() & hideQuestions()
 }
 
 function playVideo() {	// Called by 3 functions: questionReview(), questionContinue() & playPause()
-    video.play();
+    if(video) video.play();
     $("#bigPlay").removeClass("playState");				//	Tony
     $("#videoPlayPause").removeClass("playState");
     //$("#videoPlayPause").addClass("pauseState");		//	Tony
@@ -1074,12 +1083,12 @@ function getWatchPercentage() {	// Called by 1 function: recordTimeWatched()
      //*pstdenis changed to handle watchData longer than duration
 	//for (var i = 0; i < userData.watchData.length; i++) {
     for (var i = 0; i < Math.floor(video.duration); i++) {
-        if (userData.watchData[i] >= 0) {
+        if (userData.watchData[i] > 0) {
             total++;
         }
     }
-    var percentage= Math.floor(10000 * total / userData.watchData.length) / 100;
-    if (percentage>99) percentage =100;
+    var percentage= Math.floor(100 * total / userData.watchData.length);
+    if (percentage>=99) percentage =100;
     return percentage;
 }
 
@@ -1099,7 +1108,8 @@ function recordTimeWatched() {	// Called by 5 functions: initQuestionClickEvent(
     if (questions.questions.length == 0) {
         var watchPct = getWatchPercentage();
         $("#noQuestionText").text("This quiz has no questions. You've watched " + watchPct + "% of the video." + (watchPct > 80 ? " Completed!" : ""));
-        if (watchPct > 80 && !recordedCompletion && questions.questions.length == 0) {
+				// console.log("watchPct: "+watchPct+"\nrecordedCompletion: "+recordedCompletion+"\nquestions.questions.length: "+questions.questions.length)
+				if (watchPct > 80 && !recordedCompletion && questions.questions.length == 0) {
             // Complete
             recordedCompletion = true;
             completeQuiz();
@@ -1120,6 +1130,8 @@ function seekTimeUpdate() {	// Called by 1 function: loadButtons()
             setQuestion(i);
         }
     }
+    
+    console.log($('video')[0].textTracks[0].activeCues);
     // Record
     recordTimeWatched();
     // Save?
@@ -1139,13 +1151,9 @@ function videoEnded() {	// Called by 1 function: loadButtons()
 }
 
 function videoMute() {	// Called by 1 function: loadButtons()
-    if (video.muted) {
-        video.muted = false;
-        $("#muteButton").css("background-image", "url(img/button_unmute.svg)");
-    } else {
-        video.muted = true;
-        $("#muteButton").css("background-image", "url(img/button_mute.svg)");
-    }
+        video.muted = !video.muted;;
+        $("#muteButton").toggleClass("muteOn");
+    
 }
 
 function setVolume() {	// Called by 1 function: loadButtons()
@@ -1164,9 +1172,13 @@ function formatTime(n) {	// Called by 1 function: seekTimeUpdate()
 }
 
 function saveWatchData() {	// Called by 3 functions: selectAnswer(), seekTimeUpdate() & videoEnded()
-    if (permissionData.isPublic == true) {
-        // saveLocalData();
-    } else {
+        if(ses){
+
+ses.grade= (userData.bestScore)/2000;
+postLTI(ses);
+}
+ 
+    {
         var str = JSON.stringify(userData);
         saveData(str);
     }
@@ -1183,6 +1195,7 @@ function saveUserData() {	// Called by 2 functions: completeQuiz() & saveData()
     }
     var str = JSON.stringify(userData);
     saveData(str);
+
 }
 
 function getGrade() {	//	Tony		// Called by 1 function: saveData()
@@ -1195,7 +1208,6 @@ function getGrade() {	//	Tony		// Called by 1 function: saveData()
 
 function saveData(str) {	// Called by 2 functions: saveWatchData() & saveUserData()
 	//alert('in saveData()');
-	if (typeof Lti != 'undefined') Lti.submit(getGrade());	//	Tony
     $.ajax({
         type: "POST",
         url: "saveUserData.php",
@@ -1279,20 +1291,22 @@ function clearLocalData() {	// Called by 0 functions: previously called by loadB
 
 function updateScore() {	// Called by 5 functions: getUserData() loadUserData() loadButtons() answerCorrect() & recordTimeWatched()
 
+            video = $("#videoBox")[0];
     var score = 0;
     // Compute score
     // Time watched
     var watchedSeconds = 0;
+    var floorDuration= Math.floor(video.duration);
     //*pstdenis changed to avoid watchedData.length > video.duration
     //for (var i = 0; i < userData.watchData.length; i++) {
     //async fix
     if(video){
-    for (var i = 0; i < video.duration; i++) {
+    for (var i = 0; i < floorDuration; i++) {
         if (userData.watchData[i] > 0) {
             watchedSeconds++;
         }
     }
-    score += Math.round(watchedSeconds / video.duration * 1000);
+    score += Math.round(watchedSeconds / floorDuration * 1000);
     // Questions answered
     if (questions !== undefined) {
         if (questions.questions.length > 0) {
@@ -1321,7 +1335,7 @@ function updateScore() {	// Called by 5 functions: getUserData() loadUserData() 
     if (isNaN(score)) {
         score = 0;
     }
-    userScore = score;
+    userScore = Math.min(maxScore,score);
     $("#scoreNum").text(score);
     $("#scoreBar").css("width", (score / maxScore * 100) + "%");
 	}

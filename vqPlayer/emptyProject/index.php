@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>IVQ Player</title>
     <link rel="stylesheet" type="text/css" href="/vq/vqPlayer/style.css" />
@@ -11,6 +10,27 @@
     <script type="text/javascript" src="/vq/vqPlayer/js/range-touch.js"></script>
     <script type="text/javascript" src="/vq/vqPlayer/js/resize.js"></script>
 	<!--    <script src='/login/js/lti.js'></script>			-->
+<?
+print"<script>var ses;</script>";
+if(array_key_exists("lis_person_name_given", $_POST)){
+$JSON_POST=json_encode($_POST);
+print <<<EOT
+ <script src="/vq/vqPlayer/js/grading.js"></script>
+<script>
+ses=$JSON_POST;
+</script>
+EOT;
+}
+else{
+print_r("<!---not found $_POST----->");
+
+} 
+ 
+ 
+?>
+
+
+
 </head>
 
 <body>
@@ -23,7 +43,7 @@
     <div id="stage" class="screen">
         <div id="quiz">
             <div id="videoPlayer">
-                <video id="videoBox" playsinline>
+                <video id="videoBox"  autoplay playsinline>
                     <source src="media/video.mp4" type="video/mp4">
                     <source src="media/video.m4v" type="video/mp4">
                     <p class="text fs-20">Loading video...</p>
@@ -142,7 +162,7 @@
                     </select>
                 </div>
 				<div id='cc' class = 'on btn'></div> <!-- Tony -->
-                <div id="muteButton" class="btn"></div>
+                <div id="muteButton" class="btn muteOff"></div>
                 <input id="volumeSlider" type="range" min="0" max="100" value="100" step="1">
                 <div id="volumeSliderBG" class="fakeSlider">
                     <div id="volumeSliderTrack">

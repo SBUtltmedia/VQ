@@ -1,23 +1,10 @@
-[31-Jan-2018 11:59:42] PHP Parse error:  syntax error, unexpected ',' in /home1/tltsecure/apache2/htdocs/vq/vqEdit/login.php on line 17
-[31-Jan-2018 11:59:45] PHP Parse error:  syntax error, unexpected ',' in /home1/tltsecure/apache2/htdocs/vq/vqEdit/login.php on line 17
-[31-Jan-2018 12:52:24] PHP Notice:  Undefined index: path in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 3
-[31-Jan-2018 12:52:24] PHP Notice:  Undefined index: jsonData in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 4
-[31-Jan-2018 12:52:24] PHP Warning:  file_put_contents(users/): failed to open stream: Is a directory in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 6
-[15-Mar-2018 12:44:55] PHP Notice:  Undefined property: stdClass::$videoPath in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 6
-[15-Mar-2018 12:44:55] PHP Warning:  rename(../ralessi/262/.htaccess_disabled,../ralessi/262/.htaccess): No such file or directory in /home1/tltsecure/apache2/htdocs/vq/vqEdit/makePublic.php on line 8
-[15-Mar-2018 12:47:37] PHP Warning:  rename(../ralessi/263/.htaccess_disabled,../ralessi/263/.htaccess): No such file or directory in /home1/tltsecure/apache2/htdocs/vq/vqEdit/makePublic.php on line 8
-[15-Mar-2018 12:47:37] PHP Notice:  Undefined property: stdClass::$videoPath in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 6
-[15-Mar-2018 12:48:41] PHP Warning:  rename(../ralessi/264/.htaccess_disabled,../ralessi/264/.htaccess): No such file or directory in /home1/tltsecure/apache2/htdocs/vq/vqEdit/makePublic.php on line 8
-[15-Mar-2018 12:48:41] PHP Notice:  Undefined property: stdClass::$videoPath in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 6
-[15-Mar-2018 12:50:22] PHP Warning:  rename(../ralessi/265/.htaccess_disabled,../ralessi/265/.htaccess): No such file or directory in /home1/tltsecure/apache2/htdocs/vq/vqEdit/makePublic.php on line 8
-[15-Mar-2018 12:50:22] PHP Notice:  Undefined property: stdClass::$videoPath in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 6
-[15-Mar-2018 12:50:30] PHP Warning:  rename(../ralessi/265/.htaccess_disabled,../ralessi/265/.htaccess): No such file or directory in /home1/tltsecure/apache2/htdocs/vq/vqEdit/makePublic.php on line 8
-[15-Mar-2018 12:50:30] PHP Notice:  Undefined property: stdClass::$videoPath in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 6
-[15-Mar-2018 12:50:53] PHP Warning:  rename(../ralessi/266/.htaccess_disabled,../ralessi/266/.htaccess): No such file or directory in /home1/tltsecure/apache2/htdocs/vq/vqEdit/makePublic.php on line 8
-[15-Mar-2018 12:50:53] PHP Notice:  Undefined property: stdClass::$videoPath in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 6
-[15-Mar-2018 12:51:24] PHP Warning:  rename(../ralessi/267/.htaccess_disabled,../ralessi/267/.htaccess): No such file or directory in /home1/tltsecure/apache2/htdocs/vq/vqEdit/makePublic.php on line 8
-[15-Mar-2018 12:51:24] PHP Notice:  Undefined property: stdClass::$videoPath in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 6
-[15-Mar-2018 12:53:13] PHP Warning:  rename(../ralessi/262/.htaccess_disabled,../ralessi/262/.htaccess): No such file or directory in /home1/tltsecure/apache2/htdocs/vq/vqEdit/makePublic.php on line 8
-[15-Mar-2018 12:53:13] PHP Notice:  Undefined property: stdClass::$videoPath in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 6
-[15-Mar-2018 12:53:23] PHP Warning:  rename(../ralessi/262/.htaccess_disabled,../ralessi/262/.htaccess): No such file or directory in /home1/tltsecure/apache2/htdocs/vq/vqEdit/makePublic.php on line 8
-[15-Mar-2018 12:53:23] PHP Notice:  Undefined property: stdClass::$videoPath in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 6
+[13-Dec-2018 14:36:13] PHP Warning:  rename(../pstdenis/18/.htaccess,../pstdenis/18/.htaccess_disabled): No such file or directory in /home1/tltsecure/apache2/htdocs/vq/vqEdit/makePublic.php on line 5
+[13-Dec-2018 14:36:13] PHP Notice:  Undefined property: stdClass::$videoPath in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 6
+[13-Dec-2018 14:36:38] PHP Warning:  rename(../pstdenis/18/.htaccess,../pstdenis/18/.htaccess_disabled): No such file or directory in /home1/tltsecure/apache2/htdocs/vq/vqEdit/makePublic.php on line 5
+[13-Dec-2018 14:36:38] PHP Notice:  Undefined property: stdClass::$videoPath in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 6
+[13-Dec-2018 16:43:37] PHP Warning:  rename(../pstdenis/18/.htaccess,../pstdenis/18/.htaccess_disabled): No such file or directory in /home1/tltsecure/apache2/htdocs/vq/vqEdit/makePublic.php on line 5
+[13-Dec-2018 16:43:37] PHP Notice:  Undefined property: stdClass::$videoPath in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 6
+[17-Jan-2019 19:12:59] PHP Notice:  Undefined index: nickname in /home1/tltsecure/apache2/htdocs/vq/vqEdit/login.php on line 45
+[08-Feb-2019 08:38:15] PHP Notice:  Undefined index: nickname in /home1/tltsecure/apache2/htdocs/vq/vqEdit/login.php on line 45
+[08-Mar-2019 22:14:11] PHP Warning:  rename(../wmeaney/1/.htaccess,../wmeaney/1/.htaccess_disabled): No such file or directory in /home1/tltsecure/apache2/htdocs/vq/vqEdit/makePublic.php on line 5
+[08-Mar-2019 22:14:11] PHP Notice:  Undefined property: stdClass::$videoPath in /home1/tltsecure/apache2/htdocs/vq/vqEdit/saveQuiz.php on line 6

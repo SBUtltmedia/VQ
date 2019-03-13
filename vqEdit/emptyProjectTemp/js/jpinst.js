@@ -222,7 +222,7 @@ function loadButtons() {	// Called by 2 functions: getPermissions() & getUserDat
 			video.addEventListener("loadedmetadata", cconce);						//	Tony
 			if (video.readyState >= 2) cconce(); // Tony https://stackoverflow.com/questions/33116067/addeventlistenerloadedmetadata-fun-doesnt-run-correctly-firefox-misses-eve
 			$('#cc')[0].addEventListener('click', togglecc);						//	Tony
-				
+
 			$('#bigPlay').click(playPause);											//	Paul
 			$('#quizBank').hide();													//	Tony
             $("#videoPlayPause").click(function () {
@@ -1065,12 +1065,14 @@ function getWatchPercentage() {	// Called by 1 function: recordTimeWatched()
             total++;
         }
     }
-    return Math.floor(10000 * total / userData.watchData.length) / 100;
+		var percentage= Math.floor(100 * total / userData.watchData.length);
+		if (percentage>=99) percentage =100;
+		return percentage;
 }
 
 function recordTimeWatched() {	// Called by 5 functions: initQuestionClickEvent() pauseVideo() vidSeek() seekTimeUpdate() & videoEnded()
 	//*pstdenis added duration check to try to avoid appended nulls
-    var now = Math.min(Math.floor(video.duration),Math.floor(video.currentTime));
+    var now = Math.max(Math.floor(video.duration),Math.floor(video.currentTime));
     var changed = false;
     for (var i = watchStart; i < now; i++) {
         userData.watchData[i]++;

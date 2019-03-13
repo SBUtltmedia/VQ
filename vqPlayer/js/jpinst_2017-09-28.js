@@ -649,7 +649,7 @@ function resetQuestions() {
     // Hide reset button
     $("#resetQuestionButton").removeClass("anim_resetQuestionShow");
     //$("#resetQuestionButton").addClass("anim_resetQuestionHide");
-    
+
     // Hide game complete text
     $("#gameCompleteText").removeClass("anim_gameCompleteTextShow");
     for (var i = 0; i < userData.answerData.length; i++) {

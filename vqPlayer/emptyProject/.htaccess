@@ -6,7 +6,7 @@ RewriteCond %{HTTPS} off
 RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
 #For now, we comment out that we require our visitor be a student of stony brook university.
  require affiliation student@stonybrook.edu
- DirectoryIndex index.html
+ DirectoryIndex index.php
 # RewriteCond %{HTTPS} !=on [NC]
 # RewriteRule ^stocki(.*) https://%{HTTP_HOST}%{REQUEST_URI}
 

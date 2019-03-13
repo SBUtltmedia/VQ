@@ -434,9 +434,9 @@ function loadPermissions(id, isInitial) {
         }
     }).done(function (data) {
 		if (data !== "" && data !== "{}") {			//	Check for no data					-Tony
-			// Load data
+
 			var jsonData = JSON.parse(data);
-			var canAccessData = jsonData.canAccessData;
+			var canAccessData = jsonData.canAccessData ||[];
 			var str = "";
 			for (var i = 0; i < canAccessData.length; i++) {
 				str += canAccessData[i] + (i < canAccessData.length - 1 ? "\n" : "");

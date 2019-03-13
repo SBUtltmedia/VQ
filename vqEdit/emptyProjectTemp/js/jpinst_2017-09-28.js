@@ -649,7 +649,7 @@ function resetQuestions() {
     // Hide reset button
     $("#resetQuestionButton").removeClass("anim_resetQuestionShow");
     //$("#resetQuestionButton").addClass("anim_resetQuestionHide");
-    
+
     // Hide game complete text
     $("#gameCompleteText").removeClass("anim_gameCompleteTextShow");
     for (var i = 0; i < userData.answerData.length; i++) {
@@ -991,7 +991,9 @@ function getWatchPercentage() {
             total++;
         }
     }
-    return Math.floor(10000 * total / userData.watchData.length) / 100;
+    var percentage= Math.floor(100 * total / userData.watchData.length);
+    if (percentage>=99) percentage =100;
+    return percentage;
 }
 
 function recordTimeWatched() {
