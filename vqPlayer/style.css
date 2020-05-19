@@ -15,6 +15,10 @@ body {
     background-color: black;
 }
 
+input[type="range"]::-moz-range-track {
+  background-color: #CCC;
+}
+
 .cover {
     position: absolute;
     background-color: black;
@@ -221,8 +225,8 @@ input:focus {
 #resetQuestionButton {
     width: 5%;
     height: 4%;
-	left: 48%;
-    top: 87%;
+	left: 88%;
+    top: 88%;
     position: absolute;
     background-size: contain;
     background-repeat: no-repeat;
@@ -232,24 +236,33 @@ input:focus {
     /*visibility: hidden;*/
 }
 
-#resetQuestionBox {
+#resetQuestionBox,#videoSkipBox {
     width: 15%;
     height: 4%;
-    left: 52.5%;
-    top: 87%;
+   /* left: 83.5%;    top: 93%;*/
+  z-index:1000;
     position: absolute;
     opacity: 0;
     overflow: hidden;
 }
 
-#resetQuestionBG {
+#videoSkipBox{
+ left: 70.5%;    top: 90%;
+}
+
+
+#resetQuestionBox{
+   left: 83.5%;    top: 93%;
+}
+
+#resetQuestionBG,#videoSkipBG  {
     width: 100%;
     height: 100%;
     background-color: white;
     opacity: .75;
 }
 
-#resetQuestionText {
+#resetQuestionText,#videoSkipText  {
     width: 90%;
     top: 20%;
     left: 5%;
@@ -316,6 +329,20 @@ input:focus {
     background-image: url(img/hex_check_gray.svg);
     z-index: 1000;
     visibility: hidden;
+}
+
+#bblink{
+position:absolute;
+    font-family: "Helvetica", sans-serif;
+
+/*background-image: url(img/Blackboard.svg);*/
+color:white;
+top:90%;
+width:2rem;
+height:1rem;
+background-size: 100% 100%;
+left:6%;
+font-size:.25rem;
 }
 
 @keyframes hexSpin {
@@ -509,8 +536,8 @@ input:focus {
     left: 5%;
     top: 12.5%;
     position: absolute;
-    opacity: 0;
-    z-index: 1500;
+    opacity:0;
+z-index: 1500;
 }
 
 #questionBoxContents {
@@ -693,9 +720,10 @@ input:focus {
 }
 
 #fillInAnswer {
+    font-size:.75rem!important;
     width: 70%;
-    height: 10%;
-    top: 85%;
+    height: 20%;
+    top: 75%;
     left: 15%;
     position: absolute;
     background-color: black;
@@ -1368,6 +1396,27 @@ input:focus {
     border-radius: 50%;
 }
 
+#videoSkip {
+    z-index:1000;
+    width: 3.9%;
+    height: 5%;
+    left: 72.5%;
+    top: 82.5%;
+    position: absolute;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+ background-image: url(img/button_skip.svg);
+}
+#videoSkipText {
+    width: 100%;
+    height: 100%;
+    top: 0%;
+    position: absolute;
+    z-index:1000;
+}
+
+
 .playState {
     background-image: url(img/button_play.svg);
 }
@@ -1376,8 +1425,8 @@ input:focus {
     background-image: url(img/button_pause.svg);
 }
 
-#seekSlider {
-    width: 69.5%;
+#seekSlider,#seekSliderBG,#questionMarkers {
+    width: 65%;
     height: 100%;
     left: 6.75%;
     top: 0%;
@@ -1386,14 +1435,12 @@ input:focus {
     padding: 0;
 }
 
+#questionMarkers {
+    z-index: -50;
+}
+
+
 #seekSliderBG {
-    width: 69.5%;
-    height: 100%;
-    left: 6.75%;
-    top: 0%;
-    position: absolute;
-    margin: 0;
-    padding: 0;
     pointer-events: none;
 }
 
@@ -1473,7 +1520,6 @@ input:focus {
 
 #playbackSpeed {
     width: 80%;
-    height: 40%;
     left: 10%;
     top: 60%;
     position: absolute;
@@ -1507,7 +1553,14 @@ input:focus {
 
 
 
-#cc {							/*	Tony	*/
+
+#cc{
+
+    background-image: url(img/cc.svg);
+
+}
+
+#cc,#repair,#repairBox {							/*	Tony	*/
     width: 3.75%;
     height: 100%;
     left: 83.75%;
@@ -1516,8 +1569,28 @@ input:focus {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url(img/cc.svg);
 }
+#repair{
+color:white;
+top:200%;
+font-size:.25rem;
+
+}
+
+
+#repairBox {
+
+top: 230%;
+height:150%;
+width:15%;
+}
+#repairBox form{
+
+display:flex;
+}
+
+#repairBox textarea{flex-grow: 1;}
+
 
 #cc.on { border-bottom: thin solid red; }
 
@@ -1531,16 +1604,6 @@ input:focus {
     padding: 0;
 }
 
-#questionMarkers {
-    width: 68.25%;
-    height: 100%;
-    left: 7.4%;
-    top: 0%;
-    position: absolute;
-    margin: 0;
-    padding: 0;
-    z-index: -50;
-}
 
 @keyframes hideQuestionMarkers {
     0% {
@@ -1678,12 +1741,12 @@ input[type=range]:focus {
     width: 100%;
     height: 5%;
     left: 0%;
-    top: 92.5%;
+    top: 88%;
     position: absolute;
     text-align: center;
     opacity: 0;
     z-index: -1000;
-    color: #404040;
+    color: white;
 }
 
 @keyframes turnGreen {
@@ -1954,7 +2017,7 @@ input[type=range]:focus {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	opacity: .025;
+	opacity: .05;
     background-repeat: no-repeat;
     background-position: center;
 }

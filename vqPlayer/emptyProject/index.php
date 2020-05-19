@@ -24,9 +24,9 @@ EOT;
 else{
 print_r("<!---not found $_POST----->");
 
-} 
- 
- 
+}
+
+
 ?>
 
 
@@ -53,16 +53,23 @@ print_r("<!---not found $_POST----->");
                 </video>
 				<div id='bigPlay' class='playState'></div>	<!-- Tony -->
             </div>
-            <div id="quizTitle" class="text fs-30"></div>
+            <div id="quizTitle" class="text fs-26"></div>
             <div id="toggleQuestionBox" class="rounded">
                 <div id="toggleQuestionBG"></div>
                 <div id="toggleQuestionText" class="text fs-18">Show/Hide Questions</div>
             </div>
-            <div id="resetQuestionButton" class="btn"></div>
+           <div id="bblink"></div>
+	     <div id="resetQuestionButton" class="btn"></div>
             <div id="resetQuestionBox" class="rounded">
                 <div id="resetQuestionBG"></div>
                 <div id="resetQuestionText" class="text fs-18">Reset Questions</div>
             </div>
+	   <div id="videoSkip"></div>
+                 <div id="videoSkipBox" class="rounded">
+                <div id="videoSkipBG"></div>
+                <div id="videoSkipText" class="text fs-18">Skip to Unwatched Sections</div>
+            </div>
+
             <div id="userInfoButton"></div>
             <div id="userInfoBox" class="rounded">
                 <div id="userInfoBG"></div>
@@ -103,7 +110,7 @@ print_r("<!---not found $_POST----->");
                         <div id="questionBoxBG" class="rounded"></div>
                         <div id="questionText" class="text fs-40"></div>
                         <div id="fillInPanels"></div>
-                        <input id="fillInAnswer" class="rounded text fs-50">
+                        <textarea id="fillInAnswer" class="rounded text fs-50"></textarea>
                         <div id="expoBox" class="rounded">
                             <div id="expoTitle" class="text fs-60">Correct</div>
                             <div id="expoText" class="text fs-30"></div>
@@ -146,8 +153,9 @@ print_r("<!---not found $_POST----->");
                         <div id="seekSliderThumb"></div>
                     </div>
                 </div>
+
                 <div id="questionMarkers"></div>
-            
+
             <div id="toggleQuestionButton" class="btn"></div>
     <div id="timeDisplay">
                     <div id="timeDisplayText" class="text fs-23"></div>
@@ -162,6 +170,8 @@ print_r("<!---not found $_POST----->");
                     </select>
                 </div>
 				<div id='cc' class = 'on btn'></div> <!-- Tony -->
+				<div id='repair'  class='text'>repair</div>
+				<div id="repairBox"><form action="#"><textarea></textarea><input type="hidden"  id="startTime"/><input type="submit" value="ok"></input><form></div>
                 <div id="muteButton" class="btn muteOff"></div>
                 <input id="volumeSlider" type="range" min="0" max="100" value="100" step="1">
                 <div id="volumeSliderBG" class="fakeSlider">
@@ -170,8 +180,8 @@ print_r("<!---not found $_POST----->");
                     </div>
                 </div>
             </div>
-            <div id="gameCompleteText" class="text fs-40"></div>
-            <div id="noQuestionText" class="text fs-30"></div>
+            <div id="gameCompleteText" class="text fs-25"></div>
+            <div id="noQuestionText" class="text fs-25"></div>
         </div>
         <div id="blocker">
             <div id="blockerText">

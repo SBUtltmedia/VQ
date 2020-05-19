@@ -83,7 +83,7 @@ $(function () {
     $("#closeButton").on("click",function() {
       $("#myModal").css("display","none");
     });
-    
+
 });
 
 function userLogin() {
@@ -145,10 +145,12 @@ function loadUserData() {
     });
     for (var i = 0; i < quizzes.length; i++) {
         if (userData.quizData[i].isOwner) {
-            $("#loadQuiz").append('<option value="' + i + '">' + userData.quizData[i].title + '</option>');
-            $("#deleteDropdown").append('<option value="' + i + '">' + userData.quizData[i].title + '</option>');
+	   //ivqID=userData.quizData[i].relativePath.split("/").reverse()[0] 
+	   ivqID=i 
+            $("#loadQuiz").append('<option value="' + ivqID + '">' + userData.quizData[i].title + '</option>');
+            $("#deleteDropdown").append('<option value="' + ivqID + '">' + userData.quizData[i].title + '</option>');
         }
-        $("#quizStatsSelect").append('<option value="' + i + '">' + userData.quizData[i].title + '</option>');
+        $("#quizStatsSelect").append('<option value="' + ivqID + '">' + userData.quizData[i].title + '</option>');
     }
     // Create a small box for each video quiz
     $("#quizInfoPanel").empty();
@@ -308,8 +310,8 @@ function loadUserData() {
         var added = false;
         for (var j = 0; j < userData.folders.length; j++) {
 			var dirs = userData.folders[j].quizzes;				//	Tony
-         //   console.log(path,dirs )
-			if (dirs.indexOf(path) != -1) {
+        // console.log(path,dirs )
+			if (dirs.length && dirs.indexOf(path) != -1) {
                 folders[j].quizzes.push(i);
                 added = true;
             }
@@ -635,14 +637,14 @@ function initButtons() {
         var fileSize = file.size;
         var nameSplit = fileName.split(".");
         var ext = nameSplit[nameSplit.length - 1];
-        var MAX_SIZE = 400 * 1024 * 1024 // 400 MB
+        var MAX_SIZE =1000 * 1024 * 1024 // 400 MB
         // Check if extension is acceptable AND file size is less than max size
         if ((ext == "mp4" || ext == "m4v") && fileSize < MAX_SIZE) {
             // File is OK; upload file
             uploadFile(file);
         } else {
             if (fileSize > MAX_SIZE) {
-                $("#fileFormatErrorText").text("That file exceeds the upload limit of 400 MB. (Click this to dismiss.)");
+                $("#fileFormatErrorText").text("That file exceeds the upload limit of 1000 MB. (Click this to dismiss.)");
                 $("#fileFormatErrorLink").attr("href", null);
             } else {
                 $("#fileFormatErrorText").text("That file format isn't accepted. Click here to convert it to MP4.");
@@ -1642,8 +1644,12 @@ function loadVideo(src) {
     }
 }
 
-function loadVideo__Quizindex(quizindex) {		//	-Tony
-	Video__Quizindex(quizindex, loadVideo);
+function loadVideo__Quizindex(quizindex) {
+//	loadVideo(quizindex)	
+	var videoPath=`${userData.quizData[quizindex].relativePath}/media/video.mp4`
+	console.log(userData.quizData[quizindex])		//	-Tony
+	loadVideo(videoPath)		//	-Tony
+//	Video__Quizindex(quizindex, loadVideo);
 }
 
 function cleanQuiz(save) {

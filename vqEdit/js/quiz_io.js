@@ -1,10 +1,13 @@
 function Video__Quizindex(quizindex, callback) {		//	Tony
+	console.log(userData.quizData[quizindex-1])
 	$.ajax({url: "../vqLib/DAL?video&quizindex="+quizindex}).done(callback).fail(function(e){console.log('quiz_io.js Video__Quizindex() : ' + e)})
 }
 
 function loadExistingQuiz(id) {
     loadPermissions(id, true);
+console.log(id)
 }
+
 
 function reallyLoadQuiz(id) {
     print("Really load quiz " + id);

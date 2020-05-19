@@ -1,5 +1,6 @@
 <?
 // Get netID
+clearstatcache();
 $netID = $_SERVER['cn'];
 if ($netID=="") $netID= "japalmeri";
 // Make directory for that netID if it does not exist already

@@ -1,6 +1,36 @@
 <?
-header("Content-Type: application/json");
 require('injectUserPath.php');
+header("Content-Type: application/json");
+header("Connection: close");
+ob_start();
+$netID = $_SERVER['cn'];
+$cacheFile="../users/$netID/login.json";
+$cacheExists=file_exists($cacheFile);
+if ($cacheExists) {
+$cacheData= file_get_contents($cacheFile);
+ endFlush($cacheData);
+}
+$outData=login();
+if(!$cacheExists){
+
+	 endFlush($outData);
+}
+
+file_put_contents($cacheFile,$outData);
+
+
+function endFlush($printData){
+	print $printData;
+ob_end_flush();
+flush();
+$size = ob_get_length();
+header("Content-Length: $size");
+}
+
+
+
+
+
 function file_get_json($jsonPath) {
 	if (file_exists($jsonPath)) {
 		$json = file_get_contents($jsonPath);
@@ -34,12 +64,14 @@ function addQuizData($dir, $isOwner) {
 		$quizData -> questionData = $json;
 		$quizData -> isOwner = $isOwner;
 		$dirSplit = explode("/", $dir);
-		$owner = $dirSplit[1]; 	// user Bug 
+		$owner = $dirSplit[1]; 	// user Bug
 		$quizData -> owner = $owner;
 		return $quizData;
 	}
 }
 
+
+function login(){
 // Get netID
 $netID = $_SERVER['cn'];
 $firstname = $_SERVER['nickname'];
@@ -125,9 +157,6 @@ $foldersText2=json_encode( $folderData -> folders);
 
 }
 $data -> folders =json_decode($foldersText2);
-print(json_encode($data));
+return json_encode($data);
+}
 ?>
-
-
-
-
