@@ -1115,10 +1115,10 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 			playVideo();
 
 		} else {
-			if (Date.now() - playPause.lastTime > 700)		//	Tony
+			if (Date.now() - lastTime > 700)		//	Tony
 				pauseVideo();
 		}
-		playPause.lastTime = Date.now();					//	Tony
+		lastTime = Date.now();					//	Tony
 	}
 
 	function playVideo() {	// Called by 3 functions: questionReview(), questionContinue() & playPause()
@@ -1245,6 +1245,7 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 		var currentPct = currentTime * (100 / video.duration);
 		if(!video.paused){
 			$("#bigPlay").removeClass("playState");
+			$("#videoPlayPause").removeClass("playState");
 		}
 		$("#seekSlider").val(currentPct);
 		$("#seekSliderThumb").css("left", (currentPct * .98) + "%");
