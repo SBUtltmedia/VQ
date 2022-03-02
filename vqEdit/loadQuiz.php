@@ -1,4 +1,4 @@
-<?
+<?php
 require("injectUserPath.php");
 $qp = injectUserPathN($_REQUEST['quizPath'],4);
 #print $qp;

@@ -1,4 +1,4 @@
-<?
+<?php
 	print getScores("ralessi","tjoleary");
 
 	function getScores($vqNetId, $userNetId){

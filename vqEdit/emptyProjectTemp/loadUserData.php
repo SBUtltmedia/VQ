@@ -1,4 +1,4 @@
-<?
+<?php
 // Get netID
 $netID = $_SERVER['cn'];
 if ($netID=="") $netID= "japalmeri";

@@ -1,4 +1,4 @@
-<?
+<?php
 require('injectUserPath.php');
 header("Content-Type: application/json");
 header("Connection: close");
@@ -12,7 +12,6 @@ $cacheData= file_get_contents($cacheFile);
 }
 $outData=login();
 if(!$cacheExists){
-
 	 endFlush($outData);
 }
 
@@ -145,13 +144,6 @@ $folderData = json_decode(file_get_contents($folderPath));
 
 $folders = $folderData -> folders;
 $foldersText2=json_encode( $folderData -> folders);
-//$foldersText2 = preg_replace("/\.\./","../users",$foldersText);
-
-
-
-
-
-
 
 
 

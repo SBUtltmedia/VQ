@@ -1,4 +1,4 @@
-<?
+<?php
 $netID = $_SERVER['cn'];
 $quizList = json_decode($_REQUEST['quizList']);
 // asdf

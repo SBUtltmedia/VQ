@@ -26,11 +26,7 @@ button:focus {
     outline: none;
 }
 
-#canReset
-{
-width:3%;
-height:4%;
-}
+
 
 #questionTextInput:focus,
 .questionChoiceInput:focus,
@@ -835,6 +831,9 @@ input {
 #questionChoiceBox5 {
     top: 71%;
 }
+#questionChoiceBox6 {
+    top: 77.5%;
+}
 
 .questionChoiceInput {
     width: 86%;
@@ -846,7 +845,7 @@ input {
     padding-right: 2%;
 }
 
-.questionChoiceCorrect {
+.questionChoiceCorrect,#resetIcon {
     width: 8%;
     height: 100%;
     left: 92%;
@@ -863,6 +862,14 @@ input {
 
 .checkOff {
     background-image: url(../img/circle_check_gray.svg);
+}
+
+.resetGreen {
+    background-image: url(../img/reset_questions_green.svg);
+}
+
+.resetGray {
+    background-image: url(../img/reset_questions_gray.svg);
 }
 
 .questionExpoBox {
@@ -961,10 +968,11 @@ input {
 }
 
 #questionTimingLabel {
+    display:none;
     width: 50%;
     height: 5%;
     left: 5%;
-    top: 79%;
+    top: 82%;
     position: absolute;
     color: #c0c0c0;
 }
@@ -1318,16 +1326,23 @@ input[type="range"]::-ms-thumb {
 input[type=range]:focus {
     outline: none;
 }
-
-#numberButtonPanel {
-    width: 32.5%;
-    height: 25%;
-    left: 65%;
-    top: 72.5%;
-    position: absolute;
-    background-color: #222;
+#numberButtonPanel,#cannotReset{
+position: absolute;
+background-color: #222;
+width: 32.5%;
+left: 65%;
 }
+#numberButtonPanel {
+    height: 20%;
+   
+    top: 72.5%;
 
+}
+#cannotReset
+{
+    top: 95%;
+    height: 5%;
+}
 .questionButton {
     width: 20%;
     height: 20%;

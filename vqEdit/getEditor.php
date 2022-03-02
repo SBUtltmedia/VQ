@@ -1,4 +1,4 @@
-<?
+<?php
 $data = json_decode(file_get_contents($_REQUEST['permissionsPath']));
 $out = new stdClass();
 $out -> editor = "";

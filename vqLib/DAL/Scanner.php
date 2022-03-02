@@ -17,7 +17,8 @@
 			if ($name==='get') return end($this->tokens);
 		}
 		public static function __callStatic($name, $arguments) {
-			if ($name==='get') return end(explode('/',$arguments[0]));
+			$exp=explode('/',$arguments[0]);
+			if ($name==='get') return end($exp);
 		}
 	}
 	

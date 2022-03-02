@@ -1,4 +1,4 @@
-<?
+<?php
 // Get netID
 $resources = "../vqPlayer/emptyProjectLink";
 $netID = $_SERVER['cn'];
@@ -22,7 +22,9 @@ while ($ok == false) {
 $path = "../users/$netID/$numFiles";
 $mediaPath = $path."/media/";
 $fileName = $mediaPath . "video.";
-`cp -r $resources $path`;
+//$path="/home/tltsecure/apache2/htdocs/vq/users/tryme";
+`cp -rP $resources $path`;
+//custom_copy($resources, $path);
 
 if (isset($_FILES['upload_file'])) {
         $newFileName = $_FILES['upload_file']['name'];
@@ -43,5 +45,35 @@ if (isset($_FILES['upload_file'])) {
         }} else {
                 echo "No files uploaded ...";
         }
+
+function custom_copy($src, $dst) {  
+  
+    // open the source directory 
+    $dir = opendir($src);  
+  
+    // Make the destination directory if not exist 
+    @mkdir($dst);  
+  
+    // Loop through the files in source directory 
+    while( $file = readdir($dir) ) {  
+  
+        if (( $file != '.' ) && ( $file != '..' )) {  
+            if ( is_dir($src . '/' . $file) )  
+            {  
+  
+                // Recursively calling custom copy function 
+                // for sub directory  
+                custom_copy($src . '/' . $file, $dst . '/' . $file);  
+  
+            }  
+            else {  
+                copy($src . '/' . $file, $dst . '/' . $file);  
+            }  
+        }  
+    }  
+  
+    closedir($dir); 
+}  
+  
 
 ?>

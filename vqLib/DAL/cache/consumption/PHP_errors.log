@@ -1,4 +1,0 @@
-[15-Dec-2017 17:43:51] PHP Fatal error:  Cannot redeclare go() (previously declared in /home1/tltsecure/apache2/htdocs/vq/vqLib/DAL/cache/consumption/compile.php:4) in /home1/tltsecure/apache2/htdocs/vq/vqLib/DAL/cache/consumption/compile.php on line 11
-[15-Dec-2017 17:51:36] PHP Notice:  Undefined variable: content in /home1/tltsecure/apache2/htdocs/vq/vqLib/DAL/cache/consumption/compile.php on line 11
-[15-Dec-2017 18:25:37] PHP Parse error:  syntax error, unexpected '[' in /home1/tltsecure/apache2/htdocs/vq/vqLib/DAL/cache/consumption/old.php on line 5
-[15-Dec-2017 18:26:20] PHP Parse error:  syntax error, unexpected '[' in /home1/tltsecure/apache2/htdocs/vq/vqLib/DAL/cache/consumption/old.php on line 8

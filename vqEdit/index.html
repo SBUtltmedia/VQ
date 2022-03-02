@@ -214,6 +214,16 @@
                         <div class="questionExpoArrow text fs-30">➜</div>
                     </div>
                 </div>
+  <div id="questionChoiceBox6" class="questionChoiceBox show-mc">
+                    <input id="questionChoiceInput6" class="questionChoiceInput text fs-16 rounded" placeholder="Answer Choice 6">
+                    <div id="questionChoiceCorrect6" class="questionChoiceCorrect checkOff btn"></div>
+                    <div id="questionExpoBox6" class="questionExpoBox rounded">
+                        <div class="questionExpoTitle textF fs-20">Expository Text</div>
+                        <textarea id="questionExpoInput6" class="questionExpoInput rounded text fs-16" placeholder="Optional. This text will be displayed when the user selects answer choice 5."></textarea>
+                        <div class="questionExpoArrow text fs-30">➜</div>
+                    </div>
+                </div>
+
                 <div id="questionAnswerLabel" class="textF fs-20 show-fitb">Answer Text</div>
                 <div id="questionAnswerBox" class="questionChoiceBox show-fitb">
                     <input id="questionAnswerInput" class="text fs-16 rounded">
@@ -256,12 +266,16 @@
                 </div>
             </div>
             <div id="numberButtonPanel"></div>
+            <div id="cannotReset" class="text">
+                <div id="resetIcon" class="resetGreen btn"></div>
+                Allow Quiz Replay</div>
             <div id="errorBubble">
                 <div id="errorBubbleText" class="text fs-20"></div>
             </div>
             <div id="noQuestionsPanel">
                 <div id="noQuestionsText" class="text fs-60">This quiz contains no questions.</div>
             </div>
+       
         </div>
         <div id="unsavedWarningPanel" class="rounded">
             <div id="unsavedWarningLabel" class="textF fs-40">Warning</div>

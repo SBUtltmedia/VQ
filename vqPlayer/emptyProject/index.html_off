@@ -1,36 +1,16 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>IVQ Player</title>
     <link rel="stylesheet" type="text/css" href="/vq/vqPlayer/style.css" />
- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
-<script type="text/javascript" src="/vq/vqPlayer/js/progress.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/vq/vqPlayer/js/progress.js"></script>
     <script type="text/javascript" src="/vq/vqPlayer/js/css_browser_selector.js"></script>
-    <script type="text/javascript" src="/vq/vqPlayer/js/jpinst.js?new"></script>
+    <script type="text/javascript" src="/vq/vqPlayer/js/jpinst.js"></script>
     <script type="text/javascript" src="/vq/vqPlayer/js/range-touch.js"></script>
     <script type="text/javascript" src="/vq/vqPlayer/js/resize.js"></script>
 	<!--    <script src='/login/js/lti.js'></script>			-->
-<?php
-print"<script>var ses;</script>";
-if(array_key_exists("lis_person_name_given", $_POST)){
-$JSON_POST=json_encode($_POST);
-print <<<EOT
- <script src="/vq/vqPlayer/js/grading.js"></script>
-<script>
-ses=$JSON_POST;
-</script>
-EOT;
-}
-else{
-print_r("<!---not found $_POST----->");
-
-}
-
-
-?>
-
-
-
 </head>
 
 <body>
@@ -43,8 +23,8 @@ print_r("<!---not found $_POST----->");
     <div id="stage" class="screen">
         <div id="quiz">
             <div id="videoPlayer">
-                <video id="videoBox"  autoplay playsinline>
-		    <source src="media/video.mp4" type="video/mp4">
+                <video id="videoBox" playsinline>
+                    <source src="media/video.mp4" type="video/mp4">
                     <source src="media/video.m4v" type="video/mp4">
                     <p class="text fs-20">Loading video...</p>
 					<!--<track src='../../../vqLib/DAL/?author=towan&videoid=4&vtt' default>-->
@@ -53,23 +33,16 @@ print_r("<!---not found $_POST----->");
                 </video>
 				<div id='bigPlay' class='playState'></div>	<!-- Tony -->
             </div>
-            <div id="quizTitle" class="text fs-26"></div>
+            <div id="quizTitle" class="text fs-30"></div>
             <div id="toggleQuestionBox" class="rounded">
                 <div id="toggleQuestionBG"></div>
                 <div id="toggleQuestionText" class="text fs-18">Show/Hide Questions</div>
             </div>
-           <div id="bblink"></div>
-	     <div id="resetQuestionButton" class="btn"></div>
+            <div id="resetQuestionButton" class="btn"></div>
             <div id="resetQuestionBox" class="rounded">
                 <div id="resetQuestionBG"></div>
                 <div id="resetQuestionText" class="text fs-18">Reset Questions</div>
             </div>
-	   <div id="videoSkip"></div>
-                 <div id="videoSkipBox" class="rounded">
-                <div id="videoSkipBG"></div>
-                <div id="videoSkipText" class="text fs-18">Skip to Unwatched Sections</div>
-            </div>
-
             <div id="userInfoButton"></div>
             <div id="userInfoBox" class="rounded">
                 <div id="userInfoBG"></div>
@@ -110,7 +83,7 @@ print_r("<!---not found $_POST----->");
                         <div id="questionBoxBG" class="rounded"></div>
                         <div id="questionText" class="text fs-40"></div>
                         <div id="fillInPanels"></div>
-                        <textarea id="fillInAnswer" class="rounded text fs-50"></textarea>
+                        <input id="fillInAnswer" class="rounded text fs-50">
                         <div id="expoBox" class="rounded">
                             <div id="expoTitle" class="text fs-60">Correct</div>
                             <div id="expoText" class="text fs-30"></div>
@@ -153,9 +126,8 @@ print_r("<!---not found $_POST----->");
                         <div id="seekSliderThumb"></div>
                     </div>
                 </div>
-
                 <div id="questionMarkers"></div>
-
+            
             <div id="toggleQuestionButton" class="btn"></div>
     <div id="timeDisplay">
                     <div id="timeDisplayText" class="text fs-23"></div>
@@ -165,15 +137,12 @@ print_r("<!---not found $_POST----->");
                         <option value="0.75">0.75x</option>
                         <option value="1" selected="selected">1x</option>
                         <option value="1.25">1.25x</option>
-			<option value="1.5">1.5x</option>
-                        <option value="1.75">1.75x</option>
+                        <option value="1.5">1.5x</option>
                         <option value="2">2x</option>
                     </select>
                 </div>
 				<div id='cc' class = 'on btn'></div> <!-- Tony -->
-				<!--<div id='repair'  class='text'>repair</div>
-				<div id="repairBox"><form action="#"><textarea></textarea><input type="hidden"  id="startTime"/><input type="submit" value="ok"></input><form></div> -->
-                <div id="muteButton" class="btn muteOff"></div>
+                <div id="muteButton" class="btn"></div>
                 <input id="volumeSlider" type="range" min="0" max="100" value="100" step="1">
                 <div id="volumeSliderBG" class="fakeSlider">
                     <div id="volumeSliderTrack">
@@ -181,8 +150,8 @@ print_r("<!---not found $_POST----->");
                     </div>
                 </div>
             </div>
-            <div id="gameCompleteText" class="text fs-25"></div>
-            <div id="noQuestionText" class="text fs-25"></div>
+            <div id="gameCompleteText" class="text fs-40"></div>
+            <div id="noQuestionText" class="text fs-30"></div>
         </div>
         <div id="blocker">
             <div id="blockerText">

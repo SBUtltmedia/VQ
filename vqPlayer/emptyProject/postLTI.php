@@ -1,4 +1,4 @@
-<?
+<?php
 
 if (!array_key_exists('lis_result_sourcedid',$_POST['data'])) { print 'In lti\test\index.php : No ID<br>'; print_r($_POST); die(); }
 

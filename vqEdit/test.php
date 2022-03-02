@@ -1,4 +1,4 @@
-<?
+<?php
 header("Connection: close");
 ob_start();
 phpinfo();

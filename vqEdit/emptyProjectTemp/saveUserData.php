@@ -1,4 +1,4 @@
-<?
+<?php
 $netID = $_SERVER['cn'];
 $data = $_POST['userData'];
 print_r($data);

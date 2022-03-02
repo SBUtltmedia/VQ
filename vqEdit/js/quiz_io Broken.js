@@ -551,6 +551,7 @@ function savePermissions(id) {
     var whitelistArray = whitelistText.split("\n");
     var oldEditor = currentQuizEditor;
     var oldEditCode = currentQuizEditCode;
+    var canReset= userData.quizData[id].canReset||true;
     var editorInput = $("#optionsLoanInput").val();
     var editor = (editorInput == userData.netID ? "" : editorInput);
     var editCode = "";
@@ -563,7 +564,8 @@ function savePermissions(id) {
             editCode = "temp" + (new Date().getTime());
         }
     }
-    var permissionJson = {
+    var permissionJson = { 
+        "canReset":canReset,
         "canAccessData": permissionArray,
         "canViewQuiz": whitelistArray,
         "isPublic": enablePublicMode,

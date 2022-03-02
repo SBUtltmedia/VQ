@@ -17,7 +17,7 @@
 			function Quiz__Author_Quizid($a, $q) { return self::Data__Author_Quizid_Fname($a, $q, 'json/quiz.json'); }
 			function Perm__Author_Quizid($a, $q) { return self::Data__Author_Quizid_Fname($a, $q, 'json/permissions.json'); }
 			function Filter__Author_Quizid($a, $q) { return self::Data__Author_Quizid_Fname($a, $q, 'json/filters.json'); }
-			function VTT__Author_Quizid($a, $q) { return self::Data__Fnames(array("$a/$q/media/video.vtt", "$a/$q/media/autosub.vtt")); }
+			function VTT__Author_Quizid($a, $q) { return self::Data__Fnames(array("$a/$q/media/video.vtt", "$a/$q/media/autosub.en.vtt")); }
 		
 			function Perm_Author_Quizid($d, $a, $q) { return self::Data_Author_Quizid_Fname($d, $a, $q, 'json/permissions.json'); }
 			function Quiz_Author_Quizid($d, $a, $q) { return self::Data_Author_Quizid_Fname($d, $a, $q, 'json/quiz.json'); }
@@ -70,7 +70,9 @@
 			}
 			
 			//	Called by DAL::UsageLen__Author
-			protected function setCache($key, $value) { file_put_contents(Dir::cache() . "/$key.txt", $value); }
+			protected function setCache($key, $value) { 
+			#file_put_contents(Dir::cache() . "/$key.txt", $value); 
+			}
 			
 			//	Called by DAL::UsageLen__Author
 			protected function getCache($key) {

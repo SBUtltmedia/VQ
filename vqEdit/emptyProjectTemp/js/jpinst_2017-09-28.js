@@ -701,7 +701,8 @@ function setQuestion(n) {
             $(".fillInPanel").css("pointer-events", "none");
             $("#fillInAnswer").css("opacity", 0);
             $("#fillInAnswer").css("pointer-events", "none");
-            for (var i = 0; i < 5; i++) {
+            for (var i = 0; i < 6; i++) {
+                console.log(i,questions.questions[n].answerText[i])
                 if (questions.questions[n].answerText[i] != "") {
                     $("#answerText" + i).text(questions.questions[n].answerText[i]);
                     $("#answerBox" + i).css("opacity", 1);

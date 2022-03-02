@@ -1,4 +1,4 @@
-<?
+<?php
 require("injectUserPath.php");
 $path = $_REQUEST['path'];
 $totals = $_REQUEST['totals'];

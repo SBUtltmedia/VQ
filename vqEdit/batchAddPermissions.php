@@ -1,4 +1,4 @@
-<?
+<?php
 require('injectUserPath.php');
 $quizzes = json_decode($_REQUEST['quizzes']);
 $users = json_decode($_REQUEST['users']);

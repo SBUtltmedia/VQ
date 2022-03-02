@@ -421,7 +421,10 @@ function refreshFilterList() {
         $("#scoreReportFilterSelect").append('<option value="' + i + '">' + filter.groupName + '</option>');
     }
 }
-
+function setIcon(sel,state)
+{   var iconColor=["Green","Gray"][+state]
+    sel.addClass(`reset${iconColor}`); 
+}
 function loadPermissions(id, isInitial) {
     var qp = userData.quizData[id].relativePath + "/json/permissions.json";
 	console.log('quiz_io.js loadPermissions() : ' + qp.split('/')[1] + ' , ' + qp.split('/')[2])	//	Tony
@@ -439,6 +442,8 @@ function loadPermissions(id, isInitial) {
 		if (data !== "" && data !== "{}") {			//	Check for no data					-Tony
 
 			var jsonData = JSON.parse(data);
+            userData.quizData[id].cannotReset= jsonData.cannotReset;
+            setIcon($("#resetIcon"), jsonData.cannotReset);
 			var canAccessData = jsonData.canAccessData ||[];
 			var str = "";
 			for (var i = 0; i < canAccessData.length; i++) {
@@ -556,6 +561,7 @@ function savePermissions(id) {
     var oldEditCode = currentQuizEditCode;
     var editorInput = $("#optionsLoanInput").val();
     var editor = (editorInput == userData.netID ? "" : editorInput);
+    var cannotReset= userData.quizData[id].cannotReset||false;
     var editCode = "";
     if (editor == oldEditor) {
         editCode = oldEditCode;
@@ -567,6 +573,7 @@ function savePermissions(id) {
         }
     }
     var permissionJson = {
+        "cannotReset":cannotReset,
         "canAccessData": permissionArray,
         "canViewQuiz": whitelistArray,
         "isPublic": enablePublicMode,
@@ -597,7 +604,7 @@ function savePermissions(id) {
     updatePermissionLocks();
     // Save permissions
     $.ajax({
-        //type: "POST",
+        type: "POST",
       //  url: "../vqLib/DAL",					//	Tony
       url: "saveQuiz.php",					//	Remove Jim's path-depended loader.		-Tony
         data: {

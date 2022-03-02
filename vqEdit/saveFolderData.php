@@ -1,4 +1,4 @@
-<?
+<?php
 require("injectUserPath.php");
 $netID = $_SERVER['cn'];
 $data = $_REQUEST['data'];

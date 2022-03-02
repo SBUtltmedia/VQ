@@ -467,10 +467,10 @@ function betterParseInt(s) {	// Called by 0 functions:
 
 function prepQuestionScreen() {	// Called by 1 function: loadButtons()
     for (var i = 0; i < 5; i++) {
-        $("#questionBoxContents").append("<div id='answerBox" + i + "' class='answerBox text fs-28'></div>");
+        $("#questionBoxContents").append("<div id='answerBox" + i + "' class='answerBox text fs-20'></div>");
         $("#answerBox" + i).append("<div id='answerIcon" + i + "' class='answerIcon btn'></div>");
         $("#answerBox" + i).append("<div id='answerText" + i + "' class='answerText'></div>");
-        $("#answerBox" + i).css("top", (37.5 + 12 * i) + "%");
+        $("#answerBox" + i).css("top", (27.5 + 12 * i) + "%");
         initAnswerClickEvent(i);
     }
     for (var i = 0; i < 100; i++) {
@@ -765,7 +765,8 @@ function setQuestion(n) {	// Called by 2 functions: questionRetry() & initQuesti
             $(".fillInPanel").css("pointer-events", "none");
             $("#fillInAnswer").css("opacity", 0);
             $("#fillInAnswer").css("pointer-events", "none");
-            for (var i = 0; i < 5; i++) {
+            for (var i = 0; i < 6; i++) {
+                console.log(i,questions.questions[n].answerText[i])
                 if (questions.questions[n].answerText[i] != "") {
                     $("#answerText" + i).text(questions.questions[n].answerText[i]);
                     $("#answerBox" + i).css("opacity", 1);
@@ -1159,6 +1160,8 @@ function saveWatchData() {	// Called by 3 functions: selectAnswer(), seekTimeUpd
     }
 }
 
+
+
 function saveUserData() {	// Called by 2 functions: completeQuiz() & saveData()
     if (userData.attempts.length == 0) {
         var wrongAnswers = [];
@@ -1168,9 +1171,16 @@ function saveUserData() {	// Called by 2 functions: completeQuiz() & saveData()
         }
         userData.attempts.push(wrongAnswers);
     }
+
+    if (!userData.quizHistory) {
+        userData.quizHistory = [];
+    }
+     
+    userData.quizHistory.push(getGrade());
     var str = JSON.stringify(userData);
     saveData(str);
 }
+
 
 function getGrade() {	//	Tony		// Called by 1 function: saveData()
 	var ans = userData.answerData

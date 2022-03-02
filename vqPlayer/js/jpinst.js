@@ -31,17 +31,14 @@ try {
 } catch(e) {
 }
 
-
 function clearCookies(){
 	console.log(document.cookie+"s");
 	document.cookie.split(";").forEach(function(c) {
 			console.log(c)
 			document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
 }
-// Watch data
 var watchStart = 0;
 
-// User data
 var userData = {
 	"watchData": [],
 	"attempts": [],
@@ -53,19 +50,22 @@ var userData = {
 $(document).ready(function () {
 		getPermissions();
 		resizeWindow();
-
-
-		//});												//	Continue $()	-Tony
-		//
-		//$(function () {									//	Combine $()		-Tony
-		//    resizeWindow();								//	Remove Resize.	-Tony
-		//
-$("#fullScreenButton").click(function() {
-		setTimeout(function () {
-				resizeWindow();
-				}, 800);
+		checkForLTI()
+		$("#fullScreenButton").click(function() {
+				setTimeout(function () {
+						resizeWindow();
+						}, 800);
+				});
 		});
-});
+
+function checkForLTI()
+{
+	if(document.referrer.match(/blackboard/i) && !inframe() &&!ses){
+		alert("You appear to be coming from a link in Blackboard but we did not get the proper informanion to submit a grade, if you are expecting a grade, pleae try revisitng the link from Blackboard again")
+	}
+
+
+}
 
 function getPermissions() {	// Called by 1 function: onload()
 	$.ajax({
@@ -74,7 +74,12 @@ url: "json/permissions.json",
 data: "",
 success: function (data) {
 permissionData = data;
+if (permissionData.cannotReset) {
+	console.log(permissionData.cannotReset)
+	$("div[id^='resetQuestion']").remove();
+}
 if (permissionData.isPublic) {
+
 // Quiz is public
 $("#userInfoButton").css("display", "none");
 $("#quiz").css("visibility", "visible");
@@ -227,7 +232,7 @@ setInitialVolume();
 video.addEventListener('onchange',function(evt){console.log(evt)})
 video.addEventListener("loadedmetadata", cconce);						//	Tony
 if (video.readyState >= 2) cconce(); // Tony https://stackoverflow.com/questions/33116067/addeventlistenerloadedmetadata-fun-doesnt-run-correctly-firefox-misses-eve
-$('#cc')[0].addEventListener('click', togglecc);
+$('#cc').on('click', togglecc);
 //togglecc();						//	Tony
 
 $('#bigPlay').click(playPause);											//	Paul
@@ -251,6 +256,7 @@ $("#muteButton").click(function () {
 $("#volumeSlider").change(function () {
 		setVolume();
 		});
+//$('#cc').on("click",setVolume)
 $("body").on("mouseup touchend",function () {
 		if (scrubbing) {
 		scrubbing = false;
@@ -260,7 +266,7 @@ setInterval(function () {
 		if (!scrubbing) {
 		seekTimeUpdate();
 		}
-		}, 50);
+		}, 200);
 if (questions.questions.length > 0) {
 	// There are questions
 	makeQuestionButtons();
@@ -306,12 +312,12 @@ if (video.readyState == 1) {
 
 // Check if video has loaded
 if (canView) {
-	if (video.readyState == 4) {
+	if (video.readyState > 3) {
 		// setTimeout(playPause, 20);	//	Paul
 		metadataLoaded();
 	} else {
 		video.addEventListener('loadeddata', function () {
-				//  playPause();
+				metadataLoaded();			
 				});
 	}
 }
@@ -474,14 +480,15 @@ function addTrack(){
 
 	$("video")[0].appendChild(track);
 
-
+/*
 	var video_author = window.location.toString().split('/').reverse();									//	Tony
 	if(video_author.indexOf("bookMaker") > -1){     //Rahul
 		$("video track").attr("src","media/video.vtt");
 	}else{
 		$("video track").attr("src","/vq/vqLib/DAL/?vtt&author=" + video_author[2] + "&quizid=" + video_author[1]);              //      Tony
 	}
-
+*/
+   	$("video track").attr("src","getVTT.php");
 	$($("video")[0].textTracks[0]).on('cuechange',populateRepair);
 
 }
@@ -536,11 +543,11 @@ function betterParseInt(s) {	// Called by 0 functions:
 }
 
 function prepQuestionScreen() {	// Called by 1 function: loadButtons()
-	for (var i = 0; i < 5; i++) {
-		$("#questionBoxContents").append("<div id='answerBox" + i + "' class='answerBox text fs-28'></div>");
+	for (var i = 0; i < 6; i++) {
+		$("#questionBoxContents").append("<div id='answerBox" + i + "' class='answerBox text fs-20'></div>");
 		$("#answerBox" + i).append("<div id='answerIcon" + i + "' class='answerIcon btn'></div>");
 		$("#answerBox" + i).append("<div id='answerText" + i + "' class='answerText'></div>");
-		$("#answerBox" + i).css("top", (37.5 + 12 * i) + "%");
+		$("#answerBox" + i).css("top", (37.5 + 10 * i) + "%");
 		initAnswerClickEvent(i);
 	}
 	for (var i = 0; i < 100; i++) {
@@ -571,7 +578,7 @@ function selectAnswer(n) {	// Called by 1 function: initAnswerClickEvent()
 		}
 
 		// Fade out non-selected answers
-		for (var i = 0; i < 5; i++) {
+		for (var i = 0; i < 6; i++) {
 			if (i != n) {
 				$("#answerBox" + i).addClass("anim_answerFadeOut");
 			}
@@ -773,6 +780,10 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 		if (!userData.completeDate) {
 			userData.completeDate = new Date();
 		}
+		if(!userData.firstQuizScore && userData.quizScore)
+		{
+		userData.firstQuizScore=userData.quizScore; 
+		}
 		quizComplete = true;
 		$("#noQuestionText").css({"opacity":1});
 		if (permissionData.isPublic != true) {
@@ -852,8 +863,9 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 				$(".fillInPanel").css("pointer-events", "none");
 				$("#fillInAnswer").css("opacity", 0);
 				$("#fillInAnswer").css("pointer-events", "none");
-				for (var i = 0; i < 5; i++) {
-					if (questions.questions[n].answerText[i] != "") {
+				for (var i = 0; i < 6; i++) {
+					console.log(i,questions.questions[n].answerText[i])
+					if (questions.questions[n].answerText[i]) {
 						$("#answerText" + i).text(questions.questions[n].answerText[i]);
 						$("#answerBox" + i).css("opacity", 1);
 						$("#answerBox" + i).css("pointer-events", "all");
@@ -1075,7 +1087,7 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 		for (var i = 0; i < qCount; i++) {
 			var q = questions.questions[i];
 			var questionAnswerData = [];
-			for (var j = 0; j < 5; j++) {
+			for (var j = 0; j < 6; j++) {
 				if (q.answerText[j] != "") {
 					questionAnswerData.push(false);
 
@@ -1207,6 +1219,10 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 		var now = Math.min(Math.floor(video.duration),Math.floor(video.currentTime));
 		var changed = false;
 		for (var i = watchStart; i < now; i++) {
+			if(!userData.watchData[i])
+			{
+				userData.watchData[i]=0;
+			}
 			userData.watchData[i]++;
 			changed = true;
 		}
@@ -1262,7 +1278,7 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 		// Save?
 		var currentDate = new Date().getTime();
 		userData.lastAccessDate = new Date();
-		if (currentDate - lastSaved > 15000) {
+		if (currentDate - lastSaved > 5000) {
 			var currentDataCheck=JSON.stringify({"watch":userData.watchData,"quiz":userData.answerData})
 				if (currentDataCheck!=idleCheck)
 				{
@@ -1316,16 +1332,30 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 	}
 
 	function saveWatchData() {	// Called by 3 functions: selectAnswer(), seekTimeUpdate() & videoEnded()
+
 		if(userData){
+
+			
 			saveLocalData();
 			if(ses && userData.bestScore){
 				ses.grade= (userData.bestScore)/2000;
-				postLTI(ses);
-				$('#bblink').html(`Blackboard:${userData.bestScore}<br>User:${userData.netID}`);
+				postLTI(ses,userData.netID).then((result)=>{
+						var text=`Blackboard:${userData.bestScore}<br>User:${userData.netID}`;
+						if (result!="success"){
+						text=`<div style="color:red">Error submitting to Blackboard!</div>`;	
+						}
+						$('#bblink').html(text);
+						});			
 			}
-
+			for(i=0;i<userData.watchData.length;i++)
+			{
+				if(!userData.watchData[i])
+				{
+					userData.watchData[i]=0;
+				}
+			}
 			var str = JSON.stringify(userData);
-			saveData(str);
+			return	saveData(str);
 		}
 	}
 
@@ -1351,7 +1381,7 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 	}
 
 	function saveData(str) {	// Called by 2 functions: saveWatchData() & saveUserData()
-		$.ajax({
+		return $.ajax({
 type: "POST",
 url: "saveUserData.php",
 data: {
@@ -1365,7 +1395,13 @@ location.reload();
 }
 });
 }
-
+function inframe () {
+	try {
+		return window.self !== window.top;
+	} catch (e) {
+		return true;
+	}
+}
 function showQuestions() {	// Called by 1 function: loadButtons()
 	showingQuestions = true;
 	$("#toggleQuestionButton").removeClass("anim_toggleQuestionsOff");
@@ -1448,7 +1484,9 @@ function updateScore() {	// Called by 5 functions: getUserData() loadUserData() 
 				for (var i = 0; i < userData.answerData.length; i++) {
 					questionScore += userData.answerData[i].score;
 				}
-				score += Math.round(questionScore / questions.questions.length * 1000);
+				let quizScore= Math.round(questionScore / questions.questions.length * 1000);
+				score += quizScore;
+				userData.quizScore= quizScore/10;
 			} else {
 				score *= 2;
 			}

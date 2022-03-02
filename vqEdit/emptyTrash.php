@@ -1,5 +1,5 @@
 <pre>
-<?
+<?php
 $arr = implode(".", explode(".", $_SERVER['REMOTE_ADDR'], -1));
 if ($arr == "129.49.17") {
     if (isset($_GET['deleteFile'])) {

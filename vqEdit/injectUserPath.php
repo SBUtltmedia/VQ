@@ -1,4 +1,4 @@
-<?
+<?php
 	function injectUserPathN($url, $n) {
 		if(strstr($url, "users")) return $url;
 		$url = rtrim($url, "/");

@@ -1,4 +1,4 @@
-<?
+<?php
 $path = $_REQUEST['path'];
 $path= preg_replace ('/\.\.\//','../users/',$path);
 $isPublic = $_REQUEST['isPublic'];

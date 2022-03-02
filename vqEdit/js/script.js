@@ -78,12 +78,29 @@ $(function () {
     resizeWindow();
     checkDev();
     userLogin();
+$(document).keydown(function(e) {
+//var keys=["ArrowLeft","Null","ArrowRighti"]
+    if(e.which==37 || e.which==39)
+{
+video = $("#videoBox")[0];
 
+var codeDelta= (e.which)-38;
+var timeDelta=codeDelta*video.duration/1000;
+//console.log(codeDelta,video.currentTime,video.duration,timeDelta)
+if(video) video.currentTime+=timeDelta;
+seekTimeUpdate();
+}
+});
     // When the user clicks on <span> (x), close the modal
     $("#closeButton").on("click",function() {
       $("#myModal").css("display","none");
     });
 
+setInterval(()=>{
+$.get('img/arrow_down.svg',()=>{},180000);
+
+
+})
 });
 
 function userLogin() {
@@ -144,7 +161,7 @@ function loadUserData() {
         return id1 - id2;
     });
     for (var i = 0; i < quizzes.length; i++) {
-        if (userData.quizData[i].isOwner) {
+        if (userData.quizData && userData.quizData[i].isOwner) {
 	   //ivqID=userData.quizData[i].relativePath.split("/").reverse()[0] 
 	   ivqID=i 
             $("#loadQuiz").append('<option value="' + ivqID + '">' + userData.quizData[i].title + '</option>');
@@ -486,7 +503,7 @@ function initButtons() {
         }
     });
     // Answer choices
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 6; i++) {
         initAnswerTextChange(i);
         initAnswerButtonClick(i + 1);
     }
@@ -637,14 +654,14 @@ function initButtons() {
         var fileSize = file.size;
         var nameSplit = fileName.split(".");
         var ext = nameSplit[nameSplit.length - 1];
-        var MAX_SIZE =1000 * 1024 * 1024 // 400 MB
+        var MAX_SIZE =1500 * 1024 * 1024 // 400 MB
         // Check if extension is acceptable AND file size is less than max size
         if ((ext == "mp4" || ext == "m4v") && fileSize < MAX_SIZE) {
             // File is OK; upload file
             uploadFile(file);
         } else {
             if (fileSize > MAX_SIZE) {
-                $("#fileFormatErrorText").text("That file exceeds the upload limit of 1000 MB. (Click this to dismiss.)");
+                $("#fileFormatErrorText").text("That file exceeds the upload limit of 1500 MB. (Click this to dismiss.)");
                 $("#fileFormatErrorLink").attr("href", null);
             } else {
                 $("#fileFormatErrorText").text("That file format isn't accepted. Click here to convert it to MP4.");
@@ -875,6 +892,26 @@ function initButtons() {
         hidePermissionsView();
     });
 
+    $("#cannotReset").click(function () {
+var cannotReset=  !userData.quizData[currentQuiz].cannotReset
+
+        $("#resetIcon").removeClass("anim_spinButton");
+		$("#resetIcon").removeClass("resetGreen");
+		$("#resetIcon").removeClass("resetGray");
+		setTimeout(function () {
+            $("#resetIcon").addClass("anim_spinButton");
+            setIcon($("#resetIcon"),cannotReset);
+				}, 25);
+        console.log(currentQuiz)
+        userData.quizData[currentQuiz].cannotReset= cannotReset;
+        savePermissions(currentQuiz);
+      
+    });    
+    function setIcon(sel,state)
+    {   var iconColor=["Green","Gray"][+state]
+        sel.addClass(`reset${iconColor}`); 
+    }
+
     $("#shareReturn").click(function () {
         hideShareView();
         showMenuView();
@@ -896,6 +933,7 @@ function initButtons() {
     bindExpoEvents();
 
     $("#timeDisplayText").click(function () {
+console.log(video)
         $("#timeDisplayInput").css("visibility", "visible");
         pauseVideo();
         var currentTime = $("#timeDisplayText").text();
@@ -1196,7 +1234,7 @@ function updateQuestionPanel(i, forceAnimation) {
                 var q = questions[currentQuestion];
                 $("#questionTextInput").val(q.questionText);
                 if (q.type == "mc") {
-                    for (var i = 0; i < 5; i++) {
+                    for (var i = 0; i < 6; i++) {
                         $("#questionChoiceInput" + (i + 1)).val(q.answerText[i]);
                         if (q.expoText !== undefined) {
                             $("#questionExpoInput" + (i + 1)).val(q.expoText[i]);
@@ -1427,7 +1465,7 @@ function videoEnded() {
 }
 
 function bindExpoEvents() {
-    for (var i = 1; i <= 5; i++) {
+    for (var i = 1; i <= 6; i++) {
         bindExpoEvent(i);
     }
 }

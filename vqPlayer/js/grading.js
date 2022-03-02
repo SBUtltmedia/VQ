@@ -1,8 +1,8 @@
 
-function postLTI(ses){
+function postLTI(ses,name){
 
 var dfd = jQuery.Deferred();
-$.post( "/LTI/postLTI.php", {data:ses} ).done(function(result){
+$.post( `/LTI/postLTI.php?name=${name}`, {data:ses} ).done(function(result){
 
 dfd.resolve(result)
 

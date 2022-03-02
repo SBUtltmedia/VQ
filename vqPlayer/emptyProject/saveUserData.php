@@ -1,4 +1,5 @@
-<?
+<?php
+//ignore_user_abort(true);
 $netID = $_SERVER['cn'];
 if($_GET['reset']){
 $path = array_reverse(preg_split("/\//",getcwd()));

@@ -18,12 +18,12 @@ function loadQuestionCSV(csvData) {
         questions[i] = {
           "type": qType,
           "questionText": rowData[0],
-          "answerText": [rowData[1], rowData[2], rowData[3], rowData[4], rowData[5]],
-          "correctAnswer": rowData[6],
-          "startTime": rowData[7],
-          "wrongTime": rowData[8],
-          "startTimeSet": (String(rowData[7]).length == 0 ? false : true),
-          "wrongTimeSet": (String(rowData[8]).length == 0 ? false : true)
+          "answerText": [rowData[1], rowData[2], rowData[3], rowData[4], rowData[5], rowData[6]],
+          "correctAnswer": rowData[7],
+          "startTime": rowData[8],
+          "wrongTime": rowData[9],
+          "startTimeSet": (String(rowData[8]).length == 0 ? false : true),
+          "wrongTimeSet": (String(rowData[9]).length == 0 ? false : true)
         }
       }
 
@@ -49,7 +49,7 @@ function newLoadQuestionCSV(csvString) {
       var rowData = csvRows[i];
       if (csvRows[i].length != 0) {
         var answers = 0;
-        for (var k = 1; k <= 5; k++) {
+        for (var k = 1; k <= 6; k++) {
           if (rowData[k] != "") {
             answers++;
           }
@@ -58,7 +58,7 @@ function newLoadQuestionCSV(csvString) {
         questions[i] = {
           "type": qType,
           "questionText": rowData[0],
-          "answerText": [rowData[1], rowData[2], rowData[3], rowData[4], rowData[5]],
+          "answerText": [rowData[1], rowData[2], rowData[3], rowData[4], rowData[5],rowData[6]],
           "correctAnswer": rowData[6],
           "startTime": rowData[7],
           "wrongTime": rowData[8],
@@ -81,13 +81,13 @@ function newLoadQuestionCSV(csvString) {
 
 function newDownloadQuestionCSV() {
   var dataToUnparse = [];
-  dataToUnparse[0] = ["Question Text", "Answer Choice 1", "Answer Choice 2", "Answer Choice 3", "Answer Choice 4", "Answer Choice 5", "Correct Answer Number", "Display Time", "Wrong Time"];
+  dataToUnparse[0] = ["Question Text", "Answer Choice 1", "Answer Choice 2", "Answer Choice 3", "Answer Choice 4", "Answer Choice 5", "Answer Choice 6","Correct Answer Number", "Display Time", "Wrong Time"];
   for (var i = 0; i < questions.length; i++) {
     dataToUnparse[i + 1] = [];
     var q = questions[i];
     if ((q.questionText != "" && q.answerText[0] != "") || true) {
       dataToUnparse[i + 1].push(q.questionText);
-      for (var j = 0; j < 5; j++) {
+      for (var j = 0; j < 6; j++) {
         dataToUnparse[i + 1].push(q.answerText[j]);
       }
       dataToUnparse[i + 1].push(q.correctAnswer);
