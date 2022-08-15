@@ -1,6 +1,7 @@
 <?php
+session_start();
 //ignore_user_abort(true);
-$netID = $_SERVER['cn'];
+$netID = $_SESSION['cn'] ?? $_SERVER['cn'];
 if($_GET['reset']){
 $path = array_reverse(preg_split("/\//",getcwd()));
 $dirName= $path[1];

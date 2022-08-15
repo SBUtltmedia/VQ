@@ -138,7 +138,7 @@ function downloadQuizDataCSV(mode, whitelist, quizName, sectionName) {
       // Header, line 1
       out += '"Video Quiz Statistics","' + quiz.title + '","Acquired ' + userData.accessDate + '"\n';
       // Header, line 2
-      out += '"NetID","First Name","Preferred Name","Last Name","Completion Date","Last Access Date","Time Watched (seconds)","Score","Mistakes: Total"';
+      out += '"NetID","First Name","Preferred Name","Last Name","Completion Date","Last Access Date","Time Watched (seconds)","Score","First Try Score","Mistakes: Total"';
       for (var i = 1; i <= questionCount; i++) {
         out += ',"Q' + i + '"';
       }
@@ -164,7 +164,11 @@ function downloadQuizDataCSV(mode, whitelist, quizName, sectionName) {
             stln += new Date(students[i].lastAccessDate).toLocaleString();
           }
           stln += '",' + arraySum(students[i].watchData) + "," + (Math.floor(100 * computeScore(students[i])) / 100) + ",";
-          if (students[i].answerData) {
+        if (students[i].firstQuizScore){
+	 stln +=students[i].firstQuizScore;
+	} 
+	 stln += ','; 
+	if (students[i].answerData) {
             print(students[i].answerData);
             var wrongLine = "";
             var wrongTotal = 0;

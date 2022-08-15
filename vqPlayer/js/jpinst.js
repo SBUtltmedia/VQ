@@ -1341,7 +1341,7 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 				ses.grade= (userData.bestScore)/2000;
 				postLTI(ses,userData.netID).then((result)=>{
 						var text=`Blackboard:${userData.bestScore}<br>User:${userData.netID}`;
-						if (result!="success"){
+						if (!result.match(/success/g)){
 						text=`<div style="color:red">Error submitting to Blackboard!</div>`;	
 						}
 						$('#bblink').html(text);

@@ -97,10 +97,9 @@ seekTimeUpdate();
     });
 
 setInterval(()=>{
-$.get('img/arrow_down.svg',()=>{},180000);
+$.get('img/arrow_down.svg',()=>{})}
+,180000);
 
-
-})
 });
 
 function userLogin() {
@@ -905,7 +904,7 @@ var cannotReset=  !userData.quizData[currentQuiz].cannotReset
         console.log(currentQuiz)
         userData.quizData[currentQuiz].cannotReset= cannotReset;
         savePermissions(currentQuiz);
-      
+      showSaveButton(); 
     });    
     function setIcon(sel,state)
     {   var iconColor=["Green","Gray"][+state]

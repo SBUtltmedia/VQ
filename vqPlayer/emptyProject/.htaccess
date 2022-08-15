@@ -1,41 +1,6 @@
 AuthType shibboleth
-ShibRequestSetting requireSession 1
+ShibRequestSetting requireSession true 
 require valid-user
-
-# DISABLE CACHING
-<IfModule mod_headers.c>
-    Header set Cache-Control "no-cache, no-store, must-revalidate"
-    Header set Pragma "no-cache"
-    Header set Expires 0
-</IfModule>
-
-<FilesMatch "\.(css|flv|gif|htm|html|ico|jpe|jpeg|jpg|js|mp3|mp4|png|pdf|swf|txt)$">
-    <IfModule mod_expires.c>
-        ExpiresActive Off
-    </IfModule>
-    <IfModule mod_headers.c>
-        FileETag None
-        Header unset ETag
-        Header unset Pragma
-        Header unset Cache-Control
-        Header unset Last-Modified
-        Header set Pragma "no-cache"
-        Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
-        Header set Expires "Thu, 1 Jan 1970 00:00:00 GMT"
-    </IfModule>
-</FilesMatch>
-
-#RewriteEngine On
-#RewriteCond %{HTTPS} off
-#RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
-#For now, we comment out that we require our visitor be a student of stony brook university.
- #DirectoryIndex index.php
-# RewriteCond %{HTTPS} !=on [NC]
-# RewriteRule ^stocki(.*) https://%{HTTP_HOST}%{REQUEST_URI}
-
-# Uncomment to display php errors in the log
-#  php_flag display_startup_errors on
-#  php_flag display_errors on
-#  php_flag html_errors on
-#  php_flag log_errors on
-#  php_value error_log PHP_errors.log
+#AuthType shibboleth
+#ShibRequestSetting requireSession false
+#require shibboleth
