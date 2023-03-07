@@ -24,6 +24,8 @@ $mediaPath = $path."/media/";
 $fileName = $mediaPath . "video.";
 //$path="/home/tltsecure/apache2/htdocs/vq/users/tryme";
 `cp -rP $resources $path`;
+`cp -rp $resources/.htaccess $path`;
+//print "cp -rP $resources $path";
 //custom_copy($resources, $path);
 
 if (isset($_FILES['upload_file'])) {

@@ -14,16 +14,13 @@ $outData=login();
 if(!$cacheExists){
 	 endFlush($outData);
 }
-
 file_put_contents($cacheFile,$outData);
-
-
 function endFlush($printData){
 	print $printData;
 ob_end_flush();
 flush();
 $size = ob_get_length();
-header("Content-Length: $size");
+#header("Content-Length: $size");
 }
 
 

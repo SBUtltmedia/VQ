@@ -1,11 +1,13 @@
 <?php
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 session_start();
 //ignore_user_abort(true);
-$netID = $_SESSION['cn'] ?? $_SERVER['cn'];
-if($_GET['reset']){
+$netID = $_SESSION['mail'] ?? $_SERVER['mail'] ?? "error_".time();
+if(array_key_exists("reset", $_GET)){
 $path = array_reverse(preg_split("/\//",getcwd()));
 $dirName= $path[1];
-print $dirName;
 $permissions = json_decode(file_get_contents("json/permissions.json"));
 $canReset= in_array($netID,$permissions->canAccessData) || $netID==$dirName || $netID==$permissions->editor;
 if($canReset)
@@ -23,15 +25,18 @@ print("You don't have permission to reset user ${_GET['user']}");
 }
 exit();
 }
+if(!file_exists(".htaccess")){
+$netID="public";
+}
 
-
-if(!key_exists("data",$_POST))
+#print_r($netID);
+print_r($_SESSION['mail']);
+if(!key_exists("data",$_POST) && key_exists("userData",$_POST)  )
 {
 $data = $_POST['userData'];
-print_r($data);
 file_put_contents("data/" . $netID, $data);
 }
-else{
+/*else{
 $startTime=formatTime($_POST['data']['startTime']);
 
 
@@ -46,7 +51,7 @@ file_put_contents($file,$newVtt);
 file_put_contents("history.txt","$netID $text\n",FILE_APPEND);
 }
 }
-
+*/
 function formatTime($t) {
 
   return sprintf('%02d:%02d:%02d\.%03d', ($t/3600),($t/60%60), $t%60,($t-floor($t))*1000);

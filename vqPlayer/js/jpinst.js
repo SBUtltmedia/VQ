@@ -20,6 +20,7 @@ var quizComplete = false;
 var questionToggleEnabled = false;
 var showingQuestions = true;
 var lastSaved =  new Date().getTime();
+var lastWatched =  new Date().getTime();
 var recordedCompletion = false;
 var permissionData = {};
 var canView = false;
@@ -75,8 +76,8 @@ data: "",
 success: function (data) {
 permissionData = data;
 if (permissionData.cannotReset) {
-	console.log(permissionData.cannotReset)
-	$("div[id^='resetQuestion']").remove();
+console.log(permissionData.cannotReset)
+$("div[id^='resetQuestion']").remove();
 }
 if (permissionData.isPublic) {
 
@@ -93,13 +94,13 @@ getUserData();
 }
 },
 error: function () {
-permissionData = {
-	"isPublic": false
-}
-// Quiz is not public
-$("#userInfoButton").css("display", "auto");
-getUserData();
-}
+	       permissionData = {
+		       "isPublic": false
+	       }
+	       // Quiz is not public
+	       $("#userInfoButton").css("display", "auto");
+	       getUserData();
+       }
 });
 }
 
@@ -480,15 +481,15 @@ function addTrack(){
 
 	$("video")[0].appendChild(track);
 
-/*
-	var video_author = window.location.toString().split('/').reverse();									//	Tony
-	if(video_author.indexOf("bookMaker") > -1){     //Rahul
-		$("video track").attr("src","media/video.vtt");
-	}else{
-		$("video track").attr("src","/vq/vqLib/DAL/?vtt&author=" + video_author[2] + "&quizid=" + video_author[1]);              //      Tony
-	}
-*/
-   	$("video track").attr("src","getVTT.php");
+	/*
+	   var video_author = window.location.toString().split('/').reverse();									//	Tony
+	   if(video_author.indexOf("bookMaker") > -1){     //Rahul
+	   $("video track").attr("src","media/video.vtt");
+	   }else{
+	   $("video track").attr("src","/vq/vqLib/DAL/?vtt&author=" + video_author[2] + "&quizid=" + video_author[1]);              //      Tony
+	   }
+	   */
+	$("video track").attr("src","getVTT.php");
 	$($("video")[0].textTracks[0]).on('cuechange',populateRepair);
 
 }
@@ -529,7 +530,9 @@ function metadataLoaded() {	// Called by 1 function: loadButtons()
 		}
 	}
 	for (var i = 0; i < questions.questions.length; i++) {
-		$("#questionMarker" + i).css("left", ((questions.questions[i].startTime / video.duration * 100) - 1.4) + "%");
+		let markerWidth = parseFloat($("#questionMarker" + i).css("width"))/parseFloat($("#questionMarkers").css("width"))*100
+		console.log(markerWidth)
+		$("#questionMarker" + i).css("left", (questions.questions[i].startTime / video.duration * 100)-markerWidth/2 +"%");
 	}
 }
 
@@ -782,7 +785,7 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 		}
 		if(!userData.firstQuizScore && userData.quizScore)
 		{
-		userData.firstQuizScore=userData.quizScore; 
+			userData.firstQuizScore=userData.quizScore; 
 		}
 		quizComplete = true;
 		$("#noQuestionText").css({"opacity":1});
@@ -865,15 +868,15 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 				$("#fillInAnswer").css("pointer-events", "none");
 				for (var i = 0; i < 6; i++) {
 					console.log(i,questions.questions[n].answerText[i])
-					if (questions.questions[n].answerText[i]) {
-						$("#answerText" + i).text(questions.questions[n].answerText[i]);
-						$("#answerBox" + i).css("opacity", 1);
-						$("#answerBox" + i).css("pointer-events", "all");
-					} else {
-						$("#answerText" + i).text("");
-						$("#answerBox" + i).css("opacity", 0);
-						$("#answerBox" + i).css("pointer-events", "none");
-					}
+						if (questions.questions[n].answerText[i]) {
+							$("#answerText" + i).text(questions.questions[n].answerText[i]);
+							$("#answerBox" + i).css("opacity", 1);
+							$("#answerBox" + i).css("pointer-events", "all");
+						} else {
+							$("#answerText" + i).text("");
+							$("#answerBox" + i).css("opacity", 0);
+							$("#answerBox" + i).css("pointer-events", "none");
+						}
 					var answerChosen = answerData[currentQuestion][i]; // Old way
 					answerChosen = (userData.answerData[currentQuestion].answers.indexOf(i) != -1);
 					if (answerChosen) {
@@ -1264,7 +1267,7 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 			$("#videoPlayPause").removeClass("playState");
 		}
 		$("#seekSlider").val(currentPct);
-		$("#seekSliderThumb").css("left", (currentPct * .98) + "%");
+		$("#seekSliderThumb").css("left", currentPct + "%");
 		$("#timeDisplayText").text(formatTime(currentTime));
 		// Check for question display
 		for (var i = 0; i < questions.questions.length; i++) {
@@ -1335,14 +1338,19 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 
 		if(userData){
 
-			
+
 			saveLocalData();
-			if(ses && userData.bestScore){
+			if(typeof ses !== 'undefined' && userData.bestScore){
 				ses.grade= (userData.bestScore)/2000;
 				postLTI(ses,userData.netID).then((result)=>{
-						var text=`Blackboard:${userData.bestScore}<br>User:${userData.netID}`;
+						var text=`Score:${userData.bestScore}<br>User:${userData.netID}`;
 						if (!result.match(/success/g)){
-						text=`<div style="color:red">Error submitting to Blackboard!</div>`;	
+						text=`<div style="color:red">Error submitting to Grade!</div>`;
+						setTimeout(()=>{
+						location.reload
+						window.parent.location.reload()
+						},2000);
+						 	
 						}
 						$('#bblink').html(text);
 						});			
@@ -1380,15 +1388,25 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 		return right / total;
 	}
 
-	function saveData(str) {	// Called by 2 functions: saveWatchData() & saveUserData()
-		return $.ajax({
+	function saveData(str) {// Called by 2 functions: saveWatchData() & saveUserData()
+	if( Date.now() - lastWatched >300000) //5 minutes
+{
+location.reload();
+}	
+else  {
+lastWatched = new Date().getTime(); 
+}
+	return $.ajax({
 type: "POST",
 url: "saveUserData.php",
 data: {
 'userData': str
 },
-success: function () {
-
+success: function (data) {
+console.log({data});
+if(data.includes("error_")){
+location.reload();
+}
 },
 error: function (jqXHR, textStatus, errorThrown) {
 location.reload();
@@ -1444,8 +1462,18 @@ function saveLocalData() {	// Called by 4 functions: completeQuiz(), submitFillA
 		if(userData.completeDate){
 			status="done"
 		}
-	if(window.parent.updateCompletion && !isNaN(userData.bestScore)){
-		window.parent.updateCompletion(urlVars["key"],userData.bestScore,status);
+	console.log(canAccessParent())
+		if(canAccessParent() && window.parent.updateCompletion && !isNaN(userData.bestScore)){
+			window.parent.updateCompletion(urlVars["key"],userData.bestScore,status);
+		}
+}
+
+function canAccessParent() {
+	try {
+		return Boolean(window.parent.location.href);
+	}
+	catch(e){
+		return false;
 	}
 }
 
