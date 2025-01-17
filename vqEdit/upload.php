@@ -6,7 +6,7 @@ $netID = $_SERVER['cn'];
 $dir = scandir("../users/" . $netID);
 sort($dir, SORT_NUMERIC);
 $numCount=preg_grep("/^(\d+)?$/",$dir);
-$numFiles = 1;
+$numFiles = end($numCount);
 $ok = false;
 while ($ok == false) {
     if (file_exists("../users/$netID/$numFiles")) {
@@ -23,8 +23,9 @@ $path = "../users/$netID/$numFiles";
 $mediaPath = $path."/media/";
 $fileName = $mediaPath . "video.";
 //$path="/home/tltsecure/apache2/htdocs/vq/users/tryme";
-`cp -rP $resources $path`;
-`cp -rp $resources/.htaccess $path`;
+`cp -rP  $resources $path`;
+`chmod -R g+w $path`;
+`cp -rp  $resources/.htaccess $path`;
 //print "cp -rP $resources $path";
 //custom_copy($resources, $path);
 

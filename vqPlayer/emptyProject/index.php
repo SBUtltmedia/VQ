@@ -184,8 +184,8 @@ The maximum score is 2000 points.
 </select>
 </div>
 <div id='cc' class = 'on btn'></div> <!-- Tony -->
-<!--<div id='repair'  class='text'>repair</div>
-<div id="repairBox"><form action="#"><textarea></textarea><input type="hidden"  id="startTime"/><input type="submit" value="ok"></input><form></div> -->
+<div id='repair'  class='text'>repair</div>
+<div id="repairBox"><form action="#"><textarea></textarea><input type="hidden"  id="startTime"/><input type="submit" value="ok"></input><form></div>
 <div id="muteButton" class="btn muteOff"></div>
 <input id="volumeSlider" type="range" min="0" max="100" value="100" step="1">
 <div id="volumeSliderBG" class="fakeSlider">

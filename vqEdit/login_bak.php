@@ -1,28 +1,22 @@
 <?php
 require('injectUserPath.php');
-require('file_get_json.php');
 header("Content-Type: application/json");
 header("Connection: close");
 ob_start();
 $netID = $_SERVER['cn'];
-$firstname = $_SERVER['nickname'];
-$lastname = $_SERVER['sn'];
-$email = $_SERVER['mail'];
 $cacheFile="../users/$netID/login.json";
 $cacheExists=file_exists($cacheFile);
 if ($cacheExists) {
 $cacheData= file_get_contents($cacheFile);
  endFlush($cacheData);
 }
-$outData=login($netID,$firstname,$lastname,$email);
+$outData=login();
 if(!$cacheExists){
 	 endFlush($outData);
 }
 file_put_contents($cacheFile,$outData);
 function endFlush($printData){
-	if (__FILE__ == $_SERVER['DOCUMENT_ROOT'].$_SERVER['PHP_SELF']){
 	print $printData;
-}	
 ob_end_flush();
 flush();
 $size = ob_get_length();
@@ -33,7 +27,15 @@ $size = ob_get_length();
 
 
 
-
+function file_get_json($jsonPath) {
+	if (file_exists($jsonPath)) {
+		$json = file_get_contents($jsonPath);
+	}
+	else {
+		$json = "{}";
+	}
+	return json_decode($json);
+}
 
 // add quiz data
 function addQuizData($dir, $isOwner) {
@@ -65,8 +67,12 @@ function addQuizData($dir, $isOwner) {
 }
 
 
-function login($netID,$firstname="test",$lastname="user",$email="testing@test.com"){
+function login(){
 // Get netID
+$netID = $_SERVER['cn'];
+$firstname = $_SERVER['nickname'];
+$lastname = $_SERVER['sn'];
+$email = $_SERVER['mail'];
 
 // Make directory for that netID if it does not exist already
 if (!file_exists('../users/' . $netID)) {
@@ -92,24 +98,25 @@ foreach($directories as $dir) {
 }
 
 // Look in ALL directories, and add quiz data if the user has permissions for it
-$allPermissions = glob('../*/*/json/permissions.json' , GLOB_BRACE | GLOB_MARK );
-foreach($allPermissions as $file) {
-	if (!(strpos($file, 'vqEdit') !== false) && !(strpos($file, $netID) !== false)) {
+$allDirs = glob('../*/*' , GLOB_ONLYDIR);
+foreach($allDirs as $dir) {
+	if (!(strpos($dir, 'vqEdit') !== false) && !(strpos($dir, $netID) !== false)) {
 		// Check permissions
-		if (file_exists($file)) {
-			$permissions = file_get_json($file);
-			list($dir,$rest)=explode('/json/',$file);
+		$permissionsPath = $dir . "/json/permissions.json";
+		if (file_exists($permissionsPath)) {
+			$permissions = file_get_json($permissionsPath);
+
 			if (isset($permissions -> canAccessData))	//	This check is intended to fix "Notice:  Undefined property: stdClass::$canAccessData in /home1/tltsecure/apache2/htdocs/vq/vqEdit/login.php on line 81"	-Tony
 				if (is_array($permissions -> canAccessData) && in_array($netID, $permissions -> canAccessData)) {
-					
 					array_push($allQuizData, addQuizData($dir, false));
 					array_push($ownedDirs, $dir);
 				}
 			else{
-			//file_put_contents($permissionsPath,"{}");
+			file_put_contents($permissionsPath,"{}");
 			}
 		}
-	}}
+	}
+}
 
 
 chdir ( $saveDir  );

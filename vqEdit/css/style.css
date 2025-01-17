@@ -3626,7 +3626,7 @@ left: 65%;
     width: 80%;
     height: 10%;
     left: 10%;
-    top: 75%;
+    top: 60%;
     position: absolute;
     background-color: #505050;
 }
@@ -3641,7 +3641,7 @@ left: 65%;
 #folderDeleteInfoText {
     width: 90%;
     left: 5%;
-    top: 87.5%;
+    top: 70.5%;
     position: absolute;
     color: #808080;
     text-align: center;

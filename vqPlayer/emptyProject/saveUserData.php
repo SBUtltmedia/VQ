@@ -4,6 +4,14 @@
 //error_reporting(E_ALL);
 session_start();
 //ignore_user_abort(true);
+function watchTime($accumulator, $item)
+{
+if($item!=0)
+{return $accumulator+1;}
+else
+{ return $accumulator;}
+};
+
 $netID = $_SESSION['mail'] ?? $_SERVER['mail'] ?? "error_".time();
 if(array_key_exists("reset", $_GET)){
 $path = array_reverse(preg_split("/\//",getcwd()));
@@ -30,11 +38,25 @@ $netID="public";
 }
 
 #print_r($netID);
-print_r($_SESSION['mail']);
+print_r($netID);
 if(!key_exists("data",$_POST) && key_exists("userData",$_POST)  )
 {
 $data = $_POST['userData'];
-file_put_contents("data/" . $netID, $data);
+$json=json_decode($data);
+$clientWatched = array_reduce($json->watchData,"watchTime");
+if(file_exists("data/" . $netID)){
+$serverJson= json_decode(file_get_contents("data/" . $netID));
+$serverWatched =  array_reduce($serverJson->watchData,"watchTime");
+}
+else {
+$serverWatched=0;
+}
+if($clientWatched >= $serverWatched){
+file_put_contents("data/" . $netID, $data) or die("Unable to write file!");
+}
+else {
+print ("error $clientWatched $serverWatched");
+}
 }
 /*else{
 $startTime=formatTime($_POST['data']['startTime']);

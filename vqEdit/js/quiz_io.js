@@ -346,8 +346,8 @@ function updateConfirmDelete() {
     }
 }
 
-function deleteVideo() {
-    var v = $("#deleteDropdown").val();
+function deleteVideo(v=$("#deleteDropdown").val()) {
+    //var v = $("#deleteDropdown").val();
     var quizPathSplit = userData.quizData[v].relativePath.split("/");
     var quizID = quizPathSplit[quizPathSplit.length - 1];
     $.ajax({

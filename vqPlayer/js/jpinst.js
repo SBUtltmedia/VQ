@@ -132,6 +132,7 @@ if (userData.dataVersion != 1) {
 loadUserData();
 loadButtons();
 updateScore();
+saveWatchData();
 }
 });
 }
@@ -234,8 +235,10 @@ video.addEventListener('onchange',function(evt){console.log(evt)})
 video.addEventListener("loadedmetadata", cconce);						//	Tony
 if (video.readyState >= 2) cconce(); // Tony https://stackoverflow.com/questions/33116067/addeventlistenerloadedmetadata-fun-doesnt-run-correctly-firefox-misses-eve
 $('#cc').on('click', togglecc);
-//togglecc();						//	Tony
-
+if(localStorage.getItem("cc")=="show")
+{
+togglecc();						//	Tony
+}
 $('#bigPlay').click(playPause);											//	Paul
 $('#quizBank').hide();													//	Tony
 $("#videoPlayPause").click(function () {
@@ -452,9 +455,15 @@ updateScore();
 
 function togglecc() {			//	Tony
 	$('#cc').toggleClass('on');
-	$("video")[0].textTracks[0].mode = $("#cc").hasClass('on') ? 'showing' : 'hidden';
-	$('#repair,#repairBox').toggle()
-
+	let mode=$("#cc").hasClass('on') ? 'showing' : 'hidden';
+	localStorage.setItem("cc",mode);
+	$("video")[0].textTracks[0].mode =mode;
+console.log(window.location.href,userData)
+if(window.location.href.includes(userData.netID))
+{
+	console.log("f");	
+	$('#repair,#repairBox').toggle();
+}
 }
 
 function cconce() {				//	Tony
@@ -530,9 +539,9 @@ function metadataLoaded() {	// Called by 1 function: loadButtons()
 		}
 	}
 	for (var i = 0; i < questions.questions.length; i++) {
-		let markerWidth = parseFloat($("#questionMarker" + i).css("width"))/parseFloat($("#questionMarkers").css("width"))*100
+		let markerWidth = parseFloat($("#questionMarker" + i).css("width"))/parseFloat($("#questionMarkers").width())*100
 		console.log(markerWidth)
-		$("#questionMarker" + i).css("left", (questions.questions[i].startTime / video.duration * 100)-markerWidth/2 +"%");
+		$("#questionMarker" + i).css("left", (questions.questions[i].startTime / (video.duration) * 100)-markerWidth/2 +"%");
 	}
 }
 
@@ -1267,7 +1276,8 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 			$("#videoPlayPause").removeClass("playState");
 		}
 		$("#seekSlider").val(currentPct);
-		$("#seekSliderThumb").css("left", currentPct + "%");
+		$("#seekSliderThumb").css("left", (currentPct-1) + "%");
+	//	$("#input[type=range]#seekSlider::-webkit-slider-thumb").css("left", (currentPct-1) + "%");
 		$("#timeDisplayText").text(formatTime(currentTime));
 		// Check for question display
 		for (var i = 0; i < questions.questions.length; i++) {
@@ -1281,7 +1291,7 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 		// Save?
 		var currentDate = new Date().getTime();
 		userData.lastAccessDate = new Date();
-		if (currentDate - lastSaved > 5000) {
+		if (currentDate - lastSaved > 30000) {
 			var currentDataCheck=JSON.stringify({"watch":userData.watchData,"quiz":userData.answerData})
 				if (currentDataCheck!=idleCheck)
 				{
@@ -1409,7 +1419,8 @@ location.reload();
 }
 },
 error: function (jqXHR, textStatus, errorThrown) {
-location.reload();
+console.log(jqXHR, textStatus, errorThrown)
+//location.reload();
 }
 });
 }

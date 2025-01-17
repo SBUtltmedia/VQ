@@ -159,10 +159,12 @@ function loadUserData() {
         var id2 = betterParseInt(q2.relativePath.split("/")[2]);
         return id1 - id2;
     });
+    let ivqID;
     for (var i = 0; i < quizzes.length; i++) {
-        if (userData.quizData && userData.quizData[i].isOwner) {
+        
+	ivqID=i 
+	if (userData.quizData && userData.quizData[i].isOwner) {
 	   //ivqID=userData.quizData[i].relativePath.split("/").reverse()[0] 
-	   ivqID=i 
             $("#loadQuiz").append('<option value="' + ivqID + '">' + userData.quizData[i].title + '</option>');
             $("#deleteDropdown").append('<option value="' + ivqID + '">' + userData.quizData[i].title + '</option>');
         }
@@ -689,7 +691,8 @@ function initButtons() {
 
     // Dropdown menu that lets the user see the stats for a quiz
     $("#quizStatsSelect").change(function () {
-        var optionSelected = $("#quizStatsSelect").val();
+        console.log(userData.quizData);
+	var optionSelected = $("#quizStatsSelect").val();
         if (optionSelected != -1) {
             readOnly = true;
             loadQuizStats(optionSelected);
@@ -2398,10 +2401,16 @@ function makeNewFolder() {
 }
 
 function deleteFolder(id) {
-    if (id < folders.length - 1) {
+   if (id < folders.length - 1) {
         for (var i = 0; i < folders[id].quizzes.length; i++) {
+
+	if (folders[id].name.toLowerCase()=="delete"){
+   	deleteVideo(folders[id].quizzes[i]);
+	}
+	else{
             folders[folders.length - 1].quizzes.push(folders[id].quizzes[i]);
         }
+	}
         folders.splice(id, 1);
         makeFolders();
         setFolderView("", -1);
