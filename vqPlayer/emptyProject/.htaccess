@@ -1,7 +1,24 @@
+
+RewriteEngine On
+
 SetEnv PHP_VALUE "session.save_path = /home/tltsecure/apache2/htdocs/userData/sessionData"
+
+# Check if ENVIRONMENT is NOT "local"
+RewriteCond %{ENV:ENVIRONMENT} !^local$
+# If true, set the PHP_VALUE environment variable
+RewriteRule ^ - [E=PHP_VALUE:session.save_path = /home/tltsecure/apache2/htdocs/userData/sessionData]
+
 <IfModule mod_headers.c>
    Header set P3P "policyref=\"/w3c/p3p.xml\", CP=\"IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT\""
  </IfModule>
+
+ # Check if ENVIRONMENT is NOT "local"
+RewriteCond %{ENV:ENVIRONMENT} !^local$
+# If true, apply the headers configuration
+<IfModule mod_headers.c>
+   Header set P3P "policyref=\"/w3c/p3p.xml\", CP=\"IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT\""
+</IfModule>
+
 #php_admin_value session.save_path "/home/tltsecure/apache2/htdocs/userData/sessionData"
 AuthType shibboleth
 #ShibRequestSetting requireSession true 

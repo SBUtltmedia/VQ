@@ -38,6 +38,7 @@ if (isset($_FILES['upload_file'])) {
         }
         else {
                 $destPath = $fileName . "mp4";
+                echo $destPath;
                 if(move_uploaded_file($_FILES['upload_file']['tmp_name'], $destPath)){
                         sleep(1);
                         echo $destPath;

@@ -2,11 +2,22 @@
 #ShibRequestSetting requireSession 1
 #require shibboleth
 
+#local vars 
+#SetEnv cn "test_cn"
+#SetEnv nickname "test_nickname"
+#SetEnv sn "test_sn"
+#SetEnv mail "michael.kawwa@stonybrook.edu"
+
 RewriteEngine on
 RewriteBase /
 RewriteCond $0#%{REQUEST_URI} ([^#]*)#(.*)\1$
 RewriteRule ^.*$ - [E=CWD:%2]
 Header always unset X-Frame-Options
+
+# Check if Environment is set to "local"
+RewriteCond %{ENV:ENVIRONMENT} ^local$
+# If true, set the environment variables
+RewriteRule ^ - [E=cn:test_cn,E=nickname:test_nickname,E=sn:test_sn,E=mail:michael.kawwa@stonybrook.edu]
 
 RewriteCond %{REQUEST_URI} !.*users.*
 RewriteCond %{REQUEST_URI} \.json$
@@ -31,10 +42,10 @@ RewriteCond %{REQUEST_URI} !.*vqFolder.*
 
 RewriteRule (.*) %{ENV:CWD}users/$1 [NC,L]
 
-  #php_value error_log PHP_errors.log
-  #php_value upload_max_filesize 2000M
-  #php_value post_max_size 2000M
-  #php_value max_execution_time 500
-  #php_value max_input_time 500
-  #php_value date.timezone 'America/New_York'
-  #php_value memory_limit 512M
+  # php_value error_log PHP_errors.log
+  # php_value upload_max_filesize 2000M
+  # php_value post_max_size 2000M
+  # php_value max_execution_time 500
+  # php_value max_input_time 500
+  # php_value date.timezone 'America/New_York'
+  # php_value memory_limit 512M
