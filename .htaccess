@@ -19,6 +19,23 @@ RewriteCond %{ENV:ENVIRONMENT} ^local$
 # If true, set the environment variables
 RewriteRule ^ - [E=cn:test_cn,E=nickname:test_nickname,E=sn:test_sn,E=mail:michael.kawwa@stonybrook.edu]
 
+#todo: conditionally 
+SetEnv PHP_VALUE "session.save_path = /home/tltsecure/apache2/htdocs/userData/sessionData"
+
+# Check if ENVIRONMENT is NOT "local"
+RewriteCond %{ENV:ENVIRONMENT} !^local$
+RewriteRule ^ - [E=PHP_VALUE:session.save_path=/home/tltsecure/apache2/htdocs/userData/sessionData]
+
+RewriteCond %{ENV:ENVIRONMENT} ^local$
+RewriteRule ^ - [E=PHP_VALUE:session.save_path=/var/www/html]
+
+<IfModule mod_shibboleth.c>
+    # Rules here only apply if mod_shibboleth is loaded
+    AuthType shibboleth
+    ShibRequestSetting requireSession false
+    Require shibboleth
+</IfModule>
+
 RewriteCond %{REQUEST_URI} !.*users.*
 RewriteCond %{REQUEST_URI} \.json$
 RewriteRule (.*) %{ENV:CWD}users/$1 [L]
