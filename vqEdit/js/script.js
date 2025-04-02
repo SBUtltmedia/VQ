@@ -971,6 +971,7 @@ function uploadFile(file) {
         if (xhr.readyState == 4 && xhr.status == 200) {
             // Everything ok, file uploaded
             videoPath = xhr.responseText;
+            console.log(videoPath);
             // Load the video
             loadVideo(videoPath);
             // Make a new json file for the video quiz

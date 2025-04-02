@@ -15,19 +15,35 @@ RewriteRule ^.*$ - [E=CWD:%2]
 Header always unset X-Frame-Options
 
 # Check if Environment is set to "local"
-RewriteCond %{ENV:ENVIRONMENT} ^local$
+#RewriteCond %{ENV:ENVIRONMENT} ^local$
 # If true, set the environment variables
-RewriteRule ^ - [E=cn:test_cn,E=nickname:test_nickname,E=sn:test_sn,E=mail:michael.kawwa@stonybrook.edu]
+#RewriteRule ^ - [E=cn:test_cn,E=nickname:test_nickname,E=sn:test_sn,E=mail:michael.kawwa@stonybrook.edu]
 
-#todo: conditionally 
-SetEnv PHP_VALUE "session.save_path = /home/tltsecure/apache2/htdocs/userData/sessionData"
+<If "env('ENVIRONMENT') == 'local'">
+    # Set env vars only if LOCAL=true
+    SetEnv cn test_cn
+    SetEnv nickname test_nickname
+    SetEnv givenName test_givenName
+    SetEnv sn test_sn
+    SetEnv mail michael.kawwa@stonybrook.edu
+</If>
+
+#conditionally set session save path for local and non-local environments
+<If "env('ENVIRONMENT') == 'local'">
+    # LOCAL environment: Set session path for local dev
+    SetEnv PHP_VALUE "session.save_path=/var/www/html"
+</If>
+<Else>
+    # NON-LOCAL environment: Set session path for production
+    SetEnv PHP_VALUE "session.save_path=/home/tltsecure/apache2/htdocs/userData/sessionData"
+</Else>
 
 # Check if ENVIRONMENT is NOT "local"
-RewriteCond %{ENV:ENVIRONMENT} !^local$
-RewriteRule ^ - [E=PHP_VALUE:session.save_path=/home/tltsecure/apache2/htdocs/userData/sessionData]
+# RewriteCond %{ENV:ENVIRONMENT} !^local$
+# RewriteRule ^ - [E=PHP_VALUE:session.save_path=/home/tltsecure/apache2/htdocs/userData/sessionData]
 
-RewriteCond %{ENV:ENVIRONMENT} ^local$
-RewriteRule ^ - [E=PHP_VALUE:session.save_path=/var/www/html]
+# RewriteCond %{ENV:ENVIRONMENT} ^local$
+# RewriteRule ^ - [E=PHP_VALUE:session.save_path=/var/www/html]
 
 <IfModule mod_shibboleth.c>
     # Rules here only apply if mod_shibboleth is loaded

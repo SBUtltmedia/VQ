@@ -108,7 +108,8 @@ function getUserData() {	// Called by 1 function: getPermissions()
 	$.ajax({
 dataType: "json",
 url: "loadUserData.php",
-error:function(){ location.reload() },
+error:function(){ //location.reload()
+},
 success: function (data) {
 console.log(data)
 if (Object.keys(data).length > 0) {
@@ -1357,8 +1358,8 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 						if (!result.match(/success/g)){
 						text=`<div style="color:red">Error submitting to Grade!</div>`;
 						setTimeout(()=>{
-						location.reload
-						window.parent.location.reload()
+						//location.reload
+						//window.parent.location.reload()
 						},2000);
 						 	
 						}
@@ -1401,7 +1402,7 @@ function checkFinished() {	// Called by 2 functions: loadButtons() & answerCorre
 	function saveData(str) {// Called by 2 functions: saveWatchData() & saveUserData()
 	if( Date.now() - lastWatched >300000) //5 minutes
 {
-location.reload();
+//location.reload();
 }	
 else  {
 lastWatched = new Date().getTime(); 
@@ -1415,7 +1416,7 @@ data: {
 success: function (data) {
 console.log({data});
 if(data.includes("error_")){
-location.reload();
+//location.reload();
 }
 },
 error: function (jqXHR, textStatus, errorThrown) {

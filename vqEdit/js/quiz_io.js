@@ -1,3 +1,4 @@
+console.log("ksdjfkdjfk")
 function Video__Quizindex(quizindex, callback) {		//	Tony
 	console.log(userData.quizData[quizindex-1])
 	$.ajax({url: "../vqLib/DAL?video&quizindex="+quizindex}).done(callback).fail(function(e){console.log('quiz_io.js Video__Quizindex() : ' + e)})
@@ -7,7 +8,6 @@ function loadExistingQuiz(id) {
     loadPermissions(id, true);
 console.log(id)
 }
-
 
 function reallyLoadQuiz(id) {
     print("Really load quiz " + id);
@@ -73,6 +73,7 @@ function loadQuizStats(id) {
         // Fix for portability
         var videoExtension = quizData.videoPath.split("/media/")[1];
         videoPath = userData.quizData[id].relativePath + "/media/" + videoExtension;
+        //console.log(videoPath);
         questions = quizData.questions;
         graphData = userData.quizData[id].quizWatchData;
         numViewers = userData.quizData[id].views;
@@ -224,6 +225,7 @@ function saveQuiz() {
     jsonPath = videoPath.split("media")[0] + "json/quiz.json";
 	console.log('quiz_io.js saveQuiz() : ' + jsonPath.split('/')[1] + ' , ' + jsonPath.split('/')[2])	//	Tony
     var jsonString = JSON.stringify(toSend);
+    console.log(jsonString);
     $.ajax({
         type: "POST",
         //url: "../vqLib/DAL",					//	Tony
@@ -399,6 +401,7 @@ function loadFilter(id) {
 function saveFilter(id) {
     var jsonPath = userData.quizData[id].relativePath + "/json/filters.json";
     var jsonString = JSON.stringify(filters);
+    console.log(jsonString);
     $.ajax({
         type: "POST",
         url: "saveQuiz.php",
@@ -602,6 +605,8 @@ function savePermissions(id) {
     currentQuizEditor = editor;
     currentQuizEditCode = editCode;
     updatePermissionLocks();
+    console.log(jsonString);
+
     // Save permissions
     $.ajax({
         type: "POST",

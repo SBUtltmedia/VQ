@@ -11,7 +11,7 @@ if(array_key_exists("lis_person_name_given", $_POST)){
         $_SESSION['sn']=  $_POST['lis_person_name_family'];
         $JSON_POST=json_encode($_POST);
         print <<<EOT
-                <script src="/vq/vqPlayer/js/grading.js"></script>
+                <script src="../../../vqPlayer/js/grading.js"></script>
                 <script>
               var  ses=$JSON_POST;
         </script>
@@ -33,13 +33,13 @@ header("Location: /shib/?shibtarget=$target");
 <html>
 <head>
 <title>IVQ Player</title>
-<link rel="stylesheet" type="text/css" href="/vq/vqPlayer/style.css" />
+<link rel="stylesheet" type="text/css" href="../../../vqPlayer/style.css" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
-<script type="text/javascript" src="/vq/vqPlayer/js/progress.js"></script>
-<script type="text/javascript" src="/vq/vqPlayer/js/css_browser_selector.js"></script>
-<script type="text/javascript" src="/vq/vqPlayer/js/jpinst.js?new"></script>
-<script type="text/javascript" src="/vq/vqPlayer/js/range-touch.js"></script>
-<script type="text/javascript" src="/vq/vqPlayer/js/resize.js"></script>
+<script type="text/javascript" src="../../../vqPlayer/js/progress.js"></script>
+<script type="text/javascript" src="../../../vqPlayer/js/css_browser_selector.js"></script>
+<script type="text/javascript" src="../../../vqPlayer/js/jpinst.js?new"></script>
+<script type="text/javascript" src="../../../vqPlayer/js/range-touch.js"></script>
+<script type="text/javascript" src="../../../vqPlayer/js/resize.js"></script>
 <!--    <script src='/login/js/lti.js'></script>			-->
 
 

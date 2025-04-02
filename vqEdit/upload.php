@@ -2,6 +2,7 @@
 // Get netID
 $resources = "../vqPlayer/emptyProjectLink";
 $netID = $_SERVER['cn'];
+
 // Count files
 $dir = scandir("../users/" . $netID);
 sort($dir, SORT_NUMERIC);
@@ -28,7 +29,6 @@ $fileName = $mediaPath . "video.";
 `cp -rp  $resources/.htaccess $path`;
 //print "cp -rP $resources $path";
 //custom_copy($resources, $path);
-
 if (isset($_FILES['upload_file'])) {
         $newFileName = $_FILES['upload_file']['name'];
         $FileExt = pathinfo($newFileName, PATHINFO_EXTENSION);
@@ -38,7 +38,6 @@ if (isset($_FILES['upload_file'])) {
         }
         else {
                 $destPath = $fileName . "mp4";
-                echo $destPath;
                 if(move_uploaded_file($_FILES['upload_file']['tmp_name'], $destPath)){
                         sleep(1);
                         echo $destPath;
