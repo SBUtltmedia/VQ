@@ -1,2 +1,5 @@
 *
 !.gitignore
+!test_cn/
+!test_cn/1/
+!test_cn/1/**
