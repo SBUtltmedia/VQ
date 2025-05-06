@@ -37,7 +37,7 @@ header("Location: /shib/?shibtarget=$target");
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
 <script type="text/javascript" src="js/progress.js"></script>
 <script type="text/javascript" src="js/css_browser_selector.js"></script>
-<script  type="module" src="js/app.js" ></script> 
+<script  type="module" src="js/new-app.js" ></script> 
 <sxcript  type="module" src="modules/main.js" ></scxript>
 <script type="text/javascript" src="js/range-touch.js"></script>
 <script type="text/javascript" src="js/resize.js"></script>
