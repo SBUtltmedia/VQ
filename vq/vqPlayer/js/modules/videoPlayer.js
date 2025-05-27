@@ -165,9 +165,12 @@ export function playVideo() {
   if (state.video.paused) {
     state.watchStart = Date.now();
   }
-  
+
+  // Ensure video is not muted when explicitly played
+  state.video.muted = false;
+
   const playPromise = state.video.play();
-  
+
   // Handle play promise (for browsers that return a promise)
   if (playPromise !== undefined) {
     playPromise.catch(error => {

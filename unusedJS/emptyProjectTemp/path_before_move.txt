@@ -1,0 +1,3 @@
+Original Path: VQ/vq/vqEdit/emptyProjectTemp
+This folder was moved as part of the project cleanup process to organize detritus JS files.
+Date of move: 2023

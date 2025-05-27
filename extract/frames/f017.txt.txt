@@ -1,0 +1,116 @@
+1. dataHandler.js:36 Error initializing data: No view permission
+2. dataHandler.js:489 No view permission
+3. new-app. js:131 Exror initializing application: Error: Data loading timed out (triggered by new-app. js:185)
+Lot's start by reading the relevant sections of VQ/vq/vqPlayer/js/modules/dataHandler. js around lines 36 and 489. This should show us how it's currently trying to load or check
+permissions.
+
+Read file VQ/vq/vaPlayer/js/modules/dataHandler. js (lines 25-45)
+
+Read file VQ/vq/vaPlayer/js/modules/dataHandler. js (lines 480-500)
+‘Okay, I've read the sections around lines 36 and 489 in VQ/vq/vqPlayer/js/modules/dataHandler. js.
++ Around line 36:
+
+JavaScript
+
+BD)
+sthen(() > £
+
+return loadUserData();
+Dy)
+sthen(() = 4
+
+document. dispatchEvent (new CustonEvent(‘dataLoaded"));
+By)
+
+The error “Error initializing data: No view permission” at line 36 is happeningin the .catich () block of a promise chain. This means one of the preceding promises in the initData
+function (or whatever function this snippet is part of) rejected with the “No view permission” error.
+
++ Around line 489:
+
+JavaScript
+
+function shonEzzoressage(message) {
+console.error(message); // This wou No ission* if tha message passed
+
+let errorElement = document. getElenentById('errorNessage') ;
+
+Line 489 console. error (message) ; is inside the showErrorMessage function. This confirms that showErrorMessage is being called with “No view permission”.
+
+The key isto find where the promise is being rejected with “No view permission’. This rejection happens before the . catch block at line 36.
+Looking at the structure of initData from the snippet: It seems to be doing something like:
+4. Apromise that might involve loading permissions.
+2. If that resolves, then loadUserData().
+3. If that resolves, dispatch dataLoaded
+4, If any of them reject, it hits the catch at line 36.
+We need to see the beginning of the initData function (or its equivalent) in VQ/vq/vqPlayer/js/modules /dataHandler. js to understand how it fetches or checks permissions. It’s
+likely that this initial permission check is failing when permissions. json doesn't exist and it's not correctly applying the default permissions.
+© Read file VO/va/vaPlayer/ js/nodules/dataHandler. js (ines 1-40)
+Okay, t
+
+is very helpfull The initDataHandler function in VQ/vq/vqPlayer/4s/modules/dataHandler. js is indeed where the logic begins:
+
+ dataHandlerjs: VO/vq/vqPlayertis/modules. »
+
+export function initDataHandler() {
+
+state.urlVars = getUrlVars();
+
+LoadPezmissions()
+sthen() =f
+ye e h mission vi
+
+if (state.canViow) { k is crue
+
+‘The sequence i
+1. loadPermissions() is called.
+2. Crucially, after loadPermissions() resolves, it checks if (state.canView).
+3. If state. canViemis false (or undefined), it Promise.xeject('No view permission’ ). This rejection is what you're seeing in the console.
+
+‘This strongly suggests that loadPermissions() is not correctly setting state . canView (or an equivalent state v.
+missing and default permissions should apply.
+
+\le that determines view permission) when permissions. json is
+
+We need to see the loadPexmissions() function in VQ/vq/vqPlayer/js/modules/dataHandler. js. It should be modified to:
+
+1. Attempt to fetch permissions. json.
+2. If the file is not found (or the fetch fails in a way that indicates “not found”), it should apply the default permissions we identified earlier:
+
+(.3S0N
+
+locked": "false",
+“sharedwith": (1,
+“canédit": (1
+
+3. Based on these permissions (either loaded or default, it should then correctly determine if the current user canView the quiz and set state .canView (or its equivalent) accordingly
+For the default permissions, canView should generally be true unless there's other logic (e.g., checking locked status or sharedWith lists against a specific user).
+Let's inspect the LoadPermissions() function.
+
+© Thinking
+
+* Search files for regex (function |const)\s+loadPermissions
+Okay, the grep found asyne function loadPermissions() starting at line 77 in VQ/vq/vqPlayer/js/modules/dataHandler. js.
+Let's read the full function to see its current logic.
+
+© Read file V0/vq/vaPlayer/js/modules/dataHandler. js (lines 77-105)
+
+‘This is the current loadPexmissions function:
+
+BB dataHandlerjs VO/vq/vqPlayeriis/modules »
+
+asyne function loadPernissions() £
+ty t
+const response = anait fetch('json/permissions.json'); // Attempts to fetch json/pexmissions. json
+if (!response.ok) £
+
+throw new Exror('Fai
++
+
+state. perissionData = await response. json();
+
+Here's the problem:
+
+1 Path to pexmissions. json: It's trying to fetch ' json/permissions. json’. Thisis a relative path. In the context of a quiz, this path should likely be relative to the specific quiz’s,
+directory, eg, .. / .. /users/test_cn/1/json/permissions. json or similar, depending on where dataHandler. js is located and how the base URL is set. The old code used
+PRS RTS fedate (id xchat teurathle “Flann Jac teetouk teen’.
+
