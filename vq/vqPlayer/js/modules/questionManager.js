@@ -871,6 +871,7 @@ function questionRetry() {
       answerData.answers = [];
     }
   }
+  state.disableClicks = false;
 
   setQuestion(state.currentQuestion);
 }
