@@ -1,0 +1,243 @@
+<body>
+    <div id="stage" class="screen" role="main">
+        <div id="menuView" role="region" aria-label="Main Menu">
+            <div id="menuInfo" role="region" aria-labelledby="infoLabel">
+                <div id="infoLabel" class="text fs-100" role="heading" aria-level="1">Video Quiz Editor</div>
+                <div id="version" class="text fs-28" aria-label="version 1.2.2">v1.2.2</div>
+                <div id="titleLogo" aria-hidden="true"></div> <!-- need to double check Logo -->
+                <div id="welcomeText" class="text fs-50" aria-live="polite">Hi, [name]!</div> <!-- does name change? -->
+                <div id="infoText" class="text fs-30">
+                    Welcome to TLL's free and open-source video quiz editor.
+                    <br>Choose an option below to get started!
+                </div>
+            </div>
+            <div id="newPanel" role='region' aria-labelledby="newLabel">
+                <div id="newLabel" class="textF fs-50" role="heading" aria-level="2">Create Quiz</div>
+                <div id="newPanelText" class="text fs-20">To create a new video quiz, please upload the video file that
+                    you would like to use.
+                    <br />
+                    <br /> Please ensure that your video is in .mp4 or .m4v format.
+                </div>
+                <label for="videoUpload">
+                    <div id="uploadVideoButton" class="btn rounded" role="button" tabindex="0"
+                        aria-label="Upload video for new quiz">
+                        <div id="uploadVideoButtonText" class="textF fs-30">Upload Video</div>
+                    </div>
+                </label>
+                <input type="file" name="File Upload" id="videoUpload" accept=".mp4,.MP4,.m4v,.M4V" tabindex="-1"
+                    aria-hidden="true" />
+            </div>
+            <div id="editPanel" role='region' aria-labelledby="editLabel">
+                <div id="editLabel" class="textF fs-50" role="heading" aria-level="2">Edit Quiz</div>
+                <div id="editPanelText" class="text fs-20">To edit an existing video quiz, please select it from the
+                    dropdown menu below.
+                    <br />
+                    <br /> The quiz URL will remain the same, so you don't have to send another link to your students.
+                </div>
+                <select id="loadQuiz" class="quizSelect text fs-24 btn" aria-label="Select a quiz to edit">
+                    <option value="0">Select a quiz:</option>
+                </select>
+                <div id="showFoldersButton" class="btn" role="button" tabindex="0" aria-label="show folders"></div>
+            </div>
+            <div id="statsPanel" class="menuPanel rounded btn" role="button" tabindex="0" aria-label="view statistics">
+                <div id="statsLabel" class="menuLabel textF fs-30">Statistics</div>
+            </div>
+            <div id="fileManagerPanel" class="menuPanel rounded btn" role="button" tabindex="0"
+                aria-label="delete a quiz">
+                <div id="fileManagerLabel" class="menuLabel textF fs-30">Delete Quiz</div>
+            </div>
+            <div id="sharePanel" class="menuPanel rounded btn" role="button" tabindex="0"
+                aria-label="batch sharing otpions">
+                <div id="shareLabel" class="menuLabel textF fs-30">Batch Sharing</div>
+            </div>
+            <div id="feedbackPanel" class="menuPanel rounded btn" role="button" tabindex="0"
+                aria-label="help and feedback">
+                <div id="feedbackLabel" class="menuLabel textF fs-30">Help/Feedback</div>
+            </div>
+            <a id="fileFormatErrorLink" aria-label="File format error">
+                <div id="fileFormatError">
+                    <div id="fileFormatErrorText" class="text fs-19"></div>
+                </div>
+            </a>
+            <a href="https://apps.tlt.stonybrook.edu/vq/japalmeri/9/" aria-label="Tutorial link">
+                <div id="tutorialIcon" tabindex="0">
+                    <div id="tutorialIconText" class="textF fs-28">Tutorial</div>
+                </div>
+            </a>
+        </div>
+<!--header bar-->
+<div id="headerBar" role="region" aria-label="Header Toolbar">
+    <div id="returnToMenu" class="rounded btn" role="button" tabindex="0" aria-label="return to main menu">
+    </div>
+    <input id="quizTitleInput" class="text fs-30 rounded readOnlyHide" tabindex="-1" aria-lable="Quiz Title"
+        aria-readonly="true">
+    <label for="quizStatsSelect" class="sr-only">Select statistics view</label>
+    <select id="quizStatsSelect" class="quizSelect text fs-24 btn"
+        aria-label="Select a quiz to view statistics">
+        <option value="0">Total Stats</option>
+    </select>
+    <div id="headerStatsLabel" class="textF fs-40 readOnlyShow" role="heading" aria-level="2">Statistics</div>
+    <div id="saveButton" class="rounded btn" role="button" tabindex="0" aria-label="save quiz">
+        <div id="saveButtonText" class="csvButtonText text fs-15">
+            Save Quiz
+        </div>
+    </div>
+    <div id="readOnlyLabel" class="textF fs-25" aria-label="Read-only mode enabled">Read-Only</div>
+    <div id="copyLinkButton" class="btn rounded readOnlyHide" role="button" tabindex="0"
+        aria-label="copy quiz link">
+        <div id="copyLinkButtonText" class="csvButtonText text fs-15">
+            Copy Quiz Link
+        </div>
+    </div>
+    <div id="copyLinkBubble" class="rounded" aria-hidden="true">
+        <input id="copyLinkBubbleText" class="text fs-20 rounded" readonly tabindex="-1">
+    </div>
+    <div id="permissionsButton" class="btn rounded readOnlyHide" role="button" tabindex="0"
+        aria-label="Edit permissions">
+        <div id="permissionsButtonText" class="csvButtonText text fs-15">
+            Permissions
+        </div>
+    </div>
+    <div id="permissionsBlocker" aria-hidden="true"></div>
+    <label for="fileUploadInput">
+        <div id="uploadCSVButton" class="btn rounded readOnlyHide" role="button" tabindex="0"
+            aria-label="Upload csv file">
+            <div id="uploadCSVButtonText" class="csvButtonText text fs-15">
+                Upload CSV
+            </div>
+        </div>
+    </label>
+    <input type="file" name="File Upload" id="fileUploadInput" accept=".csv" tabindex="-1"
+        aria-label="Upload csv file" />
+    <div id="downloadCSVButton" class="btn rounded readOnlyHide" role="button" tabindex="0"
+        aria-label="Download csv file">
+        <div id="downloadCSVButtonText" class="csvButtonText text fs-15">
+            Download CSV
+        </div>
+    </div>
+    <div id="uploadCSVBlocker" class="csvBlocker" aria-hidden="true"></div>
+    <div id="downloadCSVBlocker" class="csvBlocker" aria-hidden="true"></div>
+    <div id="editorHelpButton" class="rounded btn readOnlyHide" role="button" tabindex="0"
+        aria-label="Open editor help or tutorial"></div>
+    <div id="statsDownloadButton" class="rounded btn readOnlyShow text fs-20" role="button" tabindex="0"
+        aria-label="Download score report">
+        <div id="statsDownloadButtonText" class="text fs-20">Score Reporting</div>
+    </div>
+</div>
+
+<!--editor view-->
+<div id="videoPlayer" role="region" aria-label="Video Player">
+    <div id="canReset" class="btn checkOff" role="button" tabindex="0" aria-label="Reset video position"></div>
+    <video id="videoBox" controls aria-label="Video content for quiz">
+        <source id="videoSource" src="" type="video/mp4">
+        <p class="text fs-20">Your browser does not support the video tag.</p>
+    </video>
+</div>
+<!--should the grpah element be hidden?-->
+<div id="watchTimeBox" class="readOnlyShow" role="region" aria-label="Watch Time Graph">
+    <div id="graphBox" aria-label="Graph Box">
+    <svg id='graphSVG' aria-label="Graph Visualization">
+    </svg>
+    <div id="graphTrackbar" role="slider" aria-label="Graph Trackbar"></div>
+    </div>
+    <div id="graphBaseline" aria-label="Graph Baseline"></div>
+</div>
+<div id="videoControls" role="region" aria-label="Video Controls">
+    <div id="sliderBox" aria-label="Seek Slider Box">
+    <input id="seekSlider" type="range" min="0" max="100" value="0" step="0.05" role="slider" aria-label="Seek Slider">
+    </div>
+    <div id="questionMarkers" aria-label="Question Markers"></div>
+    <div id="timeDisplay" class="rounded" role="region" aria-label="Time Display">
+        <div id="timeDisplayText" class="text fs-60" aria-label="Current Time"></div>
+        <input id="timeDisplayInput" class="text fs-60" aria-label="Edit Time">
+    </div>
+    <div id="videoPlayPause" class="playState" role="button" tabindex="0" aria-label="Play or Pause Video"></div>
+    <div id="videoWatchInfoBox" class="rounded readOnlyShow" role="region" aria-label="Video Watch Information">
+        <div id="videoWatchInfoLabel" class="text fs-20" aria-label="Average Plays Label">Average Plays</div>
+        <div id="videoWatchInfoText" class="text fs-50" aria-label="Average Plays Value"></div>
+    </div>
+</div>
+
+<!--question panel-->
+<div id="questionPanel" role="region" aria-label="Question Panel">
+    <div id="questionNumber" class="text fs-30" aria-label="Question number">
+        <div id="questionNumberText"></div>
+    </div>
+    <select id="questionTypeSelect" class="text fs-20" aria-label="Select question type">
+        <option value="mc">Multiple Choice</option>
+        <option value="fitb">Fill in the Blank</option>
+        <option value="sr">Short Response</option>
+    </select>
+    <div id="removeQuestionButton" class="btn" role="button" tabindex="0" aria-label="Remove current question"></div>
+    <div id="questionTextLabel" class="textF fs-20">Question Text</div>
+    <textarea id="questionTextInput" class="text fs-16 rounded" type="text" aria-labelledby="questionTextLabel"></textarea>
+    <div id="questionChoiceLabel" class="textF fs-20 show-mc">Answer Choice Text</div>
+    <!--question box-->
+
+    <div id="questionChoiceBox1" class="questionChoiceBox show-mc" role="group" aria-labelledby="questionChoiceInput1">
+        <label for="questionChoiceInput1">Answer Choice 1</label>
+        <input id="questionChoiceInput1" class="questionChoiceInput text fs-16 rounded" placeholder="Answer Choice 1">
+        <div id="questionChoiceCorrect1" class="questionChoiceCorrect checkOff btn" role="checkbox" aria-checked="false" tabindex="0" aria-label="Mark answer 1 as correct"></div>
+        <div id="questionExpoBox1" class="questionExpoBox rounded">
+            <label for="questionExpoInput1" class="questionExpoTitle textF fs-20">Expository Text</label>
+            <textarea id="questionExpoInput1" class="questionExpoInput rounded text fs-16"
+                      placeholder="Optional explanation for answer choice 1."></textarea>
+            <div class="questionExpoArrow text fs-30" aria-hidden="true">➜</div>
+        </div>
+    </div>
+
+
+
+
+    <div id="questionAnswerLabel" class="textF fs-20 show-fitb" aria-label="Answer Text">Answer Text</div>
+    <div id="questionAnswerBox" class="questionChoiceBox show-fitb" role="group" aria-labelledby="questionAnswerLabel">
+        <input id="questionAnswerInput" class="text fs-16 rounded" aria-label="Answer Input">
+    </div>
+    <div id="questionTimingLabel" class="textF fs-20 readOnlyHide" aria-label="Question Timing">Question Timing</div>
+    <div id="questionTimingBox1" class="questionTimingBox rounded readOnlyHide" role="group" aria-labelledby="questionTimingLabel">
+        <div id="questionTimingBoxLabel1" class="questionTimingBoxLabel text fs-16" aria-label="Question appears on-screen at">Question appears on-screen at:</div>
+        <div id="questionTimingBoxText1" class="questionTimingBoxText text fs-30" aria-label="Timing Text"></div>
+        <div id="questionTimingJump1" class="questionTimingJump rounded btn" role="button" tabindex="0" aria-label="Jump to timing"></div>
+        <div id="questionTimingSet1" class="questionTimingSet rounded btn" role="button" tabindex="0" aria-label="Set timing"></div>
+    </div>
+    <div id="questionTimingBox2" class="questionTimingBox rounded readOnlyHide" role="group" aria-labelledby="questionTimingLabel">
+        <div id="questionTimingBoxLabel2" class="questionTimingBoxLabel text fs-16" aria-label="Send wrong answers to">Send wrong answers to:</div>
+        <div id="questionTimingBoxText2" class="questionTimingBoxText text fs-30" aria-label="Timing Text"></div>
+        <div id="questionTimingJump2" class="questionTimingJump rounded btn" role="button" tabindex="0" aria-label="Jump to timing"></div>
+        <div id="questionTimingSet2" class="questionTimingSet rounded btn" role="button" tabindex="0" aria-label="Set timing"></div>
+    </div>
+    <div id="questionStats" class="readOnlyShow" role="region" aria-label="Question Statistics">
+        <div id="averageAttempts" class="rounded" aria-label="Average Attempts">
+            <div id="averageAttemptsLabel" class="text fs-13" aria-label="Average attempts to answer correctly">Average attempts to answer correctly:</div>
+            <div id="averageAttemptsText" class="text fs-40" aria-label="Average Attempts Value"></div>
+        </div>
+        <div id="attemptsLabel" class="text fs-13" aria-label="Percentage of students who answered correctly">Percentage of students who answered this question correctly in:</div>
+        <div id="onTry1" class="onTryBox rounded" role="region" aria-label="1 try">
+            <div id="onTryLabel1" class="onTryLabel text fs-16" aria-label="1 try label">1 try:</div>
+            <div id="onTryText1" class="onTryText text fs-30" aria-label="1 try percentage"></div>
+        </div>
+        <div id="onTry2" class="onTryBox rounded" role="region" aria-label="2 tries">
+            <div id="onTryLabel2" class="onTryLabel text fs-16" aria-label="2 tries label">2 tries:</div>
+            <div id="onTryText2" class="onTryText text fs-30" aria-label="2 tries percentage"></div>
+        </div>
+        <div id="onTry3" class="onTryBox rounded" role="region" aria-label="3 tries">
+            <div id="onTryLabel3" class="onTryLabel text fs-16" aria-label="3 tries label">3 tries:</div>
+            <div id="onTryText3" class="onTryText text fs-30" aria-label="3 tries percentage"></div>
+        </div>
+        <div id="onTry4" class="onTryBox rounded" role="region" aria-label="4 tries">
+            <div id="onTryLabel4" class="onTryLabel text fs-16" aria-label="4 tries label">4 tries:</div>
+            <div id="onTryText4" class="onTryText text fs-30" aria-label="4 tries percentage"></div>
+        </div>
+    </div>
+</div>
+<div id="numberButtonPanel" role="region" aria-label="Number Button Panel"></div>
+<div id="cannotReset" class="text" role="region" aria-label="Allow Quiz Replay">
+    <div id="resetIcon" class="resetGreen btn" role="button" tabindex="0" aria-label="Reset Quiz"></div>
+    Allow Quiz Replay
+</div>
+<div id="errorBubble" role="alert" aria-label="Error Bubble">
+    <div id="errorBubbleText" class="text fs-20" aria-label="Error Message"></div>
+</div>
+<div id="noQuestionsPanel" role="region" aria-label="No Questions Panel">
+    <div id="noQuestionsText" class="text fs-60" aria-label="No Questions Message">This quiz contains no questions.</div>
+</div>

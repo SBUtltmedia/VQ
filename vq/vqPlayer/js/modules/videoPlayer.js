@@ -20,28 +20,28 @@ export function initVideoPlayer(videoElement) {
     console.error('Video element not found');
     return;
   }
-  
+
   state.video = videoElement;
-  
+
   // Set up event listeners
   videoElement.addEventListener('loadedmetadata', handleMetadataLoaded);
   videoElement.addEventListener('ended', handleVideoEnded);
   videoElement.addEventListener('timeupdate', handleTimeUpdate);
-  
+
   // Set up controls
   initPlayPauseButton();
   initSeekSlider();
   initVolumeControls();
   initPlaybackSpeedControl();
-  
+
   // Start progress tracking
   startProgressTracking();
-  
+
   // Handle autoplay if enabled
   if (videoElement.autoplay) {
     handleAutoplay();
   }
-  
+
   console.log('Video player initialized');
 }
 
@@ -50,14 +50,25 @@ export function initVideoPlayer(videoElement) {
  */
 function initPlayPauseButton() {
   const playPauseBtn = document.getElementById('videoPlayPause');
+  console.log('Init PlayPause button');
+
   const bigPlayBtn = document.getElementById('bigPlay');
-  
+  if (bigPlayBtn) {
+    console.log('bigPlayBtn found:', bigPlayBtn);
+  } else {
+    console.log('bigPlay element not found in DOM');
+  }
+
   if (playPauseBtn) {
     playPauseBtn.addEventListener('click', togglePlayPause);
+    console.log('Init PlayPause button');
   }
-  
+
   if (bigPlayBtn) {
-    bigPlayBtn.addEventListener('click', togglePlayPause);
+    bigPlayBtn.addEventListener('click', () => {
+      console.log('Big play button clicked!');
+      togglePlayPause();
+    });
   }
 }
 
@@ -66,24 +77,24 @@ function initPlayPauseButton() {
  */
 function initSeekSlider() {
   const seekSlider = document.getElementById('seekSlider');
-  
+
   if (seekSlider) {
     seekSlider.addEventListener('input', handleSeekBarChange);
     seekSlider.addEventListener('change', handleSeekBarRelease);
     seekSlider.addEventListener('mousedown', () => { state.scrubbing = true; });
     seekSlider.addEventListener('touchstart', () => { state.scrubbing = true; });
-    
+
     // Set up interval for updating seek bar during scrubbing
     seekingInterval = setInterval(() => {
       if (!state.scrubbing) updateSeekBar();
     }, 200);
   }
-  
+
   // Add handlers for clicking anywhere on the body to end scrubbing
   document.body.addEventListener('mouseup', () => {
     if (state.scrubbing) state.scrubbing = false;
   });
-  
+
   document.body.addEventListener('touchend', () => {
     if (state.scrubbing) state.scrubbing = false;
   });
@@ -95,14 +106,14 @@ function initSeekSlider() {
 function initVolumeControls() {
   const volumeSlider = document.getElementById('volumeSlider');
   const muteButton = document.getElementById('muteButton');
-  
+
   // Set initial volume based on stored preference or default
   setInitialVolume();
-  
+
   if (volumeSlider) {
     volumeSlider.addEventListener('input', handleVolumeChange);
   }
-  
+
   if (muteButton) {
     muteButton.addEventListener('click', toggleMute);
   }
@@ -113,7 +124,7 @@ function initVolumeControls() {
  */
 function initPlaybackSpeedControl() {
   const playbackSpeed = document.getElementById('playbackSpeed');
-  
+
   if (playbackSpeed) {
     playbackSpeed.addEventListener('change', () => {
       if (state.video) {
@@ -130,7 +141,7 @@ function setInitialVolume() {
   try {
     const volumeSlider = document.getElementById('volumeSlider');
     const savedVolume = localStorage.getItem('videoVolume');
-    
+
     if (volumeSlider && savedVolume !== null) {
       volumeSlider.value = savedVolume;
       handleVolumeChange();
@@ -144,14 +155,15 @@ function setInitialVolume() {
  * Toggle play/pause state of the video
  */
 export function togglePlayPause() {
+  console.log('Play/Pause button clicked');
   if (!state.video) return;
-  
+
   if (state.video.paused) {
     playVideo();
   } else {
     pauseVideo();
   }
-  
+
   updatePlayPauseButton();
 }
 
@@ -160,7 +172,7 @@ export function togglePlayPause() {
  */
 export function playVideo() {
   if (!state.video) return;
-  
+
   // Record current time as watch start time
   if (state.video.paused) {
     state.watchStart = Date.now();
@@ -181,7 +193,7 @@ export function playVideo() {
       }
     });
   }
-  
+
   updatePlayPauseButton();
 }
 
@@ -190,14 +202,14 @@ export function playVideo() {
  */
 export function pauseVideo() {
   if (!state.video) return;
-  
+
   state.video.pause();
-  
+
   // Record watched time
   if (state.watchStart > 0) {
     recordTimeWatched();
   }
-  
+
   updatePlayPauseButton();
 }
 
@@ -207,15 +219,19 @@ export function pauseVideo() {
 function updatePlayPauseButton() {
   const playPauseBtn = document.getElementById('videoPlayPause');
   const bigPlayBtn = document.getElementById('bigPlay');
-  
+
   if (!state.video) return;
-  
+
   if (state.video.paused) {
     playPauseBtn?.classList.remove('playing');
     bigPlayBtn?.classList.remove('playing');
+    bigPlayBtn?.classList.add('playState'); // Show play icon
+    playPauseBtn.classList.add('playState');
   } else {
     playPauseBtn?.classList.add('playing');
     bigPlayBtn?.classList.add('playing');
+    bigPlayBtn?.classList.remove('playState'); // Hide play icon
+    playPauseBtn.classList.remove('playState');
   }
 }
 
@@ -224,19 +240,19 @@ function updatePlayPauseButton() {
  */
 function handleMetadataLoaded() {
   if (!state.video) return;
-  
+
   // Update seek bar max value
   const seekSlider = document.getElementById('seekSlider');
   if (seekSlider) {
     seekSlider.max = state.video.duration;
   }
-  
+
   // Create question markers at their appropriate times
   createQuestionMarkers();
-  
+
   // Update duration display
   updateTimeDisplay();
-  
+
   // Enable question toggle
   state.questionToggleEnabled = true;
 }
@@ -247,7 +263,7 @@ function handleMetadataLoaded() {
 function handleVideoEnded() {
   pauseVideo();
   recordTimeWatched();
-  
+
   // Update UI to show replay option
   const bigPlayBtn = document.getElementById('bigPlay');
   if (bigPlayBtn) {
@@ -260,11 +276,11 @@ function handleVideoEnded() {
  */
 function handleTimeUpdate() {
   if (!state.video || state.scrubbing) return;
-  
+
   updateSeekBar();
   updateTimeDisplay();
   checkQuestionTriggers();
-  
+
   // Record time watched periodically
   state.checkCounter++;
   if (state.checkCounter >= config.timing.countSet) {
@@ -278,15 +294,15 @@ function handleTimeUpdate() {
  */
 function updateSeekBar() {
   if (!state.video) return;
-  
+
   const seekSlider = document.getElementById('seekSlider');
   const seekThumb = document.getElementById('seekSliderThumb');
   const seekTrack = document.getElementById('seekSliderTrack');
-  
+
   if (seekSlider) {
     seekSlider.value = state.video.currentTime;
   }
-  
+
   if (seekThumb && seekTrack) {
     const percent = (state.video.currentTime / state.video.duration) * 100;
     seekTrack.style.width = `${percent}%`;
@@ -298,9 +314,9 @@ function updateSeekBar() {
  */
 function updateTimeDisplay() {
   if (!state.video) return;
-  
+
   const timeDisplay = document.getElementById('timeDisplayText');
-  
+
   if (timeDisplay) {
     const currentTime = formatTime(state.video.currentTime);
     const duration = formatTime(state.video.duration);
@@ -313,9 +329,9 @@ function updateTimeDisplay() {
  */
 function handleSeekBarChange() {
   if (!state.video) return;
-  
+
   const seekSlider = document.getElementById('seekSlider');
-  
+
   if (seekSlider) {
     // Update the video time as user drags the slider
     state.video.currentTime = parseFloat(seekSlider.value);
@@ -328,14 +344,14 @@ function handleSeekBarChange() {
  */
 function handleSeekBarRelease() {
   if (!state.video) return;
-  
+
   const seekSlider = document.getElementById('seekSlider');
-  
+
   if (seekSlider) {
     // Finalize seeking when user releases the slider
     state.video.currentTime = parseFloat(seekSlider.value);
     state.scrubbing = false;
-    
+
     // Check if we're seeking to a question point
     checkQuestionTriggers();
   }
@@ -346,24 +362,24 @@ function handleSeekBarRelease() {
  */
 function handleVolumeChange() {
   if (!state.video) return;
-  
+
   const volumeSlider = document.getElementById('volumeSlider');
   const volumeTrack = document.getElementById('volumeSliderTrack');
-  
+
   if (volumeSlider) {
     const volume = parseFloat(volumeSlider.value) / 100;
     state.video.volume = volume;
-    
+
     // Store volume preference
     try {
       localStorage.setItem('videoVolume', volumeSlider.value);
     } catch (e) {
       console.warn('Could not save volume preference:', e.message);
     }
-    
+
     // Update mute button state
     updateMuteButton(volume === 0);
-    
+
     // Update volume slider appearance
     if (volumeTrack) {
       volumeTrack.style.width = `${volumeSlider.value}%`;
@@ -376,10 +392,10 @@ function handleVolumeChange() {
  */
 function toggleMute() {
   if (!state.video) return;
-  
+
   const volumeSlider = document.getElementById('volumeSlider');
   const wasMuted = state.video.volume === 0 || state.video.muted;
-  
+
   if (wasMuted) {
     // Unmute
     state.video.muted = false;
@@ -391,7 +407,7 @@ function toggleMute() {
     // Mute
     state.video.muted = true;
   }
-  
+
   // Apply the volume from slider
   handleVolumeChange();
   updateMuteButton(!wasMuted);
@@ -403,7 +419,7 @@ function toggleMute() {
  */
 function updateMuteButton(muted) {
   const muteButton = document.getElementById('muteButton');
-  
+
   if (muteButton) {
     if (muted) {
       muteButton.classList.add('muted');
@@ -420,15 +436,15 @@ function updateMuteButton(muted) {
  */
 function createQuestionMarkers() {
   if (!state.video || !state.questions || !state.questions.questions) return;
-  
+
   const questionsArray = state.questions.questions;
   const questionMarkers = document.getElementById('questionMarkers');
-  
+
   if (!questionMarkers) return;
-  
+
   // Clear existing markers
   questionMarkers.innerHTML = '';
-  
+
   // Create marker for each question
   questionsArray.forEach((question, index) => {
     if (question.startTime) {
@@ -437,20 +453,20 @@ function createQuestionMarkers() {
       marker.className = 'questionMarker';
       marker.setAttribute('role', 'presentation');
       marker.setAttribute('aria-hidden', 'true');
-      
+
       // Calculate position based on video duration
       const position = (question.startTime / state.video.duration) * 100;
       marker.style.left = `${position}%`;
-      
+
       // Create marker text
       const markerText = document.createElement('div');
       markerText.id = `questionMarkerText${index}`;
       markerText.className = 'questionMarkerText text fs-18';
       markerText.textContent = index + 1;
-      
+
       marker.appendChild(markerText);
       questionMarkers.appendChild(marker);
-      
+
       // Add click event for direct navigation
       marker.addEventListener('click', () => {
         state.video.currentTime = question.startTime;
@@ -466,22 +482,22 @@ function createQuestionMarkers() {
  */
 function checkQuestionTriggers() {
   if (!state.video || !state.questions || !state.questions.questions) return;
-  
+
   const questionsArray = state.questions.questions;
   const currentTime = state.video.currentTime;
-  
+
   // Don't trigger if we're already showing a question
   if (state.showingQuestion) return;
-  
+
   // Check each question to see if it should be triggered
   for (let i = 0; i < questionsArray.length; i++) {
     const question = questionsArray[i];
-    
+
     // If the current time is within 0.5 seconds of the question time and question hasn't been answered
-    if (question.startTime && 
-        Math.abs(currentTime - question.startTime) < 0.5 && 
-        !state.userData.answerData[i]?.correct) {
-      
+    if (question.startTime &&
+      Math.abs(currentTime - question.startTime) < 0.5 &&
+      !state.userData.answerData[i]?.correct) {
+
       // Trigger the question
       triggerQuestion(i);
       break;
@@ -496,10 +512,10 @@ function checkQuestionTriggers() {
 function triggerQuestion(questionIndex) {
   // This is just a stub - the actual implementation would be in questionManager.js
   console.log(`Triggering question ${questionIndex + 1}`);
-  
+
   // Pause the video when showing a question
   pauseVideo();
-  
+
   // Dispatch event for question manager to handle
   const event = new CustomEvent('triggerQuestion', { detail: { questionIndex } });
   document.dispatchEvent(event);
@@ -510,28 +526,28 @@ function triggerQuestion(questionIndex) {
  */
 export function jumpToUnwatched() {
   if (!state.video || !state.userData.watchData) return;
-  
+
   const duration = state.video.duration;
   const watchData = state.userData.watchData;
   let skipTo = 0;
-  
+
   // Find first unwatched section
   for (let i = 0; i < duration; i += 5) {
     let watched = false;
-    
+
     for (let j = 0; j < watchData.length; j++) {
       if (i >= watchData[j].start && i <= watchData[j].end) {
         watched = true;
         break;
       }
     }
-    
+
     if (!watched) {
       skipTo = i;
       break;
     }
   }
-  
+
   // If we found an unwatched section, jump to it
   if (skipTo > 0 || skipTo < duration) {
     state.video.currentTime = skipTo;
@@ -544,16 +560,16 @@ export function jumpToUnwatched() {
  */
 function recordTimeWatched() {
   if (!state.video || state.watchStart === 0) return;
-  
+
   const currentTime = state.video.currentTime;
-  
+
   // Don't record if time hasn't changed
   if (currentTime === state.lastTime) return;
-  
+
   // Calculate start and end times for this segment
   const start = Math.min(currentTime, state.lastTime);
   const end = Math.max(currentTime, state.lastTime);
-  
+
   // Add to watch data if segment is valid
   if (end > start && end - start < 30) {
     state.userData.watchData.push({
@@ -562,11 +578,11 @@ function recordTimeWatched() {
       timestamp: Date.now()
     });
   }
-  
+
   // Update last time
   state.lastTime = currentTime;
   state.watchStart = Date.now();
-  
+
   // Save data periodically
   if (Date.now() - state.lastSaved > config.timing.autoSaveInterval) {
     saveWatchData();
@@ -590,7 +606,7 @@ function startProgressTracking() {
   if (progressUpdateInterval) {
     clearInterval(progressUpdateInterval);
   }
-  
+
   // Update progress every 10 seconds
   progressUpdateInterval = setInterval(() => {
     if (state.video && !state.video.paused) {
@@ -613,20 +629,20 @@ function showAutoplayBlockedMessage() {
 export function destroyVideoPlayer() {
   if (state.video) {
     state.video.pause();
-    
+
     // Remove event listeners
     state.video.removeEventListener('loadedmetadata', handleMetadataLoaded);
     state.video.removeEventListener('ended', handleVideoEnded);
     state.video.removeEventListener('timeupdate', handleTimeUpdate);
-    
+
     // Clear intervals
     if (seekingInterval) clearInterval(seekingInterval);
     if (progressUpdateInterval) clearInterval(progressUpdateInterval);
-    
+
     // Save final watch data
     recordTimeWatched();
     saveWatchData();
-    
+
     // Clear state
     state.video = null;
   }
@@ -640,9 +656,9 @@ function handleAutoplay() {
   if (state.video) {
     // Try to play muted first (more likely to be allowed)
     state.video.muted = true;
-    
+
     const playPromise = state.video.play();
-    
+
     if (playPromise !== undefined) {
       playPromise.then(() => {
         console.log('Autoplay started (muted)');
@@ -666,9 +682,9 @@ function handleAutoplay() {
 // Export a clear API for use in other modules
 export default {
   initVideoPlayer,
+  togglePlayPause,
   playVideo,
   pauseVideo,
-  togglePlayPause,
   jumpToUnwatched,
   destroyVideoPlayer
 };

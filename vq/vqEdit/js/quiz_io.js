@@ -43,10 +43,10 @@ function reallyLoadQuiz(id) {
       videoToLoad = quizData.videoPath;
       // Fix for portability
       console.log(quizData, videoToLoad);
-      var videoExtension = quizData.videoPath.split("/media/")[1];
+      var videoExtension = "mp4" // quizData.videoPath.split("/media/")[1];
       videoPath =
         userData.quizData[id].relativePath + "/media/" + videoExtension;
-      questions = quizData.questions;
+      questions = quizData.questions || [];
       // In case of old quiz: add expoText property to json
       for (var i = 0; i < questions.length; i++) {
         if (questions[i].expoText === undefined) {

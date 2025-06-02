@@ -36,11 +36,12 @@ header("Location: /shib/?shibtarget=$target");
 <link rel="stylesheet" type="text/css" href="style.css" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
 <script type="text/javascript" src="js/progress.js"></script>
-<script type="text/javascript" src="js/css_browser_selector.js"></script>
-<script  type="module" src="js/new-app.js" ></script> 
-<sxcript  type="module" src="modules/main.js" ></scxript>
-<script type="text/javascript" src="js/range-touch.js"></script>
+<!-- <script type="text/javascript" src="js/css_browser_selector.js"></script> -->
 <script type="text/javascript" src="js/resize.js"></script>
+<script  type="module" src="js/new-app.js" ></script> 
+<!-- <sxcript  type="module" src="modules/main.js" ></scxript> -->
+<script type="text/javascript" src="js/range-touch.js"></script>
+
 <!--    <script src='/login/js/lti.js'></script>			-->
 
 
@@ -54,6 +55,7 @@ header("Location: /shib/?shibtarget=$target");
     <div id="coverLeft" class="cover stripes" role="presentation"></div>
     <div id="coverRight" class="cover stripes" role="presentation"></div>
   </div>
+
   <div id="stage" class="screen" role="main" aria-label="Main Stage">
     <div id="quiz" role="region" aria-label="Quiz">
       <div id="videoPlayer" role="region" aria-label="Video Player">

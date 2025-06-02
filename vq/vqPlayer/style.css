@@ -42,6 +42,7 @@ input:focus {
     width: 100%;
     height: 100%;
     position: absolute;
+    /* pointer-events: none; remember to delete */
 }
 
 #quizBank {
@@ -62,7 +63,8 @@ input:focus {
 
 #stage {
     background-color: black;
-    position: absolute;
+    position: fixed;
+    box-sizing: border-box;
     margin: 0px;
     z-index: 0;
 }
@@ -250,43 +252,55 @@ input:focus {
 
 #resetQuestionBox,
 #videoSkipBox {
-    width: 15%;
-    height: 4%;
-    /* left: 83.5%;    top: 93%;*/
-    z-index: 1000;
-    position: absolute;
-    opacity: 0;
-    overflow: hidden;
+  width: 15%;
+  height: 4%;
+  z-index: 50;
+  position: absolute;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none; /* KEY FIX: Makes boxes click-through when hidden */
+  transition: opacity 0.3s ease; /* Smooth fade transition */
 }
 
 #videoSkipBox {
-    left: 70.5%;
-    top: 90%;
+  left: 70.5%;
+  top: 90%;
 }
 
-
 #resetQuestionBox {
-    left: 83.5%;
-    top: 93%;
+  left: 83.5%;
+  top: 93%;
+}
+
+/* Show boxes on hover */
+#resetQuestionBox:hover,
+#videoSkipBox:hover {
+  opacity: 1;
+  pointer-events: auto; /* Re-enable clicking when visible */
 }
 
 #resetQuestionBG,
 #videoSkipBG {
-    width: 100%;
-    height: 100%;
-    background-color: white;
-    opacity: .75;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background-color: white;
+  opacity: .75;
 }
 
 #resetQuestionText,
 #videoSkipText {
-    width: 90%;
-    top: 20%;
-    left: 5%;
-    position: absolute;
-    text-align: center;
-    color: black;
+  width: 90%;
+  top: 20%;
+  left: 5%;
+  position: absolute;
+  display: block;
+  z-index: 0;
+  text-align: center;
+  color: black;
 }
+
+
 
 @keyframes resetQuestionShow {
     0% {
@@ -572,7 +586,11 @@ input:focus {
     top: 12.5%;
     position: absolute;
     opacity: 0;
-    z-index: 1500;
+    z-index: 500;
+}
+.question-active #questionBox {
+  z-index: 2000; /* higher than bigPlay */
+  position: absolute; /* or absolute/fixed as needed */
 }
 
 #questionBoxContents {
@@ -663,6 +681,8 @@ input:focus {
     position: absolute;
     overflow-x: hidden;
     overflow-y: auto;
+    font-size: 1rem; /* Use rem for font size */
+    padding: 0.5rem;   /* Use rem for padding if needed */
 }
 
 .answerBox {
@@ -670,18 +690,19 @@ input:focus {
     height: 12%;
     left: 10%;
     position: absolute;
+    display: flex; /* Use flex for easier alignment */
+    align-items: center;
 }
 
 .answerIcon {
     width: 5%;
     height: 100%;
-    position: absolute;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     background-image: url(img/answer_arrow.svg);
     border-radius: 50%;
-    top: -30%;
+    /* Remove top/left, let flexbox handle alignment */
 }
 
 .anim_answerFadeOut {
@@ -719,12 +740,17 @@ input:focus {
 }
 
 .answerText {
-    width: auto;
-    height: auto;
-    max-height: 90%;
-    left: 7.5%;
-    position: absolute;
+    width: 95%;
+    height: 100%;
     overflow-y: auto;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    position: relative; /* Not absolute, so it sits next to the icon */
+    left: 0; /* Not needed with flexbox */
+    top: 0;  /* Not needed with flexbox */
+    display: flex;
+    align-items: center;
 }
 
 #fillInPanels {
@@ -1256,9 +1282,11 @@ input:focus {
     position: relative;
     text-align: center;
     color: #bdbec0;
+    /* z-index: 1000; */
     transform: translateY(-50%);
     -webkit-transform: translateY(-50%);
     z-index: 20;
+    font-size: 5rem;
 }
 
 .questionButtonIcon {
@@ -1501,10 +1529,18 @@ input:focus {
     background-image: url(img/button_play.svg);
 }
 
-.playPause:not(.playState) {
-    /*  Tony  */
+#bigPlay:not(.playState) {
+    background-image: none !important;
+}
+
+/* #videoPlayPause.playState {
+    background-image: url(img/button_play.svg);
+} */
+
+#videoPlayPause:not(.playState) {
     background-image: url(img/button_pause.svg);
 }
+
 
 #seekSlider {
     width: 66% !important;
@@ -2129,15 +2165,27 @@ input[type=range]:focus {
             transparent)
 }
 
+
 #bigPlay {
-    /*  Tony  */
+    
     position: absolute;
     width: 100%;
     height: 100%;
     opacity: .05;
     background-repeat: no-repeat;
+    z-index: 1000;           /* Lower default z-index */
+    pointer-events: auto;
     background-position: center;
+    transition: opacity 0.2s;
 }
+
+
+.question-active #bigPlay {
+  pointer-events: none !important;
+  opacity: 0.3 !important;
+  z-index: 1 !important;
+}
+
 
 .srFix {
     height: 70% !important;

@@ -2,16 +2,20 @@
  * userInterface.js
  * Manages user interface elements and interactions for the Video Quiz application
  */
-
 import config from './config.js';
 import state from './state.js';
 import videoPlayer from './videoPlayer.js';
 import questionManager from './questionManager.js';
 import { announceToScreenReader } from './accessibility.js';
 
+// Import the optimized resize handler
+// Note: Make sure optimizedResize.js is loaded before this module
+// or include it as a script tag in your HTML
+
 /**
  * Initialize the user interface
  */
+
 export function initUserInterface() {
   // Set up UI elements
   setupUIElements();
@@ -30,7 +34,7 @@ export function initUserInterface() {
  */
 function setupUIElements() {
   // Set stage dimensions based on window size
-  resizeStage();
+  window.addEventListener('resize', resizeWindow);
   
   // Create any dynamic UI elements
   createDynamicElements();
@@ -44,7 +48,7 @@ function setupUIElements() {
  */
 function setupEventHandlers() {
   // Window resize handler
-  window.addEventListener('resize', resizeStage);
+  window.addEventListener('resize', resizeWindow);
   
   // Set up hover effects for buttons
   setupHoverEffects();
@@ -69,80 +73,6 @@ function addUIBehavior() {
 
 /**
  * Resize stage to fit window
- */
-export function resizeStage() {
-  const stage = document.getElementById('stage');
-  if (!stage) return;
-  
-  const aspectRatio = 16 / 9;
-  const windowWidth = window.innerWidth;
-  const windowHeight = window.innerHeight;
-  
-  let width, height;
-  
-  if (windowWidth / windowHeight > aspectRatio) {
-    // Window is wider than needed
-    height = windowHeight;
-    width = height * aspectRatio;
-  } else {
-    // Window is taller than needed
-    width = windowWidth;
-    height = width / aspectRatio;
-  }
-  
-  // Set stage dimensions
-  stage.style.width = `${width}px`;
-  stage.style.height = `${height}px`;
-  stage.style.top = `${(windowHeight - height) / 2}px`;
-  stage.style.left = `${(windowWidth - width) / 2}px`;
-  
-  // Update cover elements
-  updateStageCover();
-}
-
-/**
- * Update stage cover elements
- */
-function updateStageCover() {
-  const coverTop = document.getElementById('coverTop');
-  const coverBottom = document.getElementById('coverBottom');
-  const coverLeft = document.getElementById('coverLeft');
-  const coverRight = document.getElementById('coverRight');
-  const stage = document.getElementById('stage');
-  
-  if (!coverTop || !coverBottom || !coverLeft || !coverRight || !stage) return;
-  
-  const windowWidth = window.innerWidth;
-  const windowHeight = window.innerHeight;
-  const stageRect = stage.getBoundingClientRect();
-  
-  // Top cover
-  coverTop.style.width = `${windowWidth}px`;
-  coverTop.style.height = `${stageRect.top}px`;
-  coverTop.style.left = '0px';
-  coverTop.style.top = '0px';
-  
-  // Bottom cover
-  coverBottom.style.width = `${windowWidth}px`;
-  coverBottom.style.height = `${windowHeight - stageRect.bottom}px`;
-  coverBottom.style.left = '0px';
-  coverBottom.style.top = `${stageRect.bottom}px`;
-  
-  // Left cover
-  coverLeft.style.width = `${stageRect.left}px`;
-  coverLeft.style.height = `${stageRect.height}px`;
-  coverLeft.style.left = '0px';
-  coverLeft.style.top = `${stageRect.top}px`;
-  
-  // Right cover
-  coverRight.style.width = `${windowWidth - stageRect.right}px`;
-  coverRight.style.height = `${stageRect.height}px`;
-  coverRight.style.left = `${stageRect.right}px`;
-  coverRight.style.top = `${stageRect.top}px`;
-}
-
-/**
- * Create dynamic UI elements
  */
 function createDynamicElements() {
   // Create screen reader live region if needed
@@ -583,7 +513,7 @@ export function showError(message, duration = 5000) {
 // Export module API
 export default {
   initUserInterface,
-  resizeStage,
+  // resizeStage,
   refreshUI,
   showLoading,
   hideLoading,
