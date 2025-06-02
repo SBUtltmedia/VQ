@@ -10,6 +10,7 @@ function debounce(func, wait) {
 $(window).on("resize", debounce(resizeWindow, 100));
 $(document).ready(resizeWindow); // Ensure it runs on page load too
 function resizeWindow() {
+    
     const w = window.innerWidth;
     const h = window.innerHeight;
 
