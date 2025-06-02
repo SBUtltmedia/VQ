@@ -22,6 +22,15 @@ export function initVideoPlayer(videoElement) {
   }
 
   state.video = videoElement;
+  
+  if (state.video) {
+  state.video.addEventListener('pause', () => {
+    const timeDisplay = document.getElementById('timeDisplayText');
+    if (timeDisplay && window.announce) {
+      window.announce(`Paused at ${timeDisplay.textContent}`);
+    }
+  });
+}
 
   // Set up event listeners
   videoElement.addEventListener('loadedmetadata', handleMetadataLoaded);

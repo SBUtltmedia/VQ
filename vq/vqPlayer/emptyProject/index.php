@@ -167,7 +167,7 @@ header("Location: /shib/?shibtarget=$target");
         </div>
         <div id="questionMarkers" role="group" aria-label="Question Markers"></div>
         <div id="toggleQuestionButton" class="btn" role="button" tabindex="0" aria-label="Toggle Questions"></div>
-        <div id="timeDisplay" role="status" aria-live="polite">
+        <div id="timeDisplay">
           <div id="timeDisplayText" class="text fs-23"></div>
           <select id="playbackSpeed" class="text fs-15" aria-label="Playback Speed">
             <option value="0.25">0.25x</option>
