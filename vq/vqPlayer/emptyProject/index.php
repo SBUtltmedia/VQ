@@ -59,7 +59,7 @@ header("Location: /shib/?shibtarget=$target");
   <div id="stage" class="screen" role="main" aria-label="Main Stage">
     <div id="quiz" role="region" aria-label="Quiz">
       <div id="videoPlayer" role="region" aria-label="Video Player">
-        <video id="videoBox" autoplay playsinline>
+        <video id="videoBox" playsinline>
           <source src="media/video.mp4" type="video/mp4">
           <source src="media/video.m4v" type="video/mp4">
           <p class="text fs-20">Loading video...</p>
