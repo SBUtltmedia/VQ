@@ -16,7 +16,10 @@ function loadExistingQuiz(id) {
 
 function reallyLoadQuiz(id) {
   print("Really load quiz " + id);
-  var qp = "../json/quiz.json";
+  let netId=userData.netID;
+  var qp = `../${netId}/${id}/json/quiz.json`;
+  //var qp = userData.quizData[id].relativePath + "/json/quiz.json";
+  console.log(userData);
   console.log(
     "quiz_io.js reallyLoadQuiz() : " +
       qp +
@@ -42,7 +45,9 @@ function reallyLoadQuiz(id) {
       //quizData = data;				//	Tony Broke the site
       videoToLoad = quizData.videoPath;
       // Fix for portability
-      console.log(quizData, videoToLoad);
+      
+      console.log(data)
+     
       var videoExtension = "mp4" // quizData.videoPath.split("/media/")[1];
       videoPath =
         userData.quizData[id].relativePath + "/media/" + videoExtension;

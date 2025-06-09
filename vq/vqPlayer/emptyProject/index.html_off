@@ -533,3 +533,77 @@ function resizeWindow() {
     $("html").css("font-size", (stageHeight / 20) + "px");
 
 }
+
+user interface resize
+/**
+ * Resize stage to fit window
+ */
+// export function resizeStage() {
+//   const stage = document.getElementById('stage');
+//   if (!stage) return;
+  
+//   const aspectRatio = 16 / 9;
+//   const windowWidth = window.innerWidth;
+//   const windowHeight = window.innerHeight;
+  
+//   let width, height;
+  
+//   if (windowWidth / windowHeight > aspectRatio) {
+//     // Window is wider than needed
+//     height = windowHeight;
+//     width = height * aspectRatio;
+//   } else {
+//     // Window is taller than needed
+//     width = windowWidth;
+//     height = width / aspectRatio;
+//   }
+  
+//   // Set stage dimensions
+//   stage.style.width = `${width}px`;
+//   stage.style.height = `${height}px`;
+//   stage.style.top = `${(windowHeight - height) / 2}px`;
+//   stage.style.left = `${(windowWidth - width) / 2}px`;
+  
+//   // Update cover elements
+//   updateStageCover();
+// }
+
+// /**
+//  * Update stage cover elements
+//  */
+// function updateStageCover() {
+//   const coverTop = document.getElementById('coverTop');
+//   const coverBottom = document.getElementById('coverBottom');
+//   const coverLeft = document.getElementById('coverLeft');
+//   const coverRight = document.getElementById('coverRight');
+//   const stage = document.getElementById('stage');
+
+//   if (!coverTop || !coverBottom || !coverLeft || !coverRight || !stage) return;
+
+//   const windowWidth = window.innerWidth;
+//   const windowHeight = window.innerHeight;
+//   const stageRect = stage.getBoundingClientRect();
+
+//   // Helper to set cover style and hide if not needed
+//   function setCoverStyle(cover, width, height, left, top) {
+//     width = Math.max(0, Math.round(width));
+//     height = Math.max(0, Math.round(height));
+//     cover.style.width = width + 'px';
+//     cover.style.height = height + 'px';
+//     cover.style.left = Math.round(left) + 'px';
+//     cover.style.top = Math.round(top) + 'px';
+//     cover.style.display = (width === 0 || height === 0) ? 'none' : 'block';
+//   }
+
+//   // Top cover
+//   setCoverStyle(coverTop, windowWidth, stageRect.top, 0, 0);
+
+//   // Bottom cover
+//   setCoverStyle(coverBottom, windowWidth, windowHeight - stageRect.bottom, 0, stageRect.bottom);
+
+//   // Left cover
+//   setCoverStyle(coverLeft, stageRect.left, stageRect.height, 0, stageRect.top);
+
+//   // Right cover
+//   setCoverStyle(coverRight, windowWidth - stageRect.right, stageRect.height, stageRect.right, stageRect.top);
+// }
