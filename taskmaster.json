@@ -1,0 +1,89 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start DDEV",
+      "type": "shell",
+      "command": "ddev start",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Stop DDEV",
+      "type": "shell",
+      "command": "ddev stop",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "DDEV Status",
+      "type": "shell",
+      "command": "ddev status",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Watch Files",
+      "type": "shell",
+      "command": "nodemon --watch vq --ext js,css,html,php --exec 'echo File changed'",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Lint JavaScript",
+      "type": "shell",
+      "command": "ddev exec eslint vq/**/*.js",
+      "problemMatcher": ["$eslint-stylish"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Clean Session Files",
+      "type": "shell",
+      "command": "ddev exec rm -f sess_*",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "DDEV Logs",
+      "type": "shell",
+      "command": "ddev logs -f",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "DDEV Restart",
+      "type": "shell",
+      "command": "ddev restart",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    }
+  ]
+} 

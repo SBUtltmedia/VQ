@@ -264,9 +264,6 @@
 				$("#seekSlider").on("mousedown touchstart", function (evt) {
 					scrubbing = true;
 				});
-				$("#muteButton").click(() => {
-					videoMute();
-				});
 				$("#volumeSlider").change(() => {
 					setVolume();
 				});
@@ -1170,12 +1167,6 @@
 		userData.watchData[userData.watchData.length - 1]++;
 		recordTimeWatched();
 		saveWatchData();
-	}
-
-	// Mute/unmute the video
-	function videoMute() {
-		video.muted = !video.muted;
-		$("#muteButton").toggleClass("muteOn");
 	}
 
 	// Set the initial volume based on localStorage

@@ -181,7 +181,7 @@ function enhanceQuestionAccessibility() {
     // Get the text content of this answer
     const textElement = box.querySelector('.answerText');
     const text = textElement ? textElement.textContent.trim() : '';
-    box.setAttribute('aria-label', `Answer option ${index + 1}${text ? ': ' + text : ''}`);
+    box.setAttribute('aria-label', `${index + 1}${text ? ': ' + text : ''}`);
   });
   
   // Fill in answer

@@ -81,7 +81,7 @@ export function prepareQuestionScreen() {
     answerBox.className = 'answerBox text fs-20';
     answerBox.setAttribute('role', 'button');
     answerBox.setAttribute('tabindex', '0');
-    answerBox.setAttribute('aria-label', `Answer option ${i + 1}`);
+    answerBox.setAttribute('aria-label', `${i + 1}`);
 
     const answerIcon = document.createElement('div');
     answerIcon.id = `answerIcon${i}`;
@@ -421,8 +421,8 @@ function setupMultipleChoiceQuestion(question) {
         answerBox.style.opacity = 1;
         answerBox.style.pointerEvents = 'all';
         answerBox.setAttribute('tabindex', '0');
-        answerBox.setAttribute('role', 'button');
-        answerBox.setAttribute('aria-label', `Answer option ${i + 1}: ${question.answerText[i]}`);
+        //answerBox.setAttribute('role', 'button');
+        answerBox.setAttribute('aria-label', `${i + 1}: ${question.answerText[i]}`);
       } else {
         // This answer option doesn't exist, so hide it
         answerText.textContent = '';

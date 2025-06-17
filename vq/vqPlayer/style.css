@@ -357,13 +357,14 @@ input:focus {
     height: 4%;
     left: 95%;
     top: 0.5%;
+    margin-top: 4%;
     position: absolute;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     background-image: url(img/hex_check_gray.svg);
     z-index: 1000;
-    visibility: hidden;
+    display: none;
 }
 
 #bblink {
@@ -1125,7 +1126,7 @@ input:focus {
     left: 93%;
     top: 2%;
     position: absolute;
-    background-image: url(img/arrow_down.svg);
+    background-image: url(img/icons8-close.svg);
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center center;
@@ -2020,6 +2021,15 @@ input[type=range]:focus {
 
 .medalGray {
     background-image: url(img/star_gray.svg);
+}
+#medal0{
+    left: 47.5%;
+}
+#medal1{
+    left: 62.5%
+}
+#medal2{
+    left: 77.5%;
 }
 
 #scoreBubble {

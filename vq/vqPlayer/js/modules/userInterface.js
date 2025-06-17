@@ -19,13 +19,13 @@ import { announceToScreenReader } from './accessibility.js';
 export function initUserInterface() {
   // Set up UI elements
   setupUIElements();
-  
+
   // Set up event handlers
   setupEventHandlers();
-  
+
   // Add UI behavior
   addUIBehavior();
-  
+
   console.log('User interface initialized');
 }
 
@@ -35,10 +35,10 @@ export function initUserInterface() {
 function setupUIElements() {
   // Set stage dimensions based on window size
   window.addEventListener('resize', resizeWindow);
-  
+
   // Create any dynamic UI elements
   createDynamicElements();
-  
+
   // Initialize UI state
   refreshUI();
 }
@@ -49,10 +49,10 @@ function setupUIElements() {
 function setupEventHandlers() {
   // Window resize handler
   window.addEventListener('resize', resizeWindow);
-  
+
   // Set up hover effects for buttons
   setupHoverEffects();
-  
+
   // Set up click handlers for UI buttons
   setupButtonHandlers();
 }
@@ -63,10 +63,10 @@ function setupEventHandlers() {
 function addUIBehavior() {
   // Show/hide controls on video hover
   addVideoControlsBehavior();
-  
+
   // Set up score display animations
   addScoreAnimations();
-  
+
   // Set up question toggle behavior
   addQuestionToggleBehavior();
 }
@@ -100,10 +100,10 @@ function createLiveRegion() {
 export function refreshUI() {
   // Update button states
   updateButtonStates();
-  
+
   // Update score display
   updateScoreDisplay();
-  
+
   // Update question buttons
   updateQuestionButtons();
 }
@@ -118,13 +118,13 @@ function updateButtonStates() {
     toggleButton.style.visibility = state.questionToggleEnabled ? 'visible' : 'hidden';
     toggleButton.setAttribute('aria-pressed', state.showingQuestions ? 'true' : 'false');
   }
-  
+
   // Update user info button
   const userInfoButton = document.getElementById('userInfoButton');
   if (userInfoButton) {
     userInfoButton.style.visibility = 'visible';
   }
-  
+
   // Update reset questions button
   const resetButton = document.getElementById('resetQuestionButton');
   if (resetButton) {
@@ -138,17 +138,17 @@ function updateButtonStates() {
 function updateScoreDisplay() {
   const scoreNum = document.getElementById('scoreNum');
   const scoreBar = document.getElementById('scoreBar');
-  
+
   if (scoreNum) {
     scoreNum.textContent = state.userScore;
   }
-  
+
   if (scoreBar) {
     const maxScore = config.scoring.maxVideoScore + config.scoring.maxQuestionScore;
     const percent = Math.min(100, Math.floor((state.userScore / maxScore) * 100));
     scoreBar.style.width = `${percent}%`;
   }
-  
+
   // Update medals
   updateMedals();
 }
@@ -159,11 +159,11 @@ function updateScoreDisplay() {
 function updateMedals() {
   const maxScore = config.scoring.maxVideoScore + config.scoring.maxQuestionScore;
   const percentage = (state.userScore / maxScore) * 100;
-  
+
   const medal0 = document.getElementById('medal0');
   const medal1 = document.getElementById('medal1');
   const medal2 = document.getElementById('medal2');
-  
+
   if (medal0 && medal1 && medal2) {
     // Bronze (60%)
     if (percentage >= 60) {
@@ -171,14 +171,14 @@ function updateMedals() {
     } else {
       medal0.classList.remove('medalEarned');
     }
-    
+
     // Silver (80%)
     if (percentage >= 80) {
       medal1.classList.add('medalEarned');
     } else {
       medal1.classList.remove('medalEarned');
     }
-    
+
     // Gold (95%)
     if (percentage >= 95) {
       medal2.classList.add('medalEarned');
@@ -193,11 +193,11 @@ function updateMedals() {
  */
 function updateQuestionButtons() {
   if (!state.questions || !state.questions.questions) return;
-  
+
   for (let i = 0; i < state.questions.questions.length; i++) {
     const button = document.getElementById(`questionButton${i}`);
     const buttonIcon = document.getElementById(`questionButtonIcon${i}`);
-    
+
     if (button && buttonIcon) {
       if (state.userData.answerData[i]?.correct) {
         button.classList.add('questionButtonCorrect');
@@ -217,66 +217,113 @@ function setupHoverEffects() {
   // User info button hover
   const userInfoButton = document.getElementById('userInfoButton');
   const userInfoBox = document.getElementById('userInfoBox');
-  
+
   if (userInfoButton && userInfoBox) {
     userInfoButton.addEventListener('mouseenter', () => {
       userInfoBox.classList.remove('anim_quickFadeOut');
       userInfoBox.classList.add('anim_quickFadeIn');
     });
-    
+
     userInfoButton.addEventListener('mouseleave', () => {
       userInfoBox.classList.remove('anim_quickFadeIn');
       userInfoBox.classList.add('anim_quickFadeOut');
     });
   }
-  
+
   // Toggle question button hover
   const toggleQuestionButton = document.getElementById('toggleQuestionButton');
   const toggleQuestionBox = document.getElementById('toggleQuestionBox');
-  
+
   if (toggleQuestionButton && toggleQuestionBox) {
     toggleQuestionButton.addEventListener('mouseenter', () => {
       toggleQuestionBox.classList.remove('anim_quickFadeOut');
       toggleQuestionBox.classList.add('anim_quickFadeIn');
     });
-    
+
     toggleQuestionButton.addEventListener('mouseleave', () => {
       toggleQuestionBox.classList.remove('anim_quickFadeIn');
       toggleQuestionBox.classList.add('anim_quickFadeOut');
     });
   }
-  
+
   // Reset question button hover
   const resetQuestionButton = document.getElementById('resetQuestionButton');
   const resetQuestionBox = document.getElementById('resetQuestionBox');
-  
+
   if (resetQuestionButton && resetQuestionBox) {
     resetQuestionButton.addEventListener('mouseenter', () => {
       resetQuestionBox.classList.remove('anim_quickFadeOut');
       resetQuestionBox.classList.add('anim_quickFadeIn');
     });
-    
+
     resetQuestionButton.addEventListener('mouseleave', () => {
       resetQuestionBox.classList.remove('anim_quickFadeIn');
       resetQuestionBox.classList.add('anim_quickFadeOut');
     });
   }
-  
+
   // Video skip button hover
   const videoSkip = document.getElementById('videoSkip');
   const videoSkipBox = document.getElementById('videoSkipBox');
-  
+
   if (videoSkip && videoSkipBox) {
     videoSkip.addEventListener('mouseenter', () => {
       videoSkipBox.classList.remove('anim_quickFadeOut');
       videoSkipBox.classList.add('anim_quickFadeIn');
     });
-    
+
     videoSkip.addEventListener('mouseleave', () => {
       videoSkipBox.classList.remove('anim_quickFadeIn');
       videoSkipBox.classList.add('anim_quickFadeOut');
     });
   }
+  //score information bar hover
+//   const scoreInfo = document.getElementById('scoreInfo');
+//   const scoreInfoTitle = document.getElementById('scoreInfoTitle');
+//   const scoreInfoText = document.getElementById('scoreInfoText');
+
+//   if (scoreInfo) {
+//   scoreInfo.addEventListener('mouseenter', () => {
+//     scoreInfo.classList.remove('anim_quickFadeOut');
+//     scoreInfo.classList.add('anim_quickFadeIn');
+//   });
+//   scoreInfo.addEventListener('mouseleave', () => {
+//     scoreInfo.classList.remove('anim_quickFadeIn');
+//     scoreInfo.classList.add('anim_quickFadeOut');
+//   });
+// }
+const scoreBox = document.getElementById('scoreBox');
+const scoreInfo = document.getElementById('scoreInfo');
+if (scoreBox && scoreInfo) {
+  scoreBox.addEventListener('mouseenter', () => {
+    scoreInfo.classList.remove('anim_quickFadeOut');
+    scoreInfo.classList.add('anim_quickFadeIn');
+  });
+  scoreBox.addEventListener('mouseleave', () => {
+    scoreInfo.classList.remove('anim_quickFadeIn');
+    scoreInfo.classList.add('anim_quickFadeOut');
+  });
+}
+
+  // if (scoreInfo && scoreInfoTitle && scoreInfoText) {
+  //   scoreInfo.addEventListener('mouseenter', () => {
+  //     scoreInfoTitle.classList.remove('anim_quickFadeOut');
+  //     //void scoreInfoTitle.offsetWidth;
+  //     scoreInfoTitle.classList.add('anim_quickFadeIn');
+  //     scoreInfoText.classList.remove('anim_quickFadeOut');
+  //     //void scoreInfoText.offsetWidth;
+  //     scoreInfoText.classList.add('anim_quickFadeIn');
+  //   });
+
+  //   scoreInfo.addEventListener('mouseleave', () => {
+  //     scoreInfoTitle.classList.remove('anim_quickFadeIn');
+  //     //void scoreInfoTitle.offsetWidth;
+  //     scoreInfoTitle.classList.add('anim_quickFadeOut');
+  //     scoreInfoText.classList.remove('anim_quickFadeIn');
+  //     //void scoreInfoText.offsetWidth;
+  //     scoreInfoText.classList.add('anim_quickFadeOut');
+  //   });
+  // }
 }
 
 /**
@@ -292,7 +339,7 @@ function setupButtonHandlers() {
       }
     });
   }
-  
+
   // Video skip button
   const videoSkip = document.getElementById('videoSkip');
   if (videoSkip) {
@@ -300,7 +347,7 @@ function setupButtonHandlers() {
       videoPlayer.jumpToUnwatched();
     });
   }
-  
+
   // Show question button
   const showQuestionButton = document.getElementById('showQuestionButton');
   if (showQuestionButton) {
@@ -308,7 +355,7 @@ function setupButtonHandlers() {
       questionManager.showQuestionPanel();
     });
   }
-  
+
   // Hide question button
   const hideQuestionButton = document.getElementById('hideQuestionButton');
   if (hideQuestionButton) {
@@ -316,20 +363,20 @@ function setupButtonHandlers() {
       questionManager.hideQuestionPanel();
     });
   }
-  
-  // Score info box
-  const scoreBox = document.getElementById('scoreBox');
-  const scoreInfo = document.getElementById('scoreInfo');
-  
-  if (scoreBox && scoreInfo) {
-    scoreBox.addEventListener('mouseenter', () => {
-      scoreInfo.style.display = 'block';
-    });
-    
-    scoreBox.addEventListener('mouseleave', () => {
-      scoreInfo.style.display = 'none';
-    });
-  }
+
+  //Score info box
+  // const scoreBox = document.getElementById('scoreBox');
+  // const scoreInfo = document.getElementById('scoreInfo');
+
+  // if (scoreBox && scoreInfo) {
+  //   scoreBox.addEventListener('mouseenter', () => {
+  //     scoreInfo.style.display = 'block';
+  //   });
+
+  //   scoreBox.addEventListener('mouseleave', () => {
+  //     scoreInfo.style.display = 'none';
+  //   });
+  // }
 }
 
 /**
@@ -338,16 +385,16 @@ function setupButtonHandlers() {
 function addVideoControlsBehavior() {
   const videoPlayer = document.getElementById('videoPlayer');
   const videoControls = document.getElementById('videoControls');
-  
+
   if (videoPlayer && videoControls) {
     let controlsTimeout;
-    
+
     // Show controls on hover
     videoPlayer.addEventListener('mouseenter', () => {
       videoControls.style.opacity = '1';
       clearTimeout(controlsTimeout);
     });
-    
+
     // Hide controls when mouse leaves
     videoPlayer.addEventListener('mouseleave', () => {
       if (!state.video || !state.video.paused) {
@@ -356,12 +403,12 @@ function addVideoControlsBehavior() {
         }, 2000);
       }
     });
-    
+
     // Show controls on mouse movement
     videoPlayer.addEventListener('mousemove', () => {
       videoControls.style.opacity = '1';
       clearTimeout(controlsTimeout);
-      
+
       if (!state.video || !state.video.paused) {
         controlsTimeout = setTimeout(() => {
           videoControls.style.opacity = '0';
@@ -377,7 +424,7 @@ function addVideoControlsBehavior() {
 function addScoreAnimations() {
   const scoreBubble = document.getElementById('scoreBubble');
   if (!scoreBubble) return;
-  
+
   // Reset animation when it ends
   scoreBubble.addEventListener('animationend', () => {
     scoreBubble.classList.remove('anim_scoreBubble');
@@ -390,10 +437,10 @@ function addScoreAnimations() {
 function addQuestionToggleBehavior() {
   const toggleQuestionButton = document.getElementById('toggleQuestionButton');
   if (!toggleQuestionButton) return;
-  
+
   toggleQuestionButton.addEventListener('click', () => {
     questionManager.toggleQuestions();
-    
+
     // Update accessibility announcement
     const message = state.showingQuestions ? 'Questions shown' : 'Questions hidden';
     announceToScreenReader(message);
@@ -407,7 +454,7 @@ function addQuestionToggleBehavior() {
 export function showLoading(message = 'Loading...') {
   // Create or update loading indicator
   let loadingIndicator = document.getElementById('loading-indicator');
-  
+
   if (!loadingIndicator) {
     loadingIndicator = document.createElement('div');
     loadingIndicator.id = 'loading-indicator';
@@ -421,7 +468,7 @@ export function showLoading(message = 'Loading...') {
     loadingIndicator.style.borderRadius = '10px';
     loadingIndicator.style.zIndex = '1000000';
     loadingIndicator.style.textAlign = 'center';
-    
+
     const spinner = document.createElement('div');
     spinner.style.border = '5px solid #f3f3f3';
     spinner.style.borderTop = '5px solid #3498db';
@@ -430,13 +477,13 @@ export function showLoading(message = 'Loading...') {
     spinner.style.height = '30px';
     spinner.style.margin = '0 auto 10px auto';
     spinner.style.animation = 'spin 2s linear infinite';
-    
+
     const messageElement = document.createElement('div');
-    
+
     loadingIndicator.appendChild(spinner);
     loadingIndicator.appendChild(messageElement);
     document.body.appendChild(loadingIndicator);
-    
+
     // Add animation
     const styleElement = document.createElement('style');
     styleElement.textContent = `
@@ -447,13 +494,13 @@ export function showLoading(message = 'Loading...') {
     `;
     document.head.appendChild(styleElement);
   }
-  
+
   // Update message
   const messageElement = loadingIndicator.querySelector('div:not([style*="border"])');
   if (messageElement) {
     messageElement.textContent = message;
   }
-  
+
   // Make visible
   loadingIndicator.style.display = 'block';
 }
@@ -476,7 +523,7 @@ export function hideLoading() {
 export function showError(message, duration = 5000) {
   // Create or update error message
   let errorElement = document.getElementById('error-message');
-  
+
   if (!errorElement) {
     errorElement = document.createElement('div');
     errorElement.id = 'error-message';
@@ -491,21 +538,21 @@ export function showError(message, duration = 5000) {
     errorElement.style.zIndex = '1000000';
     errorElement.style.textAlign = 'center';
     errorElement.style.maxWidth = '80%';
-    
+
     document.body.appendChild(errorElement);
   }
-  
+
   // Update message
   errorElement.textContent = message;
-  
+
   // Make visible
   errorElement.style.display = 'block';
-  
+
   // Auto-hide after duration
   setTimeout(() => {
     errorElement.style.display = 'none';
   }, duration);
-  
+
   // Announce error to screen readers
   announceToScreenReader(message, true);
 }

@@ -97,9 +97,9 @@ header("Location: /shib/?shibtarget=$target");
           <div id="scoreBar"></div>
         </div>
         <div id="medals" role="group" aria-label="Medals">
-          <div id="medal0" class="medal" role="img" aria-hidden="true"></div>
-          <div id="medal1" class="medal" role="img" aria-hidden="true"></div>
-          <div id="medal2" class="medal" role="img" aria-hidden="true"></div>
+          <div id="medal0" class="medal medalGray" role="img" aria-hidden="true"></div>
+          <div id="medal1" class="medal medalGray" role="img" aria-hidden="true"></div>
+          <div id="medal2" class="medal medalGray" role="img" aria-hidden="true"></div>
         </div>
         <div id="scoreBubble" role="status">
           <div id="scoreBubbleText" class="text fs-25">+250</div>
@@ -118,7 +118,7 @@ header("Location: /shib/?shibtarget=$target");
       <div id="buttonBank" role="region" aria-label="Question Buttons"></div>
       <div id="quizBank" role="dialog" aria-label="Quiz Bank">
         <div id="questionBox" role="region" aria-label="Question Panel">
-          <div id="questionBoxContents" role="group">
+          <div id="questionBoxContents">
             <div id="questionBoxBG" class="rounded" role="presentation"></div>
             <div id="questionText" class="text fs-40" role="heading" aria-level="2"></div>
             <div id="fillInPanels" role="group" aria-label="Fill-in Panels"></div>

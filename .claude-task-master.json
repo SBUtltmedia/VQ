@@ -1,0 +1,35 @@
+{
+  "version": "1.0",
+  "tasks": {
+    "start": {
+      "command": "ddev start",
+      "description": "Start the DDEV environment"
+    },
+    "build": {
+      "command": "ddev exec npm run build",
+      "description": "Build the project"
+    },
+    "test": {
+      "command": "ddev exec npm test",
+      "description": "Run tests"
+    },
+    "lint": {
+      "command": "ddev exec eslint vq/**/*.js",
+      "description": "Lint JavaScript files"
+    },
+    "watch": {
+      "command": "nodemon --watch vq --ext js,css,html,php",
+      "description": "Watch for file changes"
+    },
+    "clean": {
+      "command": "ddev exec rm -f sess_*",
+      "description": "Clean session files"
+    }
+  },
+  "ai": {
+    "model": "claude-3-opus-20240229",
+    "temperature": 0.7,
+    "maxTokens": 4000,
+    "systemPrompt": "You are a helpful AI assistant for the IVQ project. Help with development tasks, code review, and problem-solving."
+  }
+} 

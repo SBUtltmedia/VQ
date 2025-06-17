@@ -1,0 +1,30 @@
+{
+  "name": "ivq",
+  "version": "1.0.0",
+  "description": "IVQ Project with Task Master AI",
+  "main": "index.js",
+  "scripts": {
+    "start": "task-master-ai start",
+    "build": "task-master-ai build",
+    "test": "task-master-ai test",
+    "lint": "task-master-ai lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SBUtltmedia/VQ.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SBUtltmedia/VQ/issues"
+  },
+  "homepage": "https://github.com/SBUtltmedia/VQ#readme",
+  "devDependencies": {
+    "@anthropic-ai/sdk": "^0.18.0",
+    "task-master-ai": "^1.0.0",
+    "dotenv": "^16.4.5",
+    "eslint": "^8.57.0",
+    "nodemon": "^3.1.0"
+  }
+}
