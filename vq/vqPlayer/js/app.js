@@ -1324,47 +1324,60 @@
 	}
 
 	// Update the score display based on video watch time and question answers
-	function updateScore() {
-		video = $("#videoBox")[0];
-		let score = 0;
-		let watchedSeconds = 0;
-		const floorDuration = Math.floor(video.duration);
-		if (video) {
-			for (let i = 0; i < floorDuration; i++) {
-				if (userData.watchData[i] > 0) watchedSeconds++;
-			}
-			score += Math.round((watchedSeconds / floorDuration) * 1000);
-			if (questions !== undefined && questions.questions.length > 0) {
-				let questionScore = 0;
-				for (let i = 0; i < userData.answerData.length; i++) {
-					questionScore += userData.answerData[i].score;
-				}
-				const quizScore = Math.round((questionScore / questions.questions.length) * 1000);
-				score += quizScore;
-				userData.quizScore = quizScore / 10;
-			} else {
-				score *= 2;
-			}
-			const maxScore = 2000;
-			const stars = [0.5, 0.65, 0.8];
-			for (let i = 0; i < stars.length; i++) {
-				if (score >= stars[i] * maxScore) {
-					$("#medal" + i).removeClass("medalGray").addClass("medalGold");
-				} else {
-					$("#medal" + i).removeClass("medalGold").addClass("medalGray");
-				}
-				$("#medal" + i).css("left", (stars[i] * 100 - 2.5) + "%");
-			}
-			if (score >= userData.bestScore || !userData.bestScore) {
-				userData.bestScore = score;
-			}
-			if (isNaN(score)) score = 0;
-			userScore = Math.min(maxScore, score);
-			$("#scoreNum").text(score);
-			$("#scoreBar").css("width", (score / maxScore * 100) + "%");
-		}
-	}
-
+	// Ensure userData.watchData is initialized
+if (!userData.watchData) {
+	userData.watchData = [];
+  }
+  
+  const videoElement = document.getElementById('videoBox');
+  
+  videoElement.addEventListener('timeupdate', function() {
+	const currentSecond = Math.floor(videoElement.currentTime);
+	userData.watchData[currentSecond] = (userData.watchData[currentSecond] || 0) + 1;
+	updateScore();
+  });
+  
+//   function updateScore() {
+// 	video = $("#videoBox")[0];
+// 	let score = 0;
+// 	let watchedSeconds = 0;
+// 	const floorDuration = Math.floor(video.duration);
+// 	if (video) {
+// 	  for (let i = 0; i < floorDuration; i++) {
+// 		if (userData.watchData[i] > 0) watchedSeconds++;
+// 	  }
+// 	  score += Math.round((watchedSeconds / floorDuration) * 1000);
+// 	  if (questions !== undefined && questions.questions.length > 0) {
+// 		let questionScore = 0;
+// 		for (let i = 0; i < userData.answerData.length; i++) {
+// 		  questionScore += userData.answerData[i].score;
+// 		}
+// 		const quizScore = Math.round((questionScore / questions.questions.length) * 1000);
+// 		score += quizScore;
+// 		userData.quizScore = quizScore / 10;
+// 	  } else {
+// 		score *= 2;
+// 	  }
+// 	  const maxScore = 2000;
+// 	  const stars = [0.5, 0.65, 0.8];
+// 	  for (let i = 0; i < stars.length; i++) {
+// 		if (score >= stars[i] * maxScore) {
+// 		  $("#medal" + i).removeClass("medalGray").addClass("medalGold");
+// 		} else {
+// 		  $("#medal" + i).removeClass("medalGold").addClass("medalGray");
+// 		}
+// 		$("#medal" + i).css("left", (stars[i] * 100 - 2.5) + "%");
+// 	  }
+// 	  if (score >= userData.bestScore || !userData.bestScore) {
+// 		userData.bestScore = score;
+// 	  }
+// 	  if (isNaN(score)) score = 0;
+// 	  userScore = Math.min(maxScore, score);
+// 	  $("#scoreNum").text(score);
+// 	  $("#scoreBar").css("width", (score / maxScore * 100) + "%");
+// 	}
+//   }
+	
 	// When the document is ready, start the app
 	$(document).ready(function () {
 		getPermissions();

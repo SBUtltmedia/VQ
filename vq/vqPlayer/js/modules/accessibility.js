@@ -11,16 +11,16 @@ import state from './state.js';
 export function initAccessibility() {
   // Add ARIA attributes to elements
   enhanceAriaAttributes();
-  
+
   // Set up keyboard navigation
   setupKeyboardNavigation();
-  
+
   // Add focus indicators
   addFocusIndicators();
-  
+
   // Add screen reader announcements
   setupScreenReaderAnnouncements();
-  
+
   console.log('Accessibility features initialized');
 }
 
@@ -39,7 +39,7 @@ function enhanceAriaAttributes() {
         element.setAttribute('role', 'region');
       }
     }
-    
+
     // Set aria-labels for elements without them
     if (!element.hasAttribute('aria-label')) {
       // Create user-friendly labels based on IDs
@@ -50,7 +50,7 @@ function enhanceAriaAttributes() {
       }
     }
   });
-  
+
   // Handle specific components that need special treatment
   enhanceVideoPlayerAccessibility();
   enhanceQuestionAccessibility();
@@ -64,7 +64,7 @@ function enhanceVideoPlayerAccessibility() {
   const videoElement = document.getElementById('videoBox');
   if (videoElement) {
     videoElement.setAttribute('aria-label', 'Video Player');
-    
+
     // Ensure captions are properly labeled
     const tracks = videoElement.querySelectorAll('track');
     tracks.forEach(track => {
@@ -73,14 +73,14 @@ function enhanceVideoPlayerAccessibility() {
       }
     });
   }
-  
+
   // Video controls
   const controls = document.getElementById('videoControls');
   if (controls) {
     controls.setAttribute('role', 'group');
     controls.setAttribute('aria-label', 'Video Controls');
   }
-  
+
   // Play/Pause button
   const playPauseBtn = document.getElementById('videoPlayPause');
   if (playPauseBtn) {
@@ -88,7 +88,7 @@ function enhanceVideoPlayerAccessibility() {
     playPauseBtn.setAttribute('tabindex', '0');
     playPauseBtn.setAttribute('aria-label', 'Play or Pause Video');
   }
-  
+
   // Seek slider
   const seekSlider = document.getElementById('seekSlider');
   if (seekSlider) {
@@ -96,13 +96,13 @@ function enhanceVideoPlayerAccessibility() {
     seekSlider.setAttribute('aria-valuemin', '0');
     seekSlider.setAttribute('aria-valuemax', '100');
     seekSlider.setAttribute('aria-valuenow', seekSlider.value || '0');
-    
+
     // Update aria-valuenow when value changes
     seekSlider.addEventListener('input', () => {
       seekSlider.setAttribute('aria-valuenow', seekSlider.value);
     });
   }
-  
+
   // Volume slider
   const volumeSlider = document.getElementById('volumeSlider');
   if (volumeSlider) {
@@ -110,34 +110,35 @@ function enhanceVideoPlayerAccessibility() {
     volumeSlider.setAttribute('aria-valuemin', '0');
     volumeSlider.setAttribute('aria-valuemax', '100');
     volumeSlider.setAttribute('aria-valuenow', volumeSlider.value || '100');
-    
+
     // Update aria-valuenow when value changes
     volumeSlider.addEventListener('input', () => {
       volumeSlider.setAttribute('aria-valuenow', volumeSlider.value);
     });
   }
-  
+
   // Mute button
   const muteButton = document.getElementById('muteButton');
   if (muteButton) {
     muteButton.setAttribute('role', 'button');
     muteButton.setAttribute('tabindex', '0');
     muteButton.setAttribute('aria-label', 'Mute or Unmute Audio');
-    
+
     // Add pressed state
     muteButton.addEventListener('click', () => {
       const isMuted = muteButton.classList.contains('muted');
       muteButton.setAttribute('aria-pressed', isMuted ? 'true' : 'false');
     });
   }
-  
+
   // CC button
   const ccButton = document.getElementById('cc');
   if (ccButton) {
     ccButton.setAttribute('role', 'button');
     ccButton.setAttribute('tabindex', '0');
+    ccButton.setAttribute('aria-label', 'Toggle captions');
     ccButton.setAttribute('aria-label', 'Toggle Closed Captions');
-    
+
     // Add pressed state
     ccButton.addEventListener('click', () => {
       const isCCOn = ccButton.classList.contains('on');
@@ -157,14 +158,14 @@ function enhanceQuestionAccessibility() {
     quizBank.setAttribute('aria-modal', 'true');
     quizBank.setAttribute('aria-labelledby', 'questionText');
   }
-  
+
   // Question text
   const questionText = document.getElementById('questionText');
   if (questionText) {
     questionText.setAttribute('role', 'heading');
     questionText.setAttribute('aria-level', '2');
   }
-  
+
   // Question buttons
   document.querySelectorAll('[id^="questionButton"]').forEach((button, index) => {
     button.setAttribute('role', 'button');
@@ -172,38 +173,42 @@ function enhanceQuestionAccessibility() {
     button.setAttribute('aria-label', `Question ${index + 1}`);
     button.setAttribute('aria-controls', 'quizBank');
   });
-  
+
   // Answer boxes
   document.querySelectorAll('[id^="answerBox"]').forEach((box, index) => {
     box.setAttribute('role', 'button');
     box.setAttribute('tabindex', '0');
-    
+
     // Get the text content of this answer
     const textElement = box.querySelector('.answerText');
     const text = textElement ? textElement.textContent.trim() : '';
     box.setAttribute('aria-label', `${index + 1}${text ? ': ' + text : ''}`);
   });
-  
+
   // Fill in answer
   const fillInAnswer = document.getElementById('fillInAnswer');
   if (fillInAnswer) {
     fillInAnswer.setAttribute('aria-label', 'Your Answer');
     fillInAnswer.setAttribute('aria-multiline', 'true');
   }
-  
+
   // Explanation box
   const expoBox = document.getElementById('expoBox');
   if (expoBox) {
     expoBox.setAttribute('role', 'alert');
     expoBox.setAttribute('aria-live', 'polite');
   }
-  
+
   // Explanation buttons
   const expoButtons = document.querySelectorAll('.expoButton');
   expoButtons.forEach(button => {
     button.setAttribute('role', 'button');
     button.setAttribute('tabindex', '0');
   });
+  const scoreBubble = document.getElementById('scoreBubble');
+  if (scoreBubble) {
+    scoreBubble.setAttribute('aria-atomic', 'true');
+  }
 }
 
 /**
@@ -215,7 +220,7 @@ function setupKeyboardNavigation() {
     if (!button.hasAttribute('tabindex')) {
       button.setAttribute('tabindex', '0');
     }
-    
+
     // Add keyboard handler if not already present
     if (!button.hasAttribute('data-keyboard-handler')) {
       button.setAttribute('data-keyboard-handler', 'true');
@@ -227,7 +232,7 @@ function setupKeyboardNavigation() {
       });
     }
   });
-  
+
   // Handle Escape key to close dialogs
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && state.showingQuestion) {
@@ -235,7 +240,7 @@ function setupKeyboardNavigation() {
       document.dispatchEvent(event);
     }
   });
-  
+
   // Add arrow key navigation for question buttons
   const questionButtons = document.querySelectorAll('[id^="questionButton"]');
   questionButtons.forEach((button, index) => {
@@ -249,7 +254,7 @@ function setupKeyboardNavigation() {
       }
     });
   });
-  
+
   // Add arrow key navigation for answer options
   const answerBoxes = document.querySelectorAll('[id^="answerBox"]');
   answerBoxes.forEach((box, index) => {
@@ -308,7 +313,7 @@ function setupScreenReaderAnnouncements() {
   const createLiveRegion = (id, ariaLive) => {
     const existing = document.getElementById(id);
     if (existing) return existing;
-    
+
     const region = document.createElement('div');
     region.id = id;
     region.className = 'sr-only';
@@ -317,37 +322,37 @@ function setupScreenReaderAnnouncements() {
     document.body.appendChild(region);
     return region;
   };
-  
+
   // Create polite and assertive announcement regions
   const politeAnnouncer = createLiveRegion('polite-announcer', 'polite');
   const assertiveAnnouncer = createLiveRegion('assertive-announcer', 'assertive');
-  
+
   // Function to make announcements
   window.announce = (message, assertive = false) => {
     const announcer = assertive ? assertiveAnnouncer : politeAnnouncer;
     announcer.textContent = '';
-    
+
     // Force browser to recognize the content change
     setTimeout(() => {
       announcer.textContent = message;
     }, 50);
   };
-  
+
   // Listen for events that should make announcements
   document.addEventListener('questionShown', (e) => {
     if (e.detail && e.detail.questionText) {
       window.announce(`Question: ${e.detail.questionText}`, true);
     }
   });
-  
+
   document.addEventListener('answerCorrect', () => {
     window.announce('Correct answer!', true);
   });
-  
+
   document.addEventListener('answerIncorrect', () => {
     window.announce('Incorrect answer. Try again.', true);
   });
-  
+
   document.addEventListener('quizCompleted', (e) => {
     if (e.detail && e.detail.score !== undefined) {
       window.announce(`Quiz completed! Your final score is ${e.detail.score} points.`, true);
@@ -355,6 +360,16 @@ function setupScreenReaderAnnouncements() {
       window.announce('Quiz completed!', true);
     }
   });
+  document.addEventListener('blockerDialogVisibilityChanged', (e) => {
+    if (window.announce) {
+      window.announce(e.detail.visible ? 'Dialog opened' : 'Dialog closed');
+    }
+  });
+  // Show dialog
+  document.dispatchEvent(new CustomEvent('blockerDialogVisibilityChanged', { detail: { visible: true } }));
+
+  // Hide dialog
+  document.dispatchEvent(new CustomEvent('blockerDialogVisibilityChanged', { detail: { visible: false } }));
 }
 
 /**
@@ -364,7 +379,7 @@ function setupScreenReaderAnnouncements() {
  */
 export function updateElementAccessibility(element, attributes) {
   if (!element) return;
-  
+
   Object.entries(attributes).forEach(([attr, value]) => {
     if (value === null) {
       element.removeAttribute(attr);
@@ -388,13 +403,13 @@ export function announceToScreenReader(message, assertive = false) {
 // Create a focus trap for modal dialogs
 export function createFocusTrap(containerSelector) {
   const container = document.querySelector(containerSelector);
-  if (!container) return { activate: () => {}, deactivate: () => {} };
-  
+  if (!container) return { activate: () => { }, deactivate: () => { } };
+
   let focusableElements = [];
   let firstFocusableElement = null;
   let lastFocusableElement = null;
   let previousActiveElement = null;
-  
+
   const updateFocusableElements = () => {
     focusableElements = Array.from(
       container.querySelectorAll(
@@ -404,19 +419,19 @@ export function createFocusTrap(containerSelector) {
       const style = window.getComputedStyle(el);
       return style.display !== 'none' && style.visibility !== 'hidden' && !el.disabled;
     });
-    
+
     firstFocusableElement = focusableElements[0] || null;
     lastFocusableElement = focusableElements[focusableElements.length - 1] || null;
   };
-  
+
   const handleKeyDown = (e) => {
     if (e.key !== 'Tab') return;
-    
+
     // Update in case DOM has changed
     updateFocusableElements();
-    
+
     if (focusableElements.length === 0) return;
-    
+
     if (e.shiftKey) {
       // Tab backwards
       if (document.activeElement === firstFocusableElement) {
@@ -431,14 +446,14 @@ export function createFocusTrap(containerSelector) {
       }
     }
   };
-  
+
   return {
     activate: () => {
       previousActiveElement = document.activeElement;
       updateFocusableElements();
-      
+
       document.addEventListener('keydown', handleKeyDown);
-      
+
       // Set initial focus
       if (firstFocusableElement) {
         setTimeout(() => firstFocusableElement.focus(), 10);
@@ -446,7 +461,7 @@ export function createFocusTrap(containerSelector) {
     },
     deactivate: () => {
       document.removeEventListener('keydown', handleKeyDown);
-      
+
       // Restore focus
       if (previousActiveElement) {
         previousActiveElement.focus();

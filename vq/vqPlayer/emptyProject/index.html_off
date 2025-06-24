@@ -608,6 +608,72 @@ user interface resize
 //   setCoverStyle(coverRight, windowWidth - stageRect.right, stageRect.height, stageRect.right, stageRect.top);
 // }
 
+function recordTimeWatched() {
+  if (!state.video || state.watchStart === 0) return;
+
+  const currentTime = state.video.currentTime;
+
+  // Don't record if time hasn't changed
+  if (currentTime === state.lastTime) return;
+
+  // Calculate start and end times for this segment
+  const start = Math.min(currentTime, state.lastTime);
+  const end = Math.max(currentTime, state.lastTime);
+
+  // Add to watch data if segment is valid
+  if (end > start && end - start < 30) {
+    state.userData.watchData.push({
+      start,
+      end,
+      timestamp: Date.now()
+    });
+  }
+
+  // Update last time
+  state.lastTime = currentTime;
+  state.watchStart = Date.now();
+
+  // Save data periodically
+  if (Date.now() - state.lastSaved > config.timing.autoSaveInterval) {
+    saveWatchData();
+    state.lastSaved = Date.now();
+  }
+  console.log(userData.watchData);
+}
+
+function recordTimeWatched() {
+  if (!state.video || state.watchStart === 0) return;
+
+  const currentTime = state.video.currentTime;
+
+  // Don't record if time hasn't changed
+  if (currentTime === state.lastTime) return;
+
+  // Calculate start and end times for this segment
+  const start = Math.min(currentTime, state.lastTime);
+  const end = Math.max(currentTime, state.lastTime);
+
+  // Add to watch data if segment is valid
+  if (end > start && end - start < 30) {
+    for (let i = Math.floor(start); i < Math.ceil(end); i++) {
+      state.userData.watchData[i] = (state.userData.watchData[i] || 0) + 1;
+    }
+  }
+
+  // Update last time
+  state.lastTime = currentTime;
+  state.watchStart = Date.now();
+
+  // Save data periodically
+  if (Date.now() - state.lastSaved > config.timing.autoSaveInterval) {
+    saveWatchData();
+    state.lastSaved = Date.now();
+  }
+
+  // Debug: log watchData
+  console.log(state.userData.watchData);
+}
+
 Things you should do next:                                                                        │
 │                                                                                                     │
 │   1. Configure AI models (if needed) and add API keys to `.env`                                     │
@@ -627,3 +693,53 @@ Things you should do next:                                                      
 │   9. Ask Cursor to update all tasks from a specific task id based on new learnings or pivots in     │
 │   your project.                                                                                     │
 │   10. Ship it!         
+
+
+updateScore
+update this code block with the correct logic:
+export function updateScore() {
+  const video = document.getElementById('videoBox');
+  if (!video || isNaN(video.duration)) return;
+
+  let score = 0;
+  let watchedSeconds = 0;
+  const floorDuration = Math.floor(video.duration || 1);
+
+  // Initialize watchedSecondsArray if missing
+  if (!userData.watchedSecondsArray || userData.watchedSecondsArray.length !== floorDuration) {
+    userData.watchedSecondsArray = new Array(floorDuration).fill(0);
+  }
+
+  // Calculate how many seconds were watched
+  for (let i = 0; i < floorDuration; i++) {
+    if (userData.watchedSecondsArray[i] > 0) watchedSeconds++;
+  }
+
+  score += Math.round((watchedSeconds / floorDuration) * 1000);
+
+ // Add quiz question score
+  if (questions && Array.isArray(questions.questions) && questions.questions.length > 0) {
+    let questionScore = 0;
+    if (Array.isArray(userData.answerData)) {
+      for (let i = 0; i < userData.answerData.length; i++) {
+        questionScore += userData.answerData[i]?.score || 0;
+      }
+    }
+
+    const quizScore = Math.round((questionScore / questions.questions.length) * 1000);
+    score += quizScore;
+    userData.quizScore = quizScore / 10;
+  } else {
+    // No questions, give full weight to watch time
+    score *= 2;
+  }
+
+  // Update UI
+  const maxScore = 2000;
+  document.getElementById('scoreNum').textContent = score;
+  document.getElementById('scoreBar').style.width = (score / maxScore * 100) + "%";
+
+  // Update best score if needed
+  if (!userData.bestScore || score >= userData.bestScore) {
+    userData.bestScore = score;
+  }

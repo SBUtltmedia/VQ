@@ -22,15 +22,15 @@ export function initVideoPlayer(videoElement) {
   }
 
   state.video = videoElement;
-  
+
   if (state.video) {
-  state.video.addEventListener('pause', () => {
-    const timeDisplay = document.getElementById('timeDisplayText');
-    if (timeDisplay && window.announce) {
-      window.announce(`Paused at ${timeDisplay.textContent}`);
-    }
-  });
-}
+    state.video.addEventListener('pause', () => {
+      const timeDisplay = document.getElementById('timeDisplayText');
+      if (timeDisplay && window.announce) {
+        window.announce(`Paused at ${timeDisplay.textContent}`);
+      }
+    });
+  }
 
   // Set up event listeners
   videoElement.addEventListener('loadedmetadata', handleMetadataLoaded);
@@ -135,11 +135,17 @@ function initPlaybackSpeedControl() {
   const playbackSpeed = document.getElementById('playbackSpeed');
 
   if (playbackSpeed) {
+    // Set video playback speed on change
     playbackSpeed.addEventListener('change', () => {
       if (state.video) {
         state.video.playbackRate = parseFloat(playbackSpeed.value);
       }
     });
+
+    // Remove unnecessary role if set
+    if (playbackSpeed.getAttribute('role') === 'listbox') {
+      playbackSpeed.removeAttribute('role');
+    }
   }
 }
 
@@ -283,6 +289,8 @@ function handleVideoEnded() {
 /**
  * Handle video time update event
  */
+let watchedSeconds = new Set();
+
 function handleTimeUpdate() {
   if (!state.video || state.scrubbing) return;
 
@@ -290,11 +298,142 @@ function handleTimeUpdate() {
   updateTimeDisplay();
   checkQuestionTriggers();
 
-  // Record time watched periodically
+  // Periodic tracking
   state.checkCounter++;
   if (state.checkCounter >= config.timing.countSet) {
     recordTimeWatched();
     state.checkCounter = 0;
+  }
+
+  // Always update score
+  updateScore();
+}
+
+export function updateScore() {
+  const video = document.getElementById('videoBox');
+  if (!video || isNaN(video.duration)) return;
+
+  const floorDuration = Math.floor(video.duration || 1);
+  const maxVideoScore = config.scoring.maxVideoScore || 1000;
+  const maxQuestionScore = config.scoring.maxQuestionScore || 1000;
+  const maxScore = maxVideoScore + maxQuestionScore;
+
+  // --- Initialize watchedSecondsArray ---
+  if (!userData.watchedSecondsArray || userData.watchedSecondsArray.length !== floorDuration) {
+    userData.watchedSecondsArray = new Array(floorDuration).fill(0);
+  }
+
+  // --- Calculate video score ---
+  let watchedSeconds = 0;
+  for (let i = 0; i < floorDuration; i++) {
+    if (userData.watchedSecondsArray[i] > 0) watchedSeconds++;
+  }
+  const videoScore = Math.round((watchedSeconds / floorDuration) * maxVideoScore);
+
+  // --- Calculate quiz score ---
+  let quizScore = 0;
+  if (questions && Array.isArray(questions.questions) && questions.questions.length > 0) {
+    const questionCount = questions.questions.length;
+    let totalRawScore = 0;
+
+    if (Array.isArray(userData.answerData)) {
+      for (let i = 0; i < userData.answerData.length; i++) {
+        let rawScore = userData.answerData[i]?.score || 0;
+
+        // Normalize score if raw scale is over 1 (e.g., 0–10)
+        if (rawScore > 1) rawScore = rawScore / 10;
+
+        // Clamp to 0–1 to avoid overcounting
+        rawScore = Math.max(0, Math.min(1, rawScore));
+
+        totalRawScore += rawScore;
+      }
+    }
+
+    const normalizedScore = totalRawScore / questionCount;
+    quizScore = Math.round(normalizedScore * maxQuestionScore);
+    userData.quizScore = Math.round(quizScore / 10);
+  }
+
+  // --- Calculate total score (clamped to max) ---
+  const combinedScore = Math.min(videoScore + quizScore, maxScore);
+  state.userScore = combinedScore;
+
+  // --- Update score display ---
+  const scoreNum = document.getElementById('scoreNum');
+  if (scoreNum) {
+    scoreNum.textContent = state.userScore;
+  }
+
+  const scoreBar = document.getElementById('scoreBar');
+  if (scoreBar) {
+    const percent = Math.floor((state.userScore / maxScore) * 100);
+    scoreBar.style.width = `${Math.min(percent, 100)}%`;
+  }
+
+  // --- Best score tracking ---
+  if (!userData.bestScore || state.userScore > userData.bestScore) {
+    userData.bestScore = state.userScore;
+  }
+
+  // --- Trigger any follow-up medal updates ---
+  if (typeof updateMedals === 'function') {
+    updateMedals();
+  }
+}
+
+// export function updateScore() {
+//   const video = document.getElementById('videoBox');
+//   let score = 0;
+//   let watchedSeconds = 0;
+//   const floorDuration = Math.floor(video.duration || 1);
+
+//   // Calculate watched seconds
+//   for (let i = 0; i < floorDuration; i++) {
+//     if (userData.watchData[i] > 0) watchedSeconds++;
+//   }
+//   score += Math.round((watchedSeconds / floorDuration) * 1000);
+
+//   // Add quiz question score
+//   if (questions && questions.questions.length > 0) {
+//     let questionScore = 0;
+//     for (let i = 0; i < userData.answerData.length; i++) {
+//       questionScore += userData.answerData[i].score || 0;
+//     }
+//     const quizScore = Math.round((questionScore / questions.questions.length) * 1000);
+//     score += quizScore;
+//     userData.quizScore = quizScore / 10;
+//   } else {
+//     score *= 2;
+//   }
+
+//   const maxScore = 2000;
+//   score = Math.min(score, maxScore); // <-- Cap the score
+
+//   document.getElementById('scoreNum').textContent = score;
+//   document.getElementById('scoreBar').style.width = (score / maxScore * 100) + "%";
+
+//   if (score >= userData.bestScore || !userData.bestScore) {
+//     userData.bestScore = score;
+//   }
+//   updateMedals
+// }
+function updateMedals() {
+  const maxScore = config.scoring.maxVideoScore + config.scoring.maxQuestionScore;
+  const percentage = (state.userScore / maxScore) * 100;
+
+  // Bronze at 60%, Silver at 80%, Gold at 95%
+  const medals = document.querySelectorAll('.medal');
+
+  if (medals.length >= 3) {
+    // Bronze
+    medals[0].classList.toggle('medalEarned', percentage >= 60);
+
+    // Silver
+    medals[1].classList.toggle('medalEarned', percentage >= 80);
+
+    // Gold
+    medals[2].classList.toggle('medalEarned', percentage >= 95);
   }
 }
 
@@ -572,27 +711,40 @@ function recordTimeWatched() {
 
   const currentTime = state.video.currentTime;
 
-  // Don't record if time hasn't changed
+  // Skip if time hasn't changed
   if (currentTime === state.lastTime) return;
 
-  // Calculate start and end times for this segment
   const start = Math.min(currentTime, state.lastTime);
   const end = Math.max(currentTime, state.lastTime);
 
-  // Add to watch data if segment is valid
+  // Only record short jumps (under 30s)
   if (end > start && end - start < 30) {
-    state.userData.watchData.push({
+    // Push detailed watch log
+    userData.watchData.push({
       start,
       end,
       timestamp: Date.now()
     });
+
+    // Update watchedSecondsArray
+    const floorStart = Math.floor(start);
+    const floorEnd = Math.floor(end);
+    const videoDuration = Math.floor(state.video.duration || 1);
+
+    if (!userData.watchedSecondsArray || userData.watchedSecondsArray.length !== videoDuration) {
+      userData.watchedSecondsArray = new Array(videoDuration).fill(0);
+    }
+
+    for (let i = floorStart; i <= floorEnd && i < userData.watchedSecondsArray.length; i++) {
+      userData.watchedSecondsArray[i] = 1;
+    }
   }
 
-  // Update last time
+  // Update last watch state
   state.lastTime = currentTime;
   state.watchStart = Date.now();
 
-  // Save data periodically
+  // Periodic save
   if (Date.now() - state.lastSaved > config.timing.autoSaveInterval) {
     saveWatchData();
     state.lastSaved = Date.now();

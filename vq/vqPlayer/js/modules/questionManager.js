@@ -7,6 +7,7 @@ import config from './config.js';
 import state from './state.js';
 import { urlify } from './utils.js';
 import videoPlayer from './videoPlayer.js';
+import {updateScore} from './videoPlayer.js';
 
 // Private module variables
 let currentQuestionType = null;
@@ -235,6 +236,13 @@ export function makeQuestionButtons() {
     noQuestionText.style.opacity = questionCount > 0 ? 0 : 1;
   }
 
+  const markers = document.querySelectorAll('.questionMarker');
+markers.forEach((btn, idx) => {
+  btn.setAttribute('aria-label', `Question marker ${idx + 1}`);
+  btn.setAttribute('tabindex', '0');
+});
+
+
   // Force question buttons to be visible
   document.querySelectorAll('.questionButton').forEach(button => {
     button.style.visibility = 'visible';
@@ -244,6 +252,8 @@ export function makeQuestionButtons() {
 
   // Debug the button creation
   console.log('Created', document.querySelectorAll('.questionButton').length, 'buttons in buttonBank');
+
+  
 
   // Optimize tab order for better accessibility
   optimizeQuestionButtonsTabOrder();
@@ -421,7 +431,7 @@ function setupMultipleChoiceQuestion(question) {
         answerBox.style.opacity = 1;
         answerBox.style.pointerEvents = 'all';
         answerBox.setAttribute('tabindex', '0');
-        //answerBox.setAttribute('role', 'button');
+        answerBox.setAttribute('role', 'button');
         answerBox.setAttribute('aria-label', `${i + 1}: ${question.answerText[i]}`);
       } else {
         // This answer option doesn't exist, so hide it
@@ -1362,47 +1372,47 @@ export function animateAnswerCorrect(questionIndex) {
  * @param {number} points - Points to add
  * @param {number} [targetScore] - Optional target score
  */
-export function updateScore(points, targetScore) {
-  // Update user score
-  if (targetScore !== undefined) {
-    state.userScore = targetScore;
-  } else {
-    state.userScore += points;
-  }
+// export function updateScore(points, targetScore) {
+//   // Update user score
+//   if (targetScore !== undefined) {
+//     state.userScore = targetScore;
+//   } else {
+//     state.userScore += points;
+//   }
 
-  // Update score display
-  const scoreNum = document.getElementById('scoreNum');
-  if (scoreNum) {
-    scoreNum.textContent = state.userScore;
-  }
+//   // Update score display
+//   const scoreNum = document.getElementById('scoreNum');
+//   if (scoreNum) {
+//     scoreNum.textContent = state.userScore;
+//   }
 
-  // Update score bar
-  const scoreBar = document.getElementById('scoreBar');
-  if (scoreBar) {
-    const maxScore = config.scoring.maxVideoScore + config.scoring.maxQuestionScore;
-    const percent = Math.min(100, Math.floor((state.userScore / maxScore) * 100));
-    scoreBar.style.width = `${percent}%`;
-  }
+//   // Update score bar
+//   const scoreBar = document.getElementById('scoreBar');
+//   if (scoreBar) {
+//     const maxScore = config.scoring.maxVideoScore + config.scoring.maxQuestionScore;
+//     const percent = Math.min(100, Math.floor((state.userScore / maxScore) * 100));
+//     scoreBar.style.width = `${percent}%`;
+//   }
 
-  // Show points bubble if points were added
-  if (points > 0) {
-    const scoreBubble = document.getElementById('scoreBubble');
-    const scoreBubbleText = document.getElementById('scoreBubbleText');
+//   // Show points bubble if points were added
+//   if (points > 0) {
+//     const scoreBubble = document.getElementById('scoreBubble');
+//     const scoreBubbleText = document.getElementById('scoreBubbleText');
 
-    if (scoreBubble && scoreBubbleText) {
-      scoreBubbleText.textContent = `+${points}`;
-      scoreBubble.classList.remove('anim_scoreBubble');
+//     if (scoreBubble && scoreBubbleText) {
+//       scoreBubbleText.textContent = `+${points}`;
+//       scoreBubble.classList.remove('anim_scoreBubble');
 
-      // Force reflow to restart animation
-      void scoreBubble.offsetWidth;
+//       // Force reflow to restart animation
+//       void scoreBubble.offsetWidth;
 
-      scoreBubble.classList.add('anim_scoreBubble');
-    }
-  }
+//       scoreBubble.classList.add('anim_scoreBubble');
+//     }
+//   }
 
-  // Update medals based on score percentage
-  updateMedals();
-}
+//   // Update medals based on score percentage
+//   updateMedals();
+// }
 
 /**
  * Update medals based on score
