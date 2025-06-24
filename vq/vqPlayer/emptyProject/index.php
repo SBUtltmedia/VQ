@@ -182,7 +182,7 @@ header("Location: /shib/?shibtarget=$target");
         </div>
         <div id="cc" class="on btn" role="button" tabindex="0" aria-label="Toggle Closed Captions"></div>
         <div id="repair" class="text" role="button" tabindex="0" aria-label="Repair Captions">repair</div>
-        <!-- <div id="repairBox" role="dialog" aria-modal="true" aria-label="Caption Repair"> -->
+        <div id="repairBox" role="dialog" aria-modal="true" aria-label="Caption Repair">
           <form action="#">
             <textarea aria-label="Repair Caption Text"></textarea>
             <input type="hidden" id="startTime"/>
