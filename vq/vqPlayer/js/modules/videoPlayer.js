@@ -50,6 +50,15 @@ export function initVideoPlayer(videoElement) {
   if (videoElement.autoplay) {
     handleAutoplay();
   }
+  const ccButton = document.getElementById('cc');
+  if (ccButton && videoElement) {
+    ccButton.addEventListener('click', () => {
+      const tracks = videoElement.textTracks;
+      for (let i = 0; i < tracks.length; i++) {
+        tracks[i].mode = tracks[i].mode === 'showing' ? 'hidden' : 'showing';
+      }
+    });
+  }
 
   console.log('Video player initialized');
 }

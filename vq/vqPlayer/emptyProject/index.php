@@ -5,32 +5,32 @@ error_reporting(E_ALL);
 //IVQ outside of bookMaker
 session_start();
 if(array_key_exists("lis_person_name_given", $_POST)){
-        $_SESSION['mail']= $_POST['lis_person_contact_email_primary'];
-        $_SESSION['givenName']= $_POST['lis_person_name_given'];
-        $_SESSION['nickname']=  $_POST['lis_person_name_given'];;
-        $_SESSION['sn']=  $_POST['lis_person_name_family'];
-        $JSON_POST=json_encode($_POST);
-        print <<<EOT
-                <script src="js/grading.js"></script>
-                <script>
-              var  ses=$JSON_POST;
-        </script>
+  $_SESSION['mail']= $_POST['lis_person_contact_email_primary'];
+  $_SESSION['givenName']= $_POST['lis_person_name_given'];
+  $_SESSION['nickname']=  $_POST['lis_person_name_given'];;
+  $_SESSION['sn']=  $_POST['lis_person_name_family'];
+  $JSON_POST=json_encode($_POST);
+  print <<<EOT
+    <script src="js/grading.js"></script>
+    <script>
+        var  ses=$JSON_POST;
+  </script>
 EOT;
 }
 #else if(array_key_exists("mail",$_SESSION)){
 else if(isset($_SESSION['mail'])){
 }
 else{
-        if (!isset($_SERVER['cn']) && file_exists(".htaccess")){
-                $server= $_SERVER['SERVER_NAME'];
-                $target = "https://${server}${_SERVER['REQUEST_URI']}";
+  if (!isset($_SERVER['cn']) && file_exists(".htaccess")){
+    $server= $_SERVER['SERVER_NAME'];
+    $target = "https://${server}${_SERVER['REQUEST_URI']}";
 header("Location: /shib/?shibtarget=$target");        
 }
 }
 
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en-us">
 <head>
 <title>IVQ Player</title>
 <link rel="stylesheet" type="text/css" href="style.css" />
@@ -41,175 +41,171 @@ header("Location: /shib/?shibtarget=$target");
 <script  type="module" src="js/new-app.js" ></script> 
 <!-- <sxcript  type="module" src="modules/main.js" ></scxript> -->
 <script type="text/javascript" src="js/range-touch.js"></script>
-
 <!--    <script src='/login/js/lti.js'></script>			-->
-
-
-
 </head>
 
-<body role="document">
-  <div id="stageCover" role="presentation">
-    <div id="coverTop" class="cover stripes" role="presentation"></div>
-    <div id="coverBottom" class="cover stripes" role="presentation"></div>
-    <div id="coverLeft" class="cover stripes" role="presentation"></div>
-    <div id="coverRight" class="cover stripes" role="presentation"></div>
+<body>
+  <div id="stageCover">
+    <div id="coverTop" class="cover stripes"></div>
+    <div id="coverBottom" class="cover stripes"></div>
+    <div id="coverLeft" class="cover stripes"></div>
+    <div id="coverRight" class="cover stripes"></div>
   </div>
 
-  <div id="stage" class="screen" role="main" aria-label="Main Stage">
-    <div id="quiz" role="region" aria-label="Quiz">
-      <div id="videoPlayer" role="region" aria-label="Video Player">
-        <video id="videoBox" playsinline>
-          <source src="media/video.mp4" type="video/mp4">
-          <source src="media/video.m4v" type="video/mp4">
-          <p class="text fs-20">Loading video...</p>
-          <!-- Tracks are commented out -->
-        </video>
-        <div id="bigPlay" class="playState" role="button" tabindex="0" aria-label="Play/Pause"></div>
+  <div id="stage" class="screen">
+    <div id="quiz">
+      <div id="videoPlayer">
+  <video id="videoBox" playsinline>
+    <source src="media/video.mp4" type="video/mp4">
+    <source src="media/video.m4v" type="video/mp4">
+    <track kind="captions" src="media/video.vtt" srclang="en" label="English" default>
+    <p class="text fs-20">Loading video...</p>
+    <!-- Tracks are commented out -->
+  </video>
+  <div id="bigPlay" class="playState" tabindex="0"></div>
       </div>
-      <div id="quizTitle" class="text fs-26" role="heading" aria-level="2"></div>
-      <div id="toggleQuestionBox" class="rounded" role="button" tabindex="0" aria-label="Show/Hide Questions">
-        <div id="toggleQuestionBG" role="presentation"></div>
-        <div id="toggleQuestionText" class="text fs-18">Show/Hide Questions</div>
+      <div id="quizTitle" class="text fs-26"></div>
+      <div id="toggleQuestionBox" class="rounded" tabindex="0">
+  <div id="toggleQuestionBG"></div>
+  <div id="toggleQuestionText" class="text fs-18">Show/Hide Questions</div>
       </div>
-      <div id="bblink" role="region" aria-label="Grade Link"></div>
-      <div id="resetQuestionButton" class="btn" role="button" tabindex="0" aria-label="Reset Questions"></div>
-      <div id="resetQuestionBox" class="rounded" role="region" aria-label="Reset Questions Options">
-        <div id="resetQuestionBG" role="presentation"></div>
-        <div id="resetQuestionText" class="text fs-18">Reset Questions</div>
+      <div id="bblink"></div>
+      <div id="resetQuestionButton" class="btn" tabindex="0"></div>
+      <div id="resetQuestionBox" class="rounded">
+  <div id="resetQuestionBG"></div>
+  <div id="resetQuestionText" class="text fs-18">Reset Questions</div>
       </div>
-      <div id="videoSkip" role="button" tabindex="0" aria-label="Skip Video Sections"></div>
-      <div id="videoSkipBox" class="rounded" role="region" aria-label="Skip to Unwatched Sections">
-        <div id="videoSkipBG" role="presentation"></div>
-        <div id="videoSkipText" class="text fs-18">Skip to Unwatched Sections</div>
+      <div id="videoSkip" tabindex="0"></div>
+      <div id="videoSkipBox" class="rounded">
+  <div id="videoSkipBG"></div>
+  <div id="videoSkipText" class="text fs-18">Skip to Unwatched Sections</div>
       </div>
 
-      <div id="userInfoButton" class="btn" role="button" tabindex="0" aria-label="User Information"></div>
-      <div id="userInfoBox" class="rounded" role="region" aria-label="User Info">
-        <div id="userInfoBG" role="presentation"></div>
-        <div id="userInfoLogin" class="text fs-14">Signed in as [name].</div>
-        <div id="userInfoComplete" class="text fs-14">You have not completed this quiz yet.</div>
+      <div id="userInfoButton" class="btn" tabindex="0"></div>
+      <div id="userInfoBox" class="rounded">
+  <div id="userInfoBG"></div>
+  <div id="userInfoLogin" class="text fs-14">Signed in as [name].</div>
+  <div id="userInfoComplete" class="text fs-14">You have not completed this quiz yet.</div>
       </div>
-      <div id="scoreBox" role="region" aria-label="Score">
-        <div id="scoreLabel" class="text fs-15">SCORE</div>
-        <div id="scoreNum" class="text fs-30">0</div>
-        <div id="scoreBarBox" role="presentation">
-          <div id="scoreBar"></div>
-        </div>
-        <div id="medals" role="group" aria-label="Medals">
-          <div id="medal0" class="medal medalGray" role="img" aria-hidden="true"></div>
-          <div id="medal1" class="medal medalGray" role="img" aria-hidden="true"></div>
-          <div id="medal2" class="medal medalGray" role="img" aria-hidden="true"></div>
-        </div>
-        <div id="scoreBubble" role="status">
-          <div id="scoreBubbleText" class="text fs-25">+250</div>
-        </div>
+      <div id="scoreBox">
+  <div id="scoreLabel" class="text fs-15">SCORE</div>
+  <div id="scoreNum" class="text fs-30">0</div>
+  <div id="scoreBarBox">
+    <div id="scoreBar"></div>
+  </div>
+  <div id="medals">
+    <div id="medal0" class="medal medalGray"></div>
+    <div id="medal1" class="medal medalGray"></div>
+    <div id="medal2" class="medal medalGray"></div>
+  </div>
+  <div id="scoreBubble">
+    <div id="scoreBubbleText" class="text fs-25">+250</div>
+  </div>
       </div>
-      <div id="scoreInfo" role="region" aria-label="Score Information">
-        <div id="scoreInfoTitle" role="heading" aria-level="3">Scoring Information</div>
-        <div id="scoreInfoText">
-          The maximum score is 2000 points.
-          <br><br>
-          • Up to 1000 points can be earned by watching the video, based on the percentage of the video you've watched.
-          <br><br>
-          • Up to 1000 points can be earned by answering the questions correctly. However, answering a question incorrectly reduces the number of points earned.
-        </div>
+      <div id="scoreInfo" tabindex="0">
+  <div id="scoreInfoTitle">Scoring Information</div>
+  <div id="scoreInfoText">
+    The maximum score is 2000 points.
+    <br><br>
+    • Up to 1000 points can be earned by watching the video, based on the percentage of the video you've watched.
+    <br><br>
+    • Up to 1000 points can be earned by answering the questions correctly. However, answering a question incorrectly reduces the number of points earned.
+  </div>
       </div>
-      <div id="buttonBank" role="region" aria-label="Question Buttons"></div>
-      <div id="quizBank" role="dialog" aria-label="Quiz Bank">
-        <div id="questionBox" role="region" aria-label="Question Panel">
-          <div id="questionBoxContents">
-            <div id="questionBoxBG" class="rounded" role="presentation"></div>
-            <div id="questionText" class="text fs-40" role="heading" aria-level="2"></div>
-            <div id="fillInPanels" role="group" aria-label="Fill-in Panels"></div>
-            <textarea id="fillInAnswer" class="rounded text fs-50" aria-label="Answer Input"></textarea>
-            <div id="expoBox" class="rounded" role="alert">
-              <div id="expoTitle" class="text fs-60" role="heading" aria-level="3">Correct</div>
-              <div id="expoText" class="text fs-30" role="status"></div>
-              <div id="expoButtons" role="group" aria-label="Explanatory Options">
-                <div id="expoButtonReview" class="expoButton rounded" role="button" tabindex="0" aria-label="Review">
-                  <div class="expoButtonText text fs-30">Review</div>
-                </div>
-                <div id="expoButtonRetry" class="expoButton rounded" role="button" tabindex="0" aria-label="Retry">
-                  <div class="expoButtonText text fs-30">Retry</div>
-                </div>
-                <div id="expoButtonContinue" class="expoButton rounded" role="button" tabindex="0" aria-label="Continue">
-                  <div class="expoButtonText text fs-30">Continue</div>
-                </div>
-              </div>
-            </div>
-            <div id="hideQuestionButton" class="btn" role="button" tabindex="0" aria-label="Show Video">
-              <div id="hideQuestionButtonLabel">
-                <div id="hideQuestionButtonBG" class="rounded" role="presentation"></div>
-                <div id="hideQuestionButtonText" class="text fs-18">Show Video</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="smallQuestionBox" role="region" aria-label="Small Question Panel">
-        <div id="smallQuestionBoxBG" role="presentation"></div>
-        <div id="smallQuestionText" class="text fs-35"></div>
-        <div id="showQuestionButton" class="btn" role="button" tabindex="0" aria-label="Hide Video">
-          <div id="showQuestionButtonLabel">
-            <div id="showQuestionButtonBG" class="rounded" role="presentation"></div>
-            <div id="showQuestionButtonText" class="text fs-17">Hide Video</div>
-          </div>
-        </div>
-      </div>
-      <div id="videoControls" role="region" aria-label="Video Controls">
-        <div id="videoPlayPause" class="playPause playState btn" role="button" tabindex="0" aria-label="Play/Pause"></div>
-        <input id="seekSlider" type="range" min="0" max="100" value="0" step="0.05" aria-label="Seek Slider">
-        <div id="seekSliderBG" class="fakeSlider" role="presentation">
-          <div id="seekSliderTrack" role="presentation">
-            <div id="seekSliderThumb" role="presentation"></div>
-          </div>
-        </div>
-        <div id="questionMarkers" role="group" aria-label="Question Markers"></div>
-        <div id="toggleQuestionButton" class="btn" role="button" tabindex="0" aria-label="Toggle Questions"></div>
-        <div id="timeDisplay">
-          <div id="timeDisplayText" class="text fs-23"></div>
-          <select id="playbackSpeed" class="text fs-15" aria-label="Playback Speed">
-            <option value="0.25">0.25x</option>
-            <option value="0.5">0.5x</option>
-            <option value="0.75">0.75x</option>
-            <option value="1" selected="selected">1x</option>
-            <option value="1.25">1.25x</option>
-            <option value="1.5">1.5x</option>
-            <option value="1.75">1.75x</option>
-            <option value="2">2x</option>
-          </select>
-        </div>
-        <div id="cc" class="on btn" role="button" tabindex="0" aria-label="Toggle Closed Captions"></div>
-        <div id="repair" class="text" role="button" tabindex="0" aria-label="Repair Captions">repair</div>
-        <div id="repairBox" role="dialog" aria-modal="true" aria-label="Caption Repair">
-          <form action="#">
-            <textarea aria-label="Repair Caption Text"></textarea>
-            <input type="hidden" id="startTime"/>
-            <input type="submit" value="ok"/>
-          <form>
-        </div>
-        <div id="muteButton" class="btn muteOff" role="button" tabindex="0" aria-label="Mute/Unmute"></div>
-        <input id="volumeSlider" type="range" min="0" max="100" value="100" step="1" aria-label="Volume Slider">
-        <div id="volumeSliderBG" class="fakeSlider" role="presentation">
-          <div id="volumeSliderTrack" role="presentation">
-            <div id="volumeSliderThumb" role="presentation"></div>
-          </div>
-        </div>
-      </div>
-      <div id="gameCompleteText" class="text fs-25" role="alert"></div>
-      <div id="noQuestionText" class="text fs-25" role="status" aria-live="polite"></div>
+      <div id="buttonBank"></div>
+      <div id="quizBank">
+  <div id="questionBox">
+    <div id="questionBoxContents">
+      <div id="questionBoxBG" class="rounded"></div>
+      <div id="questionText" class="text fs-40"></div>
+      <div id="fillInPanels"></div>
+      <textarea id="fillInAnswer" class="rounded text fs-50"></textarea>
+      <div id="expoBox" class="rounded">
+        <div id="expoTitle" class="text fs-60">Correct</div>
+        <div id="expoText" class="text fs-30"></div>
+        <div id="expoButtons">
+    <div id="expoButtonReview" class="expoButton rounded" tabindex="0">
+      <div class="expoButtonText text fs-30">Review</div>
     </div>
-    <div id="blocker" role="alertdialog" aria-labelledby="blockerTitle" aria-describedby="blockerSubtitle">
-      <div id="blockerText" role="document">
-        <div id="blockerTitle" class="text fs-150" role="heading" aria-level="1">Locked</div>
-        <div id="blockerSubtitle" class="text fs-50">
-          This quiz has been made private by its author.<br>
-          To view it, you must receive permission from the author.
+    <div id="expoButtonRetry" class="expoButton rounded" tabindex="0">
+      <div class="expoButtonText text fs-30">Retry</div>
+    </div>
+    <div id="expoButtonContinue" class="expoButton rounded" tabindex="0">
+      <div class="expoButtonText text fs-30">Continue</div>
+    </div>
         </div>
+      </div>
+      <div id="hideQuestionButton" class="btn" tabindex="0">
+        <div id="hideQuestionButtonLabel">
+    <div id="hideQuestionButtonBG" class="rounded"></div>
+    <div id="hideQuestionButtonText" class="text fs-18">Show Video</div>
+        </div>
+      </div>
+    </div>
+  </div>
+      </div>
+      <div id="smallQuestionBox">
+  <div id="smallQuestionBoxBG"></div>
+  <div id="smallQuestionText" class="text fs-35"></div>
+  <div id="showQuestionButton" class="btn" tabindex="0">
+    <div id="showQuestionButtonLabel">
+      <div id="showQuestionButtonBG" class="rounded"></div>
+      <div id="showQuestionButtonText" class="text fs-17">Hide Video</div>
+    </div>
+  </div>
+      </div>
+      <div id="videoControls">
+  <div id="videoPlayPause" class="playPause playState btn" tabindex="0"></div>
+  <input id="seekSlider" type="range" min="0" max="100" value="0" step="0.05">
+  <div id="seekSliderBG" class="fakeSlider">
+    <div id="seekSliderTrack">
+      <div id="seekSliderThumb"></div>
+    </div>
+  </div>
+  <div id="questionMarkers"></div>
+  <div id="toggleQuestionButton" class="btn" tabindex="0"></div>
+  <div id="timeDisplay">
+    <div id="timeDisplayText" class="text fs-23"></div>
+    <select id="playbackSpeed" class="text fs-15">
+      <option value="0.25">0.25x</option>
+      <option value="0.5">0.5x</option>
+      <option value="0.75">0.75x</option>
+      <option value="1" selected="selected">1x</option>
+      <option value="1.25">1.25x</option>
+      <option value="1.5">1.5x</option>
+      <option value="1.75">1.75x</option>
+      <option value="2">2x</option>
+    </select>
+  </div>
+  <div id="cc" class="on btn" tabindex="0"></div>
+  <div id="repair" class="text" tabindex="0">repair</div>
+  <div id="repairBox">
+    <form action="#">
+      <textarea></textarea>
+      <input type="hidden" id="startTime"/>
+      <input type="submit" value="ok"/>
+    <form>
+  </div>
+  <div id="muteButton" class="btn muteOff" tabindex="0"></div>
+  <input id="volumeSlider" type="range" min="0" max="100" value="100" step="1">
+  <div id="volumeSliderBG" class="fakeSlider">
+    <div id="volumeSliderTrack">
+      <div id="volumeSliderThumb"></div>
+    </div>
+  </div>
+      </div>
+      <div id="gameCompleteText" class="text fs-25"></div>
+      <div id="noQuestionText" class="text fs-25"></div>
+    </div>
+    <div id="blocker">
+      <div id="blockerText">
+  <div id="blockerTitle" class="text fs-150">Locked</div>
+  <div id="blockerSubtitle" class="text fs-50">
+    This quiz has been made private by its author.<br>
+    To view it, you must receive permission from the author.
+  </div>
       </div>
     </div>
   </div>
 </body>
-
 </html>

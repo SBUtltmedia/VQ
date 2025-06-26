@@ -88,6 +88,7 @@ export function prepareQuestionScreen() {
     answerIcon.id = `answerIcon${i}`;
     answerIcon.className = 'answerIcon btn';
     answerIcon.setAttribute('role', 'img');
+    answerIcon.setAttribute('tabindex', '-1')
     answerIcon.setAttribute('aria-hidden', 'true');
 
     const answerText = document.createElement('div');
@@ -1003,9 +1004,11 @@ export function showQuestionPanel() {
 
   // Make question panel visible
   const quizBank = document.getElementById('quizBank');
+  const videoControls = document.getElementById('videoControls')
   if (quizBank) {
     quizBank.style.display = 'block';
     quizBank.classList.add('question-active');
+    videoControls.setAttribute('inert', '');
   }
 
   // Set state
@@ -1125,9 +1128,12 @@ export function hideQuestionPanel() {
 
   // Hide quiz bank
   const quizBank = document.getElementById('quizBank');
+  const videoControls = document.getElementById('videoControls')
   if (quizBank) {
     quizBank.style.display = 'none';
     quizBank.classList.remove('question-active');
+    videoControls.removeAttribute('inert');
+
 
   }
 
