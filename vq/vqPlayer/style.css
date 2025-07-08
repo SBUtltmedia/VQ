@@ -19,11 +19,11 @@ input[type="range"]::-moz-range-track {
     background-color: #CCC;
 }
 
-.cover {
+/* .cover {
     position: absolute;
     background-color: black;
     z-index: 1000000;
-}
+} */
 
 input {
     border: none;
@@ -38,12 +38,12 @@ input:focus {
     cursor: pointer;
 }
 
-#stageCover {
+/* #stageCover {
     width: 100%;
     height: 100%;
     position: absolute;
-    /* pointer-events: none; remember to delete */
-}
+   
+} */
 
 #quizBank {
     width: 100%;
@@ -236,69 +236,6 @@ input:focus {
     color: black;
 }
 
-#resetQuestionButton {
-    width: 5%;
-    height: 4%;
-    left: 88%;
-    top: 88%;
-    position: absolute;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-image: url(img/reset_questions.svg);
-    z-index: 1000;
-    /*visibility: hidden;*/
-}
-
-#resetQuestionBox,
-#videoSkipBox {
-  width: 15%;
-  height: 4%;
-  z-index: 50;
-  position: absolute;
-  opacity: 0;
-  overflow: hidden;
-  pointer-events: none; /* KEY FIX: Makes boxes click-through when hidden */
-  transition: opacity 0.3s ease; /* Smooth fade transition */
-}
-
-#videoSkipBox {
-  left: 70.5%;
-  top: 90%;
-}
-
-#resetQuestionBox {
-  left: 83.5%;
-  top: 93%;
-}
-
-/* Show boxes on hover */
-#resetQuestionBox:hover,
-#videoSkipBox:hover {
-  opacity: 1;
-  pointer-events: auto; /* Re-enable clicking when visible */
-}
-
-#resetQuestionBG,
-#videoSkipBG {
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  background-color: white;
-  opacity: .75;
-}
-
-#resetQuestionText,
-#videoSkipText {
-  width: 90%;
-  top: 20%;
-  left: 5%;
-  position: absolute;
-  display: block;
-  z-index: 0;
-  text-align: center;
-  color: black;
-}
 
 
 
@@ -589,9 +526,12 @@ input:focus {
     opacity: 0;
     z-index: 500;
 }
+
 .question-active #questionBox {
-  z-index: 2000; /* higher than bigPlay */
-  position: absolute; /* or absolute/fixed as needed */
+    z-index: 2000;
+    /* higher than bigPlay */
+    position: absolute;
+    /* or absolute/fixed as needed */
 }
 
 #questionBoxContents {
@@ -682,8 +622,10 @@ input:focus {
     position: absolute;
     overflow-x: hidden;
     overflow-y: auto;
-    font-size: 1rem; /* Use rem for font size */
-    padding: 0.5rem;   /* Use rem for padding if needed */
+    font-size: 1rem;
+    /* Use rem for font size */
+    padding: 0.5rem;
+    /* Use rem for padding if needed */
 }
 
 .answerBox {
@@ -691,7 +633,8 @@ input:focus {
     height: 12%;
     left: 10%;
     position: absolute;
-    display: flex; /* Use flex for easier alignment */
+    display: flex;
+    /* Use flex for easier alignment */
     align-items: center;
 }
 
@@ -747,9 +690,12 @@ input:focus {
     font-size: 0.75rem;
     padding: 0.5rem;
     box-sizing: border-box;
-    position: relative; /* Not absolute, so it sits next to the icon */
-    left: 0; /* Not needed with flexbox */
-    top: 0;  /* Not needed with flexbox */
+    position: relative;
+    /* Not absolute, so it sits next to the icon */
+    left: 0;
+    /* Not needed with flexbox */
+    top: 0;
+    /* Not needed with flexbox */
     display: flex;
     align-items: center;
 }
@@ -1484,46 +1430,164 @@ input:focus {
     -webkit-animation: gameCompleteTextShow .25s 0s 1 cubic-bezier(0, .5, .5, 1) normal forwards;
 }
 
+/* Container for all video controls */
+/* Main container for video controls */
 #videoControls {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    /* justify-content: center; */
     width: 100%;
     height: 5%;
-    left: 0%;
-    top: 82.5%;
     position: absolute;
+    left: 0;
+    top: 82.5%;
+    background: transparent;
+    z-index: 1000;
 }
 
-#videoPlayPause {
-    width: 3.75%;
+/* Shared button style for all controls */
+.videoControlBtn {
+    width: 3.75vw;
     height: 100%;
-    left: 2.5%;
-    top: 0%;
-    position: absolute;
+    left: 30%;
+    /* margin: 0 1vw; */
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#videoSkip {
-    z-index: 1000;
-    width: 3.9%;
-    height: 5%;
-    left: 72.5%;
-    top: 82.5%;
+/* Individual button backgrounds */
+#videoPlayPause.videoControlBtn {
+    background-image: url(img/button_play.svg); /* or toggle with JS */
+}
+
+#resetQuestionButton.videoControlBtn {
+    background-image: url(img/reset_questions.svg);
+}
+
+#videoSkip.videoControlBtn {
+    background-image: url(img/button_skip.svg);
+}
+
+/* Remove absolute positioning from buttons */
+#videoPlayPause
+/* #resetQuestionButton, */ {
     position: absolute;
+    width: 3.75vw;
+    height: 100%;
+    left: 1%;         /* Adjust as needed for your layout */
+    top: 0%;        /* Match the top of other controls */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(img/button_play.svg); /* or toggle with JS */
+    border-radius: 50%;
+    z-index: 1050;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#videoSkip {
+    position: absolute;
+    width: 3.9%;
+    height: 100%;
+    left: 72.5%;
+    top: 0%;         /* Use the same top as #cc and #resetQuestionButton for alignment */
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     background-image: url(img/button_skip.svg);
+    border-radius: 50%;
+    z-index: 1050;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#resetQuestionButton {
+  
+    position: absolute;
+    width: 5%;
+    height: 100%;
+    right: 2%;         /* Match #resetQuestionBox */
+    /* left: 88%; */
+    top: 74%;        /* 2vw (box) + 5vw (button height) - adjust as needed */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(img/reset_questions.svg);
+    border-radius: 50%;
+    z-index: 1050;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#videoSkipText {
+
+/* Optional: Adjust text inside skip/reset boxes */
+#resetQuestionBox,
+#videoSkipBox {
+    width: 15%;
+    height: 4%;
+    z-index: 50;
+    position: absolute;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+#videoSkipBox {
+    left: 70.5%;
+    top: 90%;
+}
+
+#resetQuestionBox {
+    left: 83.5%;
+    top: 93%;
+}
+
+/* Show boxes on hover */
+#resetQuestionBox:hover,
+#videoSkipBox:hover {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#resetQuestionBG,
+#videoSkipBG {
     width: 100%;
     height: 100%;
-    top: 0%;
-    position: absolute;
-    z-index: 1000;
+    z-index: 0;
+    background-color: white;
+    opacity: .75;
 }
+
+#resetQuestionText,
+#videoSkipText {
+    width: 90%;
+    top: 20%;
+    left: 5%;
+    position: absolute;
+    display: block;
+    z-index: 0;
+    text-align: center;
+    color: black;
+}
+
+
+
 
 
 .playState {
@@ -1634,6 +1698,7 @@ input:focus {
     top: 0%;
     position: absolute;
 }
+
 
 #timeDisplayText {
     width: 100%;
@@ -2022,13 +2087,16 @@ input[type=range]:focus {
 .medalGray {
     background-image: url(img/star_gray.svg);
 }
-#medal0{
+
+#medal0 {
     left: 47.5%;
 }
-#medal1{
+
+#medal1 {
     left: 62.5%
 }
-#medal2{
+
+#medal2 {
     left: 77.5%;
 }
 
@@ -2177,13 +2245,14 @@ input[type=range]:focus {
 
 
 #bigPlay {
-    
+
     position: absolute;
     width: 100%;
     height: 100%;
     opacity: .05;
     background-repeat: no-repeat;
-    z-index: 1000;           /* Lower default z-index */
+    z-index: 1000;
+    /* Lower default z-index */
     pointer-events: auto;
     background-position: center;
     transition: opacity 0.2s;
@@ -2191,9 +2260,9 @@ input[type=range]:focus {
 
 
 .question-active #bigPlay {
-  pointer-events: none !important;
-  opacity: 0.3 !important;
-  z-index: 1 !important;
+    pointer-events: none !important;
+    opacity: 0.3 !important;
+    z-index: 1 !important;
 }
 
 

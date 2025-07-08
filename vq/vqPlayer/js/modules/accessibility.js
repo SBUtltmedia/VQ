@@ -36,7 +36,7 @@ function enhanceAriaAttributes() {
       if (element.id.includes('Button')) {
         element.setAttribute('role', 'button');
       } else if (element.id.includes('panel') || element.id.includes('Panel')) {
-        element.setAttribute('role', 'region');
+        element.setAttribute('role', 'form');
       }
     }
 
@@ -65,6 +65,14 @@ function enhanceVideoPlayerAccessibility() {
   if (videoElement) {
     videoElement.setAttribute('aria-label', 'Video Player');
 
+    //big play button
+    // const bigPlayBtn = document.getElementById('bigPlay');
+    // if (bigPlayBtn) {
+    //   bigPlayBtn.setAttribute('role', 'button');
+    //   bigPlayBtn.setAttribute('tabindex', '0');
+    //   bigPlayBtn.setAttribute('aria-label', 'Play Video');
+    // }
+
     // Ensure captions are properly labeled
     const tracks = videoElement.querySelectorAll('track');
     tracks.forEach(track => {
@@ -77,7 +85,7 @@ function enhanceVideoPlayerAccessibility() {
   // Video controls
   const controls = document.getElementById('videoControls');
   if (controls) {
-    controls.setAttribute('role', 'group');
+    controls.setAttribute('role', 'navigation');
     controls.setAttribute('aria-label', 'Video Controls');
   }
 
@@ -154,7 +162,7 @@ function enhanceQuestionAccessibility() {
   // Question Bank
   const quizBank = document.getElementById('quizBank');
   if (quizBank) {
-    quizBank.setAttribute('role', 'dialog');
+    quizBank.setAttribute('role', 'main');
     quizBank.setAttribute('aria-modal', 'true');
     quizBank.setAttribute('aria-labelledby', 'questionText');
   }
@@ -166,6 +174,17 @@ function enhanceQuestionAccessibility() {
     questionText.setAttribute('aria-level', '2');
   }
 
+  // Question box
+  const questionBox = document.getElementById('questionBox');
+  if (questionBox) {
+    questionBox.setAttribute('role', 'contentinfo');
+  }
+  //small question box
+  const smallQuestionBox = document.getElementById('smallQuestionBox');
+  if (smallQuestionBox) {
+    smallQuestionBox.setAttribute('role', 'navigation');
+  }
+
   // Question buttons
   document.querySelectorAll('[id^="questionButton"]').forEach((button, index) => {
     button.setAttribute('role', 'button');
@@ -173,6 +192,12 @@ function enhanceQuestionAccessibility() {
     button.setAttribute('aria-label', `Question ${index + 1}`);
     button.setAttribute('aria-controls', 'quizBank');
   });
+
+  // Score box
+  const scoreBox = document.getElementById('scoreBox');
+  if (scoreBox) {
+    scoreBox.setAttribute('role', 'complementary');
+  }
 
   // Answer boxes
   document.querySelectorAll('[id^="answerBox"]').forEach((box, index) => {

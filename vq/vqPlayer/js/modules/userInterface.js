@@ -399,7 +399,7 @@ function addVideoControlsBehavior() {
     videoPlayer.addEventListener('mouseleave', () => {
       if (!state.video || !state.video.paused) {
         controlsTimeout = setTimeout(() => {
-          videoControls.style.opacity = '0';
+          videoControls.style.opacity = '1';
         }, 2000);
       }
     });
@@ -411,7 +411,7 @@ function addVideoControlsBehavior() {
 
       if (!state.video || !state.video.paused) {
         controlsTimeout = setTimeout(() => {
-          videoControls.style.opacity = '0';
+          videoControls.style.opacity = '1';
         }, 2000);
       }
     });

@@ -15,26 +15,26 @@ function resizeWindow() {
     const h = window.innerHeight;
 
     let stageWidth, stageHeight, stageLeft, stageTop;
-    let coverTop, coverBottom, coverLeft, coverRight;
+    // let coverTop, coverBottom, coverLeft, coverRight;
 
     if ((w / h) >= 4 / 3) {
         stageHeight = h;
         stageWidth = (4 / 3) * h;
         stageLeft = (w - stageWidth) / 2;
         stageTop = 0;
-        coverTop = 0;
-        coverBottom = 0;
-        coverLeft = stageLeft;
-        coverRight = stageLeft;
+        // coverTop = 0;
+        // coverBottom = 0;
+        // coverLeft = stageLeft;
+        // coverRight = stageLeft;
     } else {
         stageWidth = w;
         stageHeight = (3 / 4) * w;
         stageTop = (h - stageHeight) / 2;
         stageLeft = 0;
-        coverTop = stageTop;
-        coverBottom = stageTop;
-        coverLeft = 0;
-        coverRight = 0;
+        // coverTop = stageTop;
+        // coverBottom = stageTop;
+        // coverLeft = 0;
+        // coverRight = 0;
     }
 
     $(".screen").css({
@@ -44,33 +44,33 @@ function resizeWindow() {
         top: `${stageTop}px`
     });
 
-    $("#coverTop").css({
-        width: `${w}px`,
-        height: `${coverTop}px`,
-        top: "0px",
-        left: "0px"
-    });
+    // $("#coverTop").css({
+    //     width: `${w}px`,
+    //     height: `${coverTop}px`,
+    //     top: "0px",
+    //     left: "0px"
+    // });
 
-    $("#coverBottom").css({
-        width: `${w}px`,
-        height: `${coverBottom}px`,
-        top: `${h - coverBottom}px`,
-        left: "0px"
-    });
+    // $("#coverBottom").css({
+    //     width: `${w}px`,
+    //     height: `${coverBottom}px`,
+    //     top: `${h - coverBottom}px`,
+    //     left: "0px"
+    // });
 
-    $("#coverLeft").css({
-        width: `${coverLeft}px`,
-        height: `${h}px`,
-        top: "0px",
-        left: "0px"
-    });
+    // $("#coverLeft").css({
+    //     width: `${coverLeft}px`,
+    //     height: `${h}px`,
+    //     top: "0px",
+    //     left: "0px"
+    // });
 
-    $("#coverRight").css({
-        width: `${coverRight}px`,
-        height: `${h}px`,
-        top: "0px",
-        left: `${w - coverRight}px`
-    });
+    // $("#coverRight").css({
+    //     width: `${coverRight}px`,
+    //     height: `${h}px`,
+    //     top: "0px",
+    //     left: `${w - coverRight}px`
+    // });
 
     // Corner radii
     const cornerSize = 0.025 * stageHeight;

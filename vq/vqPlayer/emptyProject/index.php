@@ -45,14 +45,14 @@ header("Location: /shib/?shibtarget=$target");
 </head>
 
 <body>
-  <div id="stageCover">
+  <!-- <div id="stageCover" role = "main">
     <div id="coverTop" class="cover stripes"></div>
     <div id="coverBottom" class="cover stripes"></div>
     <div id="coverLeft" class="cover stripes"></div>
     <div id="coverRight" class="cover stripes"></div>
-  </div>
+  </div> -->
 
-  <div id="stage" class="screen">
+  <div id="stage" class="screen" role = "main">
     <div id="quiz">
       <div id="videoPlayer">
   <video id="videoBox" playsinline>
@@ -62,25 +62,24 @@ header("Location: /shib/?shibtarget=$target");
     <p class="text fs-20">Loading video...</p>
     <!-- Tracks are commented out -->
   </video>
-  <div id="bigPlay" class="playState" tabindex="0"></div>
+  <div id="bigPlay" class="playState" role="button" aria-label="Play Video" tabindex="0"></div>
       </div>
-      <div id="quizTitle" class="text fs-26"></div>
+      <div id="quizTitle" role = "heading" aria-level="1" class="text fs-26"></div>
       <div id="toggleQuestionBox" class="rounded" tabindex="0">
   <div id="toggleQuestionBG"></div>
   <div id="toggleQuestionText" class="text fs-18">Show/Hide Questions</div>
       </div>
       <div id="bblink"></div>
-      <div id="resetQuestionButton" class="btn" tabindex="0"></div>
+      <!-- <div id="resetQuestionButton" class="btn" tabindex="0"></div> -->
       <div id="resetQuestionBox" class="rounded">
   <div id="resetQuestionBG"></div>
   <div id="resetQuestionText" class="text fs-18">Reset Questions</div>
       </div>
-      <div id="videoSkip" tabindex="0"></div>
+      <!-- <div id="videoSkip" tabindex="0"></div> -->
       <div id="videoSkipBox" class="rounded">
   <div id="videoSkipBG"></div>
   <div id="videoSkipText" class="text fs-18">Skip to Unwatched Sections</div>
       </div>
-
       <div id="userInfoButton" class="btn" tabindex="0"></div>
       <div id="userInfoBox" class="rounded">
   <div id="userInfoBG"></div>
@@ -112,12 +111,76 @@ header("Location: /shib/?shibtarget=$target");
     • Up to 1000 points can be earned by answering the questions correctly. However, answering a question incorrectly reduces the number of points earned.
   </div>
       </div>
-      <div id="buttonBank"></div>
-      <div id="quizBank">
-  <div id="questionBox">
+      <!-- <div id="buttonBank"></div> -->
+  <div id="videoControls" role="group" aria-label="Video Controls">
+  <div id="videoPlayPause" class="playPause playState btn videoControlBtn" role="button" aria-label="Play or Pause Video" tabindex="2"></div>
+  <div id="resetQuestionButton" class="btn" role="button" aria-label="Reset Questions" tabindex="2"></div>
+  
+  <div id="resetQuestionBox" class="rounded">
+    <div id="resetQuestionBG"></div>
+    <div id="resetQuestionText" class="text fs-18">Reset Questions</div>
+  </div>
+  
+  <div id="videoSkip" tabindex="2"></div>
+  <div id="videoSkipBox" class="rounded">
+    <div id="videoSkipBG"></div>
+    <div id="videoSkipText" class="text fs-18">Skip to Unwatched Sections</div>
+  </div>
+  
+  <input id="seekSlider" type="range" min="0" max="100" value="0" step="0.05">
+  <div id="seekSliderBG" class="fakeSlider">
+    <div id="seekSliderTrack">
+      <div id="seekSliderThumb"></div>
+    </div>
+  </div>
+
+  <div id="questionMarkers"></div>
+  <div id="toggleQuestionButton" class="btn" tabindex="0"></div>
+
+  <div id="timeDisplay">
+    <div id="timeDisplayText" class="text fs-23"></div>
+    <select id="playbackSpeed" class="text fs-15">
+      <option value="0.25">0.25x</option>
+      <option value="0.5">0.5x</option>
+      <option value="0.75">0.75x</option>
+      <option value="1" selected="selected">1x</option>
+      <option value="1.25">1.25x</option>
+      <option value="1.5">1.5x</option>
+      <option value="1.75">1.75x</option>
+      <option value="2">2x</option>
+    </select>
+  </div>
+
+  <div id="cc" class="on btn" tabindex="0"></div>
+  <div id="repair" class="text" tabindex="0">repair</div>
+  
+  <div id="repairBox">
+    <form action="#">
+      <textarea></textarea>
+      <input type="hidden" id="startTime"/>
+      <input type="submit" value="ok"/>
+    </form>
+  </div>
+
+  <div id="muteButton" class="btn muteOff" tabindex="0"></div>
+  <input id="volumeSlider" type="range" min="0" max="100" value="100" step="1">
+  
+  <div id="volumeSliderBG" class="fakeSlider">
+    <div id="volumeSliderTrack">
+      <div id="volumeSliderThumb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- buttonBank is now outside videoControls -->
+<div id="buttonBank"></div>
+
+
+    <div id="quizBank">
+  <div id="questionBox" role = "form">
     <div id="questionBoxContents">
       <div id="questionBoxBG" class="rounded"></div>
-      <div id="questionText" class="text fs-40"></div>
+      <div id="questionText" class="text fs-40" role = "heading" aria-level="2"></div>
       <div id="fillInPanels"></div>
       <textarea id="fillInAnswer" class="rounded text fs-50"></textarea>
       <div id="expoBox" class="rounded">
@@ -154,44 +217,7 @@ header("Location: /shib/?shibtarget=$target");
     </div>
   </div>
       </div>
-      <div id="videoControls">
-  <div id="videoPlayPause" class="playPause playState btn" tabindex="0"></div>
-  <input id="seekSlider" type="range" min="0" max="100" value="0" step="0.05">
-  <div id="seekSliderBG" class="fakeSlider">
-    <div id="seekSliderTrack">
-      <div id="seekSliderThumb"></div>
-    </div>
-  </div>
-  <div id="questionMarkers"></div>
-  <div id="toggleQuestionButton" class="btn" tabindex="0"></div>
-  <div id="timeDisplay">
-    <div id="timeDisplayText" class="text fs-23"></div>
-    <select id="playbackSpeed" class="text fs-15">
-      <option value="0.25">0.25x</option>
-      <option value="0.5">0.5x</option>
-      <option value="0.75">0.75x</option>
-      <option value="1" selected="selected">1x</option>
-      <option value="1.25">1.25x</option>
-      <option value="1.5">1.5x</option>
-      <option value="1.75">1.75x</option>
-      <option value="2">2x</option>
-    </select>
-  </div>
-  <div id="cc" class="on btn" tabindex="0"></div>
-  <div id="repair" class="text" tabindex="0">repair</div>
-  <div id="repairBox">
-    <form action="#">
-      <textarea></textarea>
-      <input type="hidden" id="startTime"/>
-      <input type="submit" value="ok"/>
-    <form>
-  </div>
-  <div id="muteButton" class="btn muteOff" tabindex="0"></div>
-  <input id="volumeSlider" type="range" min="0" max="100" value="100" step="1">
-  <div id="volumeSliderBG" class="fakeSlider">
-    <div id="volumeSliderTrack">
-      <div id="volumeSliderThumb"></div>
-    </div>
+        
   </div>
       </div>
       <div id="gameCompleteText" class="text fs-25"></div>

@@ -81,7 +81,7 @@ export function prepareQuestionScreen() {
     answerBox.id = `answerBox${i}`;
     answerBox.className = 'answerBox text fs-20';
     answerBox.setAttribute('role', 'button');
-    answerBox.setAttribute('tabindex', '0');
+    answerBox.setAttribute('tabindex', '1');
     answerBox.setAttribute('aria-label', `${i + 1}`);
 
     const answerIcon = document.createElement('div');
@@ -185,7 +185,7 @@ export function makeQuestionButtons() {
     button.id = `questionButton${i}`;
     button.className = 'questionButton';
     button.setAttribute('role', 'button');
-    button.setAttribute('tabindex', '0');
+    button.setAttribute('tabindex', '1');
     button.setAttribute('aria-controls', 'questionBox');
     button.setAttribute('aria-label', `Question ${i + 1}`);
 
@@ -240,7 +240,7 @@ export function makeQuestionButtons() {
   const markers = document.querySelectorAll('.questionMarker');
 markers.forEach((btn, idx) => {
   btn.setAttribute('aria-label', `Question marker ${idx + 1}`);
-  btn.setAttribute('tabindex', '0');
+  btn.setAttribute('tabindex', '1');
 });
 
 
@@ -268,7 +268,7 @@ function optimizeQuestionButtonsTabOrder() {
   const questionButtons = document.querySelectorAll('.questionButton');
 
   questionButtons.forEach((button, index) => {
-    button.setAttribute('tabindex', '0');
+    button.setAttribute('tabindex', '1');
   });
 }
 
@@ -431,7 +431,7 @@ function setupMultipleChoiceQuestion(question) {
         answerText.textContent = question.answerText[i];
         answerBox.style.opacity = 1;
         answerBox.style.pointerEvents = 'all';
-        answerBox.setAttribute('tabindex', '0');
+        answerBox.setAttribute('tabindex', '1');
         answerBox.setAttribute('role', 'button');
         answerBox.setAttribute('aria-label', `${i + 1}: ${question.answerText[i]}`);
       } else {
@@ -1054,7 +1054,7 @@ function setupModalFocusTrap() {
     if (!quizBank) return;
 
     // Get all focusable elements
-    const focusableSelector = 'button, [href], input, select, textarea, [tabindex="0"], .expoButton, .answerBox[tabindex="0"]';
+    const focusableSelector = 'button, [href], input, select, textarea, [tabindex="1"], .expoButton, .answerBox[tabindex="1"]';
     const focusableElements = Array.from(quizBank.querySelectorAll(focusableSelector))
       .filter(el => {
         try {
@@ -1068,7 +1068,7 @@ function setupModalFocusTrap() {
     if (focusableElements.length === 0) return;
 
     // Set initial focus to first answer button if available
-    const firstAnswerBox = quizBank.querySelector('.answerBox[tabindex="0"]');
+    const firstAnswerBox = quizBank.querySelector('.answerBox[tabindex="1"]');
     if (firstAnswerBox) {
       setTimeout(() => firstAnswerBox.focus(), 100);
     } else if (focusableElements.length > 0) {
@@ -1141,7 +1141,7 @@ export function hideQuestionPanel() {
   document.querySelectorAll('[role="button"], [role="tab"]').forEach(element => {
     if (element.id !== 'quizBank' && !element.closest('#quizBank')) {
       element.removeAttribute('aria-hidden');
-      element.setAttribute('tabindex', '0');
+      element.setAttribute('tabindex', '1');
     }
   });
 
