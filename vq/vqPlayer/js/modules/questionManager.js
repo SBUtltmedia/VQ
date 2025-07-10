@@ -16,6 +16,8 @@ let letterFlipTimeout = null;
 /**
  * Initialize the question manager
  */
+
+
 export function initQuestionManager() {
   // Create event listeners for question interactions
   setupEventListeners();
@@ -23,14 +25,14 @@ export function initQuestionManager() {
   // Setup question buttons once questions are loaded
   document.addEventListener('questionsLoaded', function () {
     console.log('Questions loaded event received');
-    prepareQuestionScreen();
+    // prepareQuestionScreen();
     makeQuestionButtons();
   });
 
   // Also handle direct calls from app.js compatibility layer
   if (state.questions && state.questions.questions) {
     console.log('Questions already available, setting up immediately');
-    prepareQuestionScreen();
+    // prepareQuestionScreen();
     makeQuestionButtons();
   }
 
@@ -73,7 +75,9 @@ function setupEventListeners() {
  */
 export function prepareQuestionScreen() {
   const questionBoxContents = document.getElementById('questionBoxContents');
+  const quizBank = document.getElementById('quizBank');
   if (!questionBoxContents) return;
+  if (!quizBank.classList.contains('question-active')) return;
 
   // Create answer boxes for multiple choice questions
   for (let i = 0; i < 6; i++) {
@@ -305,6 +309,7 @@ export function setQuestion(questionIndex) {
 
   // Always show/reset the question panel when setting a question
   showQuestionPanel();
+  //prepareQuestionScreen()
 
   // Pause video when showing a question
   videoPlayer.pauseVideo();
@@ -992,6 +997,15 @@ function submitShortResponse(answer) {
   // Update score
   updateScore(score);
 }
+//????????????????????????????????
+document.addEventListener('DOMContentLoaded', () => {
+  const quizBank = document.getElementById('quizBank');
+  if (quizBank) {
+    quizBank.querySelectorAll('button, [tabindex], input, select, textarea, a, [role="button"]').forEach(el => {
+      el.setAttribute('tabindex', '-1');
+    });
+  }
+});
 
 /**
  * Show question panel
@@ -1010,6 +1024,10 @@ export function showQuestionPanel() {
   if (quizBank) {
     quizBank.style.display = 'block';
     quizBank.classList.add('question-active');
+    quizBank.querySelectorAll('[tabindex="-1"]').forEach(el => {
+      el.setAttribute('tabindex', '0');
+    });
+    prepareQuestionScreen()
     videoControls.setAttribute('inert', '');
     scoreInfo.setAttribute('inert', '');
   }
@@ -1136,6 +1154,9 @@ export function hideQuestionPanel() {
   if (quizBank) {
     quizBank.style.display = 'none';
     quizBank.classList.remove('question-active');
+    quizBank.querySelectorAll('[tabindex], button, input, select, textarea, a, [role="button"]').forEach(el => {
+      el.setAttribute('tabindex', '-1');
+    });
     videoControls.removeAttribute('inert');
     scoreInfo.removeAttribute('inert');
 

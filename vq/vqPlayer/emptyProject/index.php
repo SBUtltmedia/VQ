@@ -198,7 +198,7 @@ header("Location: /shib/?shibtarget=$target");
     </div>
         </div>
       </div>
-      <div id="hideQuestionButton" class="btn">
+      <div id="hideQuestionButton" tabindex = "-1" class="btn">
         <div id="hideQuestionButtonLabel" tabindex="-1">
     <div id="hideQuestionButtonBG" class="rounded" tabindex="-1"></div>
     <div id="hideQuestionButtonText" class="text fs-18" tabindex="-1">Show Video</div>
