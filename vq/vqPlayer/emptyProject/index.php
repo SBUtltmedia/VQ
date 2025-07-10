@@ -62,29 +62,29 @@ header("Location: /shib/?shibtarget=$target");
     <p class="text fs-20">Loading video...</p>
     <!-- Tracks are commented out -->
   </video>
-  <div id="bigPlay" class="playState" role="button" aria-label="Play Video" tabindex="0"></div>
+  <div id="bigPlay" class="playState" role="button" aria-label="Play Video" tabindex="0" aria-hidden="false"></div>
       </div>
       <div id="quizTitle" role = "heading" aria-level="1" class="text fs-26"></div>
-      <div id="toggleQuestionBox" class="rounded" tabindex="0">
+      <!-- <div id="toggleQuestionBox" class="rounded" tabindex="0">
   <div id="toggleQuestionBG"></div>
   <div id="toggleQuestionText" class="text fs-18">Show/Hide Questions</div>
       </div>
-      <div id="bblink"></div>
+      <div id="bblink"></div> -->
       <!-- <div id="resetQuestionButton" class="btn" tabindex="0"></div> -->
-      <div id="resetQuestionBox" class="rounded">
-  <div id="resetQuestionBG"></div>
+      <div id="resetQuestionBox" class="rounded" aria-hidden = "true">
+  <div id="resetQuestionBG" aria-hidden = "true"></div>
   <div id="resetQuestionText" class="text fs-18">Reset Questions</div>
       </div>
       <!-- <div id="videoSkip" tabindex="0"></div> -->
-      <div id="videoSkipBox" class="rounded">
-  <div id="videoSkipBG"></div>
+      <div id="videoSkipBox" class="rounded" aria-hidden = "true">
+  <div id="videoSkipBG" aria-hidden = "true"></div>
   <div id="videoSkipText" class="text fs-18">Skip to Unwatched Sections</div>
       </div>
-      <div id="userInfoButton" class="btn" tabindex="0"></div>
+      <!-- <div id="userInfoButton" class="btn" tabindex="0"></div>
       <div id="userInfoBox" class="rounded">
-  <div id="userInfoBG"></div>
+  <div id="userInfoBG" aria-hidden = "true"></div>
   <div id="userInfoLogin" class="text fs-14">Signed in as [name].</div>
-  <div id="userInfoComplete" class="text fs-14">You have not completed this quiz yet.</div>
+  <div id="userInfoComplete" class="text fs-14">You have not completed this quiz yet.</div> -->
       </div>
       <div id="scoreBox">
   <div id="scoreLabel" class="text fs-15">SCORE</div>
@@ -92,12 +92,12 @@ header("Location: /shib/?shibtarget=$target");
   <div id="scoreBarBox">
     <div id="scoreBar"></div>
   </div>
-  <div id="medals">
+  <div id="medals" aria-hidden = "true">
     <div id="medal0" class="medal medalGray"></div>
     <div id="medal1" class="medal medalGray"></div>
     <div id="medal2" class="medal medalGray"></div>
   </div>
-  <div id="scoreBubble">
+  <div id="scoreBubble" aria-hidden = "true">
     <div id="scoreBubbleText" class="text fs-25">+250</div>
   </div>
       </div>
@@ -113,19 +113,19 @@ header("Location: /shib/?shibtarget=$target");
       </div>
       <!-- <div id="buttonBank"></div> -->
   <div id="videoControls" role="group" aria-label="Video Controls">
-  <div id="videoPlayPause" class="playPause playState btn videoControlBtn" role="button" aria-label="Play or Pause Video" tabindex="2"></div>
-  <div id="resetQuestionButton" class="btn" role="button" aria-label="Reset Questions" tabindex="2"></div>
+  <div id="videoPlayPause" class="playPause playState btn videoControlBtn" role="button" aria-label="Play or Pause Video" tabindex="0"></div>
+  <div id="resetQuestionButton" class="btn" role="button" aria-label="Reset Questions" tabindex="0"></div>
   
-  <div id="resetQuestionBox" class="rounded">
+  <!-- <div id="resetQuestionBox" class="rounded">
     <div id="resetQuestionBG"></div>
     <div id="resetQuestionText" class="text fs-18">Reset Questions</div>
-  </div>
+  </div> -->
   
-  <div id="videoSkip" tabindex="2"></div>
-  <div id="videoSkipBox" class="rounded">
+  <div id="videoSkip" tabindex="0"></div>
+  <!-- <div id="videoSkipBox" class="rounded">
     <div id="videoSkipBG"></div>
     <div id="videoSkipText" class="text fs-18">Skip to Unwatched Sections</div>
-  </div>
+  </div> -->
   
   <input id="seekSlider" type="range" min="0" max="100" value="0" step="0.05">
   <div id="seekSliderBG" class="fakeSlider">
@@ -198,10 +198,10 @@ header("Location: /shib/?shibtarget=$target");
     </div>
         </div>
       </div>
-      <div id="hideQuestionButton" class="btn" tabindex="0">
-        <div id="hideQuestionButtonLabel">
-    <div id="hideQuestionButtonBG" class="rounded"></div>
-    <div id="hideQuestionButtonText" class="text fs-18">Show Video</div>
+      <div id="hideQuestionButton" class="btn">
+        <div id="hideQuestionButtonLabel" tabindex="-1">
+    <div id="hideQuestionButtonBG" class="rounded" tabindex="-1"></div>
+    <div id="hideQuestionButtonText" class="text fs-18" tabindex="-1">Show Video</div>
         </div>
       </div>
     </div>
@@ -220,8 +220,8 @@ header("Location: /shib/?shibtarget=$target");
         
   </div>
       </div>
-      <div id="gameCompleteText" class="text fs-25"></div>
-      <div id="noQuestionText" class="text fs-25"></div>
+      <div id="gameCompleteText" class="text fs-25" aria-hidden= "true"></div>
+      <div id="noQuestionText" class="text fs-25" aria-hidden = "true"></div>
     </div>
     <div id="blocker">
       <div id="blockerText">

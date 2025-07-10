@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interactive Video Quiz</title>
   <link rel="stylesheet" type="text/css" href="style.css" />
-  <!-- Load jQuery first -->
+  
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   
-  <!-- Load utility scripts -->
+  
   <script type="text/javascript" src="js/css_browser_selector.js"></script>
   <script type="text/javascript" src="js/range-touch.js"></script>
   <script type="text/javascript" src="js/resize.js"></script>
   
-  <!-- Load the new modular app -->
+ 
   <script type="module" src="js/new-app.js"></script>
 </head>
 
@@ -31,7 +31,7 @@
           <source src="media/video.mp4" type="video/mp4">
           <source src="media/video.m4v" type="video/mp4">
           <p class="text fs-20">Loading video...</p>
-          <!-- Tracks would go here -->
+         
         </video>
         <div id="bigPlay" class="playState" role="button" tabindex="0" aria-label="Play/Pause"></div>
       </div>
@@ -92,7 +92,7 @@
             <div id="fillInPanels" role="group" aria-label="Fill-in Panels"></div>
             <textarea id="fillInAnswer" class="rounded text fs-50" aria-label="Answer Input"></textarea>
             <div id="expoBox" class="rounded" role="alert">
-              <div id="expoTitle" class="text fs-60" role="heading" aria-level="3">Correct</div>
+    </div>          <div id="expoTitle" class="text fs-60" role="heading" aria-level="3">Correct</div>
               <div id="expoText" class="text fs-30" role="status"></div>
               <div id="expoButtons" role="group" aria-label="Explanatory Options">
                 <div id="expoButtonReview" class="expoButton rounded" role="button" tabindex="0" aria-label="Review">
@@ -126,7 +126,7 @@
         </div>
       </div>
       <div id="videoControls" role="region" aria-label="Video Controls">
-        <div id="videoPlayPause" class="playPause playState btn" role="button" tabindex="0" aria-label="Play/Pause"></div>
+    </div>    <div id="videoPlayPause" class="playPause playState btn" role="button" tabindex="0" aria-label="Play/Pause"></div>
         <input id="seekSlider" type="range" min="0" max="100" value="0" step="0.05" aria-label="Seek Slider">
         <div id="seekSliderBG" class="fakeSlider" role="presentation">
           <div id="seekSliderTrack" role="presentation">
@@ -170,7 +170,7 @@
     </div>
     <div id="blocker" role="alertdialog" aria-labelledby="blockerTitle" aria-describedby="blockerSubtitle">
       <div id="blockerText" role="document">
-        <div id="blockerTitle" class="text fs-150" role="heading" aria-level="1">Locked</div>
+    </div>    <div id="blockerTitle" class="text fs-150" role="heading" aria-level="1">Locked</div>
         <div id="blockerSubtitle" class="text fs-50">
           This quiz has been made private by its author.<br>
           To view it, you must receive permission from the author.

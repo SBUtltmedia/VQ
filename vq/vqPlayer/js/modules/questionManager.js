@@ -7,7 +7,7 @@ import config from './config.js';
 import state from './state.js';
 import { urlify } from './utils.js';
 import videoPlayer from './videoPlayer.js';
-import {updateScore} from './videoPlayer.js';
+import { updateScore } from './videoPlayer.js';
 
 // Private module variables
 let currentQuestionType = null;
@@ -81,7 +81,7 @@ export function prepareQuestionScreen() {
     answerBox.id = `answerBox${i}`;
     answerBox.className = 'answerBox text fs-20';
     answerBox.setAttribute('role', 'button');
-    answerBox.setAttribute('tabindex', '1');
+    answerBox.setAttribute('tabindex', '0');
     answerBox.setAttribute('aria-label', `${i + 1}`);
 
     const answerIcon = document.createElement('div');
@@ -185,7 +185,7 @@ export function makeQuestionButtons() {
     button.id = `questionButton${i}`;
     button.className = 'questionButton';
     button.setAttribute('role', 'button');
-    button.setAttribute('tabindex', '1');
+    button.setAttribute('tabindex', '0');
     button.setAttribute('aria-controls', 'questionBox');
     button.setAttribute('aria-label', `Question ${i + 1}`);
 
@@ -238,10 +238,10 @@ export function makeQuestionButtons() {
   }
 
   const markers = document.querySelectorAll('.questionMarker');
-markers.forEach((btn, idx) => {
-  btn.setAttribute('aria-label', `Question marker ${idx + 1}`);
-  btn.setAttribute('tabindex', '1');
-});
+  markers.forEach((btn, idx) => {
+    btn.setAttribute('aria-label', `Question marker ${idx + 1}`);
+    btn.setAttribute('tabindex', '0');
+  });
 
 
   // Force question buttons to be visible
@@ -254,7 +254,7 @@ markers.forEach((btn, idx) => {
   // Debug the button creation
   console.log('Created', document.querySelectorAll('.questionButton').length, 'buttons in buttonBank');
 
-  
+
 
   // Optimize tab order for better accessibility
   optimizeQuestionButtonsTabOrder();
@@ -268,7 +268,7 @@ function optimizeQuestionButtonsTabOrder() {
   const questionButtons = document.querySelectorAll('.questionButton');
 
   questionButtons.forEach((button, index) => {
-    button.setAttribute('tabindex', '1');
+    button.setAttribute('tabindex', '0');
   });
 }
 
@@ -400,7 +400,21 @@ function resetQuestionDisplay() {
     panel.classList.remove('anim_letterPanelSpin');
   });
 }
+function setElementVisibility(el, visible, options = {}) {
+  if (!el) return;
+  el.style.opacity = visible ? '1' : '0';
+  el.style.pointerEvents = visible ? 'auto' : 'none';
 
+  if (visible) {
+    el.removeAttribute('aria-hidden');
+    el.setAttribute('tabindex', options.tabIndex ?? '0');
+    if (options.role) el.setAttribute('role', options.role);
+    if (options.ariaLabel) el.setAttribute('aria-label', options.ariaLabel);
+  } else {
+    el.setAttribute('aria-hidden', 'true');
+    el.setAttribute('tabindex', '-1');
+  }
+}
 /**
  * Setup multiple choice question
  * @param {Object} question - Question data
@@ -408,17 +422,12 @@ function resetQuestionDisplay() {
 function setupMultipleChoiceQuestion(question) {
   // Hide fill-in elements
   const fillInPanels = document.querySelectorAll('.fillInPanel');
+  fillInPanels.forEach(panel => setElementVisibility(panel, false));
+
+  const panelsID = document.getElementById('fillInPanels');
   const fillInAnswer = document.getElementById('fillInAnswer');
-
-  fillInPanels.forEach(panel => {
-    panel.style.opacity = 0;
-    panel.style.pointerEvents = 'none';
-  });
-
-  if (fillInAnswer) {
-    fillInAnswer.style.opacity = 0;
-    fillInAnswer.style.pointerEvents = 'none';
-  }
+  setElementVisibility(panelsID, false);
+  setElementVisibility(fillInAnswer, false);
 
   // Show answer boxes for this question
   for (let i = 0; i < 6; i++) {
@@ -427,20 +436,15 @@ function setupMultipleChoiceQuestion(question) {
 
     if (answerBox && answerText) {
       if (question.answerText[i]) {
-        // This answer option exists, so show it
         answerText.textContent = question.answerText[i];
-        answerBox.style.opacity = 1;
-        answerBox.style.pointerEvents = 'all';
-        answerBox.setAttribute('tabindex', '1');
-        answerBox.setAttribute('role', 'button');
-        answerBox.setAttribute('aria-label', `${i + 1}: ${question.answerText[i]}`);
+        setElementVisibility(answerBox, true, {
+          role: 'button',
+          ariaLabel: `${i + 1}: ${question.answerText[i]}`
+        });
       } else {
-        // This answer option doesn't exist, so hide it
         answerText.textContent = '';
-        answerBox.style.opacity = 0;
-        answerBox.style.pointerEvents = 'none';
-        answerBox.setAttribute('tabindex', '-1');
-        answerBox.setAttribute('aria-hidden', 'true');
+        setElementVisibility(answerBox, false);
+        setElementVisibility(answerText, false);
       }
     }
   }
@@ -451,26 +455,23 @@ function setupMultipleChoiceQuestion(question) {
  * @param {Object} question - Question data
  */
 function setupFillInQuestion(question) {
-  // Hide answer boxes
+  // Hide all multiple choice answer boxes
   const answerBoxes = document.querySelectorAll('.answerBox');
-  answerBoxes.forEach(box => {
-    box.style.opacity = 0;
-    box.style.pointerEvents = 'none';
-  });
+  answerBoxes.forEach(box => setElementVisibility(box, false));
 
-  // Show fill-in elements
+  // Show all fill-in panels
   const fillInPanels = document.querySelectorAll('.fillInPanel');
+  fillInPanels.forEach(panel => setElementVisibility(panel, true));
+
+  // Show fill-in input field
   const fillInAnswer = document.getElementById('fillInAnswer');
 
-  fillInPanels.forEach(panel => {
-    panel.style.opacity = 1;
-    panel.style.pointerEvents = 'auto';
-  });
-
   if (fillInAnswer) {
-    fillInAnswer.style.opacity = 1;
-    fillInAnswer.style.pointerEvents = 'auto';
+    setElementVisibility(fillInAnswer, true);
     fillInAnswer.classList.remove('anim_quickFadeOut');
+  } else {
+    // Fallback: ensure fill-in panels are not interactive if input is missing
+    fillInPanels.forEach(panel => setElementVisibility(panel, false));
   }
 
   // Setup letter panels
@@ -1005,10 +1006,12 @@ export function showQuestionPanel() {
   // Make question panel visible
   const quizBank = document.getElementById('quizBank');
   const videoControls = document.getElementById('videoControls')
+  const scoreInfo = document.getElementById('scoreInfo')
   if (quizBank) {
     quizBank.style.display = 'block';
     quizBank.classList.add('question-active');
     videoControls.setAttribute('inert', '');
+    scoreInfo.setAttribute('inert', '');
   }
 
   // Set state
@@ -1054,7 +1057,7 @@ function setupModalFocusTrap() {
     if (!quizBank) return;
 
     // Get all focusable elements
-    const focusableSelector = 'button, [href], input, select, textarea, [tabindex="1"], .expoButton, .answerBox[tabindex="1"]';
+    const focusableSelector = 'button, [href], input, select, textarea, [tabindex="0"], .expoButton, .answerBox[tabindex="0"]';
     const focusableElements = Array.from(quizBank.querySelectorAll(focusableSelector))
       .filter(el => {
         try {
@@ -1068,7 +1071,7 @@ function setupModalFocusTrap() {
     if (focusableElements.length === 0) return;
 
     // Set initial focus to first answer button if available
-    const firstAnswerBox = quizBank.querySelector('.answerBox[tabindex="1"]');
+    const firstAnswerBox = quizBank.querySelector('.answerBox[tabindex="0"]');
     if (firstAnswerBox) {
       setTimeout(() => firstAnswerBox.focus(), 100);
     } else if (focusableElements.length > 0) {
@@ -1129,10 +1132,12 @@ export function hideQuestionPanel() {
   // Hide quiz bank
   const quizBank = document.getElementById('quizBank');
   const videoControls = document.getElementById('videoControls')
+  const scoreInfo = document.getElementById('scoreInfo')
   if (quizBank) {
     quizBank.style.display = 'none';
     quizBank.classList.remove('question-active');
     videoControls.removeAttribute('inert');
+    scoreInfo.removeAttribute('inert');
 
 
   }
@@ -1141,7 +1146,7 @@ export function hideQuestionPanel() {
   document.querySelectorAll('[role="button"], [role="tab"]').forEach(element => {
     if (element.id !== 'quizBank' && !element.closest('#quizBank')) {
       element.removeAttribute('aria-hidden');
-      element.setAttribute('tabindex', '1');
+      element.setAttribute('tabindex', '0');
     }
   });
 

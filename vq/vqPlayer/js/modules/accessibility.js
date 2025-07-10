@@ -97,6 +97,12 @@ function enhanceVideoPlayerAccessibility() {
     playPauseBtn.setAttribute('aria-label', 'Play or Pause Video');
   }
 
+  //videoSkip
+  const videoSkip = document.getElementById('videoSkip');
+  if (videoSkip){
+    videoSkip.setAttribute('role', 'button');
+  }
+
   // Seek slider
   const seekSlider = document.getElementById('seekSlider');
   if (seekSlider) {
