@@ -2182,7 +2182,7 @@ input[type=range]:focus {
     border: .1rem solid #404040;
     transform: translateX(-.2rem) translateY(.1rem);
     opacity: 0;
-    pointer-events: none;
+    pointer-events: auto;
     z-index: 500;
 }
 

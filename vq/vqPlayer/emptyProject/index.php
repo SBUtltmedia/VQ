@@ -86,7 +86,7 @@ header("Location: /shib/?shibtarget=$target");
   <div id="userInfoLogin" class="text fs-14">Signed in as [name].</div>
   <div id="userInfoComplete" class="text fs-14">You have not completed this quiz yet.</div> -->
       </div>
-      <div id="scoreBox">
+      <div id="scoreBox" tabindex = "0">
   <div id="scoreLabel" class="text fs-15">SCORE</div>
   <div id="scoreNum" class="text fs-30">0</div>
   <div id="scoreBarBox">
@@ -101,7 +101,7 @@ header("Location: /shib/?shibtarget=$target");
     <div id="scoreBubbleText" class="text fs-25">+250</div>
   </div>
       </div>
-      <div id="scoreInfo" tabindex="0">
+      <div id="scoreInfo">
   <div id="scoreInfoTitle">Scoring Information</div>
   <div id="scoreInfoText">
     The maximum score is 2000 points.

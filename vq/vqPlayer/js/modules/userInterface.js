@@ -303,6 +303,15 @@ if (scoreBox && scoreInfo) {
     scoreInfo.classList.remove('anim_quickFadeIn');
     scoreInfo.classList.add('anim_quickFadeOut');
   });
+  // Add keyboard accessibility
+  scoreBox.addEventListener('focus', () => {
+    scoreInfo.classList.remove('anim_quickFadeOut');
+    scoreInfo.classList.add('anim_quickFadeIn');
+  });
+  scoreBox.addEventListener('blur', () => {
+    scoreInfo.classList.remove('anim_quickFadeIn');
+    scoreInfo.classList.add('anim_quickFadeOut');
+  });
 }
 
   // if (scoreInfo && scoreInfoTitle && scoreInfoText) {
