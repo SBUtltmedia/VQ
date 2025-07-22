@@ -25,7 +25,7 @@ Header always unset X-Frame-Options
     SetEnv nickname test_nickname
     SetEnv givenName test_givenName
     SetEnv sn test_sn
-    SetEnv mail michael.kawwa@stonybrook.edu
+    SetEnv mail o.kawwa@stonybrook.edu
 </If>
 
 #conditionally set session save path for local and non-local environments

@@ -1482,15 +1482,16 @@ input:focus {
 #videoPlayPause
 /* #resetQuestionButton, */ {
     position: absolute;
-    width: 3.75vw;
+    /* width: 3.75vw; */
+    width: 3.8%;
     height: 100%;
-    left: 1%;         /* Adjust as needed for your layout */
+    left: 2.5%;         /* Adjust as needed for your layout */
     top: 0%;        /* Match the top of other controls */
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
     background-image: url(img/button_play.svg); /* or toggle with JS */
-    border-radius: 50%;
+    /* border-radius: 50%; */
     z-index: 1050;
     cursor: pointer;
     display: flex;
@@ -1517,11 +1518,11 @@ input:focus {
 #resetQuestionButton {
   
     position: absolute;
-    width: 5%;
+    width: 3.5%;
     height: 100%;
-    right: 2%;         /* Match #resetQuestionBox */
+    right: 7%;         /* Match #resetQuestionBox */
     /* left: 88%; */
-    top: 74%;        /* 2vw (box) + 5vw (button height) - adjust as needed */
+    top: 80%;        /* 2vw (box) + 5vw (button height) - adjust as needed */
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -1867,6 +1868,7 @@ input:focus {
     background-position: center;
     background-image: url(img/poke_gray.svg);
     transform-origin: 50% 100%;
+    transform: translateX(-50%);
 }
 
 @keyframes foldQuestionMarker {

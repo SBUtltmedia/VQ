@@ -39,16 +39,6 @@ function enhanceAriaAttributes() {
         element.setAttribute('role', 'form');
       }
     }
-
-    // Set aria-labels for elements without them
-    if (!element.hasAttribute('aria-label')) {
-      // Create user-friendly labels based on IDs
-      const idParts = element.id.match(/[A-Z][a-z]+|[0-9]+|[a-z]+/g);
-      if (idParts && idParts.length > 0) {
-        const label = idParts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
-        element.setAttribute('aria-label', label);
-      }
-    }
   });
 
   // Handle specific components that need special treatment
@@ -101,6 +91,7 @@ function enhanceVideoPlayerAccessibility() {
   const videoSkip = document.getElementById('videoSkip');
   if (videoSkip){
     videoSkip.setAttribute('role', 'button');
+    videoSkip.setAttribute('aria-label', 'Skip');
   }
 
   // Seek slider
@@ -150,7 +141,6 @@ function enhanceVideoPlayerAccessibility() {
   if (ccButton) {
     ccButton.setAttribute('role', 'button');
     ccButton.setAttribute('tabindex', '0');
-    ccButton.setAttribute('aria-label', 'Toggle captions');
     ccButton.setAttribute('aria-label', 'Toggle Closed Captions');
 
     // Add pressed state

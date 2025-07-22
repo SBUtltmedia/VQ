@@ -1202,6 +1202,7 @@
 						}, 2000);
 					}
 					$("#bblink").html(text);
+					console.log("saveWatchData called");
 				});
 			}
 			for (let i = 0; i < userData.watchData.length; i++) {

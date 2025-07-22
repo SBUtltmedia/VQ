@@ -42,6 +42,11 @@ header("Location: /shib/?shibtarget=$target");
 <!-- <sxcript  type="module" src="modules/main.js" ></scxript> -->
 <script type="text/javascript" src="js/range-touch.js"></script>
 <!--    <script src='/login/js/lti.js'></script>			-->
+<?php
+  $email = isset($_SESSION['mail']) ? $_SESSION['mail'] : 'user@example.com';
+?>
+<meta name="user-email" content="<?php echo htmlspecialchars($email); ?>">
+
 </head>
 
 <body>
@@ -68,8 +73,8 @@ header("Location: /shib/?shibtarget=$target");
       <!-- <div id="toggleQuestionBox" class="rounded" tabindex="0">
   <div id="toggleQuestionBG"></div>
   <div id="toggleQuestionText" class="text fs-18">Show/Hide Questions</div>
-      </div>
-      <div id="bblink"></div> -->
+      </div> -->
+      <div id="bblink"></div>
       <!-- <div id="resetQuestionButton" class="btn" tabindex="0"></div> -->
       <div id="resetQuestionBox" class="rounded" aria-hidden = "true">
   <div id="resetQuestionBG" aria-hidden = "true"></div>
@@ -177,7 +182,7 @@ header("Location: /shib/?shibtarget=$target");
 
 
     <div id="quizBank">
-  <div id="questionBox" role = "form">
+  <div id="questionBox" inert role = "form">
     <div id="questionBoxContents">
       <div id="questionBoxBG" class="rounded"></div>
       <div id="questionText" class="text fs-40" role = "heading" aria-level="2"></div>
@@ -186,7 +191,7 @@ header("Location: /shib/?shibtarget=$target");
       <div id="expoBox" class="rounded">
         <div id="expoTitle" class="text fs-60">Correct</div>
         <div id="expoText" class="text fs-30"></div>
-        <div id="expoButtons">
+        <div id="expoButtons" tabindex = "-1">
     <div id="expoButtonReview" class="expoButton rounded" tabindex="0">
       <div class="expoButtonText text fs-30">Review</div>
     </div>

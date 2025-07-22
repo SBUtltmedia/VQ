@@ -477,7 +477,7 @@ function updateTimeDisplay() {
   if (timeDisplay) {
     const currentTime = formatTime(state.video.currentTime);
     const duration = formatTime(state.video.duration);
-    timeDisplay.textContent = `${currentTime} / ${duration}`;
+    timeDisplay.textContent = `${currentTime}`;
   }
 }
 
@@ -592,47 +592,52 @@ function updateMuteButton(muted) {
  * Create markers for question points in the video
  */
 function createQuestionMarkers() {
-  if (!state.video || !state.questions || !state.questions.questions) return;
+  const { video, questions } = state;
+  if (!video || !questions?.questions?.length) return;
 
-  const questionsArray = state.questions.questions;
-  const questionMarkers = document.getElementById('questionMarkers');
-
-  if (!questionMarkers) return;
+  const markersContainer = document.getElementById('questionMarkers');
+  if (!markersContainer) return;
 
   // Clear existing markers
-  questionMarkers.innerHTML = '';
+  markersContainer.innerHTML = '';
 
-  // Create marker for each question
-  questionsArray.forEach((question, index) => {
-    if (question.startTime) {
-      const marker = document.createElement('div');
-      marker.id = `questionMarker${index}`;
-      marker.className = 'questionMarker';
-      marker.setAttribute('role', 'presentation');
-      marker.setAttribute('aria-hidden', 'true');
+  const fragment = document.createDocumentFragment();
 
-      // Calculate position based on video duration
-      const position = (question.startTime / state.video.duration) * 100;
-      marker.style.left = `${position}%`;
+  questions.questions.forEach((question, index) => {
+    const startTime = question?.startTime;
+    if (typeof startTime !== 'number' || isNaN(startTime)) return;
 
-      // Create marker text
-      const markerText = document.createElement('div');
-      markerText.id = `questionMarkerText${index}`;
-      markerText.className = 'questionMarkerText text fs-18';
-      markerText.textContent = index + 1;
+    const positionPercent = Math.min(100, Math.max(0, (startTime / video.duration) * 100));
 
-      marker.appendChild(markerText);
-      questionMarkers.appendChild(marker);
 
-      // Add click event for direct navigation
-      marker.addEventListener('click', () => {
-        state.video.currentTime = question.startTime;
-        updateSeekBar();
-        updateTimeDisplay();
-      });
-    }
+    // Create marker element
+    const marker = document.createElement('div');
+    marker.id = `questionMarker${index}`;
+    marker.className = 'questionMarker';
+    marker.style.left = `${positionPercent.toFixed(2)}%`;
+    marker.setAttribute('role', 'presentation');
+    marker.setAttribute('aria-hidden', 'true');
+
+    // Create marker label
+    const markerText = document.createElement('div');
+    markerText.id = `questionMarkerText${index}`;
+    markerText.className = 'questionMarkerText text fs-18';
+    markerText.textContent = index + 1;
+
+    marker.appendChild(markerText);
+    fragment.appendChild(marker);
+
+    // Click behavior
+    marker.addEventListener('click', () => {
+      video.currentTime = startTime;
+      updateSeekBar();
+      updateTimeDisplay();
+    });
   });
+
+  markersContainer.appendChild(fragment);
 }
+
 
 /**
  * Check if current time triggers any questions

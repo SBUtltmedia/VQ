@@ -39,6 +39,7 @@ export function initDataHandler() {
 
   // Set up event listeners for data saving
   setupEventListeners();
+  setupVideoAutoSave();
 }
 
 /**
@@ -69,6 +70,45 @@ function setupEventListeners() {
     }
   }, config.timing.autoSaveInterval);
 }
+/**
+ * Set up auto-saving watch data based on video playback
+ */
+function setupVideoAutoSave() {
+  const video = document.getElementById("videoBox");
+
+  if (!video) {
+    console.warn("Video element not found for autosave.");
+    return;
+  }
+
+  video.addEventListener("timeupdate", () => {
+    const now = Date.now();
+    const currentTime = Math.floor(video.currentTime);
+
+    // Ensure userData and watchData are initialized
+    if (!state.userData) return;
+    if (!Array.isArray(state.userData.watchData)) {
+      state.userData.watchData = [];
+    }
+
+    // Mark this second as watched
+    state.userData.watchData[currentTime] = 1;
+
+    // Update last watched timestamp
+    state.lastWatched = now;
+
+    // Save every 60 seconds
+    if (!state.lastSaved || now - state.lastSaved > 60000) {
+      saveWatchData();
+      state.lastSaved = now;
+    }
+  });
+
+  // Optional: Save on pause or end
+  video.addEventListener("pause", saveWatchData);
+  video.addEventListener("ended", saveWatchData);
+}
+
 
 /**
  * Load permissions data
@@ -396,39 +436,33 @@ function updateUIFromUserData() {
  * @returns {Promise} Promise that resolves when data is saved
  */
 async function saveWatchData() {
-  if (!state.userData.watchData || state.userData.watchData.length === 0) {
-    return;
-  }
+  console.log("saveWatchData called", state.userData?.watchData, state.lastWatched);
+  const watchData = state.userData?.watchData;
+  const lastWatched = state.lastWatched;
+  const WATCH_DATA_TIMEOUT = 60000;
 
-  // Skip if no recent watch activity
-  if (Date.now() - state.lastWatched > 60000) {
-    return;
-  }
+  if (!Array.isArray(watchData) || watchData.length === 0) return;
+  if (!lastWatched || Date.now() - lastWatched > WATCH_DATA_TIMEOUT) return;
 
   try {
-    // Save to server if user is authenticated
-    const userEmail = document.querySelector(
-      'meta[name="user-email"]',
-    )?.content;
+    const userEmail = document.querySelector('meta[name="user-email"]')?.content;
 
     if (userEmail) {
-      const response = await fetch("saveWatchData.php", {
+      const response = await fetch("/saveUserData.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          user: userEmail,
-          watchData: state.userData.watchData,
-        }),
+        body: JSON.stringify({ user: userEmail, watchData }),
       });
 
       if (!response.ok) {
         throw new Error("Failed to save watch data to server");
       }
+    } else {
+      console.info("User email not found; skipping server save.");
     }
 
-    // Also save to local storage as backup
     if (canAccessLocalStorage()) {
       localStorage.setItem("quizUserData", JSON.stringify(state.userData));
     }
@@ -437,12 +471,12 @@ async function saveWatchData() {
   } catch (error) {
     console.warn("Error saving watch data:", error);
 
-    // Fallback to local storage
     if (canAccessLocalStorage()) {
       localStorage.setItem("quizUserData", JSON.stringify(state.userData));
     }
   }
 }
+
 
 /**
  * Save user data to server
@@ -451,6 +485,11 @@ async function saveWatchData() {
  * @returns {Promise} Promise that resolves when data is saved
  */
 async function saveUserData(isComplete = false, finalScore = 0) {
+  if (!state.userData) {
+    console.warn("No user data available to save.");
+    return;
+  }
+  console.log("saveUserData called", { isComplete, finalScore });
   try {
     // Update last saved timestamp
     state.lastSaved = Date.now();

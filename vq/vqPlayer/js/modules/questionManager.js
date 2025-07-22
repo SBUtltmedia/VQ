@@ -16,8 +16,6 @@ let letterFlipTimeout = null;
 /**
  * Initialize the question manager
  */
-
-
 export function initQuestionManager() {
   // Create event listeners for question interactions
   setupEventListeners();
@@ -25,14 +23,14 @@ export function initQuestionManager() {
   // Setup question buttons once questions are loaded
   document.addEventListener('questionsLoaded', function () {
     console.log('Questions loaded event received');
-    // prepareQuestionScreen();
+    prepareQuestionScreen();
     makeQuestionButtons();
   });
 
   // Also handle direct calls from app.js compatibility layer
   if (state.questions && state.questions.questions) {
     console.log('Questions already available, setting up immediately');
-    // prepareQuestionScreen();
+    prepareQuestionScreen();
     makeQuestionButtons();
   }
 
@@ -75,9 +73,7 @@ function setupEventListeners() {
  */
 export function prepareQuestionScreen() {
   const questionBoxContents = document.getElementById('questionBoxContents');
-  const quizBank = document.getElementById('quizBank');
   if (!questionBoxContents) return;
-  if (!quizBank.classList.contains('question-active')) return;
 
   // Create answer boxes for multiple choice questions
   for (let i = 0; i < 6; i++) {
@@ -309,7 +305,6 @@ export function setQuestion(questionIndex) {
 
   // Always show/reset the question panel when setting a question
   showQuestionPanel();
-  //prepareQuestionScreen()
 
   // Pause video when showing a question
   videoPlayer.pauseVideo();
@@ -405,21 +400,7 @@ function resetQuestionDisplay() {
     panel.classList.remove('anim_letterPanelSpin');
   });
 }
-function setElementVisibility(el, visible, options = {}) {
-  if (!el) return;
-  el.style.opacity = visible ? '1' : '0';
-  el.style.pointerEvents = visible ? 'auto' : 'none';
 
-  if (visible) {
-    el.removeAttribute('aria-hidden');
-    el.setAttribute('tabindex', options.tabIndex ?? '0');
-    if (options.role) el.setAttribute('role', options.role);
-    if (options.ariaLabel) el.setAttribute('aria-label', options.ariaLabel);
-  } else {
-    el.setAttribute('aria-hidden', 'true');
-    el.setAttribute('tabindex', '-1');
-  }
-}
 /**
  * Setup multiple choice question
  * @param {Object} question - Question data
@@ -427,29 +408,42 @@ function setElementVisibility(el, visible, options = {}) {
 function setupMultipleChoiceQuestion(question) {
   // Hide fill-in elements
   const fillInPanels = document.querySelectorAll('.fillInPanel');
-  fillInPanels.forEach(panel => setElementVisibility(panel, false));
-
-  const panelsID = document.getElementById('fillInPanels');
   const fillInAnswer = document.getElementById('fillInAnswer');
-  setElementVisibility(panelsID, false);
-  setElementVisibility(fillInAnswer, false);
+
+  fillInPanels.forEach(panel => {
+    panel.style.opacity = 0;
+    panel.style.pointerEvents = 'none';
+  });
+
+  if (fillInAnswer) {
+    fillInAnswer.style.opacity = 0;
+    fillInAnswer.style.pointerEvents = 'none';
+  }
 
   // Show answer boxes for this question
   for (let i = 0; i < 6; i++) {
     const answerBox = document.getElementById(`answerBox${i}`);
     const answerText = document.getElementById(`answerText${i}`);
+    const quizBank = document.getElementById('quizBank');
 
-    if (answerBox && answerText) {
-      if (question.answerText[i]) {
-        answerText.textContent = question.answerText[i];
-        setElementVisibility(answerBox, true, {
-          role: 'button',
-          ariaLabel: `${i + 1}: ${question.answerText[i]}`
-        });
-      } else {
-        answerText.textContent = '';
-        setElementVisibility(answerBox, false);
-        setElementVisibility(answerText, false);
+    if (quizBank.classList.contains('question-active')) {
+      if (answerBox && answerText) {
+        if (question.answerText[i]) {
+          // This answer option exists, so show it
+          answerText.textContent = question.answerText[i];
+          answerBox.style.opacity = 1;
+          answerBox.style.pointerEvents = 'all';
+          answerBox.setAttribute('tabindex', '0');
+          answerBox.setAttribute('role', 'button');
+          answerBox.setAttribute('aria-label', `${i + 1}: ${question.answerText[i]}`);
+        } else {
+          // This answer option doesn't exist, so hide it
+          answerText.textContent = '';
+          answerBox.style.opacity = 0;
+          answerBox.style.pointerEvents = 'none';
+          answerBox.setAttribute('tabindex', '-1');
+          answerBox.setAttribute('aria-hidden', 'true');
+        }
       }
     }
   }
@@ -460,23 +454,27 @@ function setupMultipleChoiceQuestion(question) {
  * @param {Object} question - Question data
  */
 function setupFillInQuestion(question) {
-  // Hide all multiple choice answer boxes
+  // Hide answer boxes
   const answerBoxes = document.querySelectorAll('.answerBox');
-  answerBoxes.forEach(box => setElementVisibility(box, false));
+  answerBoxes.forEach(box => {
+    box.style.opacity = 0;
+    box.style.pointerEvents = 'none';
+  });
 
-  // Show all fill-in panels
+  // Show fill-in elements
   const fillInPanels = document.querySelectorAll('.fillInPanel');
-  fillInPanels.forEach(panel => setElementVisibility(panel, true));
-
-  // Show fill-in input field
   const fillInAnswer = document.getElementById('fillInAnswer');
 
+  fillInPanels.forEach(panel => {
+    panel.style.opacity = 1;
+    panel.style.pointerEvents = 'auto';
+    panel.style.zIndex = '2000';
+  });
+
   if (fillInAnswer) {
-    setElementVisibility(fillInAnswer, true);
+    fillInAnswer.style.opacity = 1;
+    fillInAnswer.style.pointerEvents = 'auto';
     fillInAnswer.classList.remove('anim_quickFadeOut');
-  } else {
-    // Fallback: ensure fill-in panels are not interactive if input is missing
-    fillInPanels.forEach(panel => setElementVisibility(panel, false));
   }
 
   // Setup letter panels
@@ -519,6 +517,11 @@ function setupFillInQuestion(question) {
             panelText.textContent = '?';
             panelText.style.color = '#808080';
 
+            // Add click event listener to reveal letter
+            panel.addEventListener('click', () => {
+              revealLetter(20 * i + j);
+            });
+
             // Position panel
             panel.style.left = `${5 * j + 2.5 * (20 - cols)}%`;
             panel.style.top = `${20 * i}%`;
@@ -544,9 +547,6 @@ function setupFillInQuestion(question) {
   if (fillInAnswer) {
     fillInAnswer.focus();
   }
-
-  // Start revealing letters periodically
-  startLetterReveal();
 }
 
 /**
@@ -566,6 +566,7 @@ function setupShortResponseQuestion(question) {
   fillInPanels.forEach(panel => {
     panel.style.opacity = 0;
     panel.style.pointerEvents = 'none';
+    panel.style.zIndex = '0';
   });
 
   // Show fill-in answer textarea
@@ -587,45 +588,7 @@ function setupShortResponseQuestion(question) {
   }
 }
 
-/**
- * Start revealing letters for fill-in-the-blank question
- */
-function startLetterReveal() {
-  // Clear any existing interval
-  if (letterFlipTimeout) {
-    clearTimeout(letterFlipTimeout);
-  }
 
-  // Start new interval
-  letterFlipTimeout = setTimeout(revealRandomLetter, config.timing.letterRevealInterval);
-}
-
-/**
- * Reveal a random letter in fill-in-the-blank question
- */
-function revealRandomLetter() {
-  if (state.letterPanels.length === 0) return;
-
-  // Pick a random letter panel that hasn't been revealed yet
-  const unrevealedPanels = state.letterPanels.filter(panel => {
-    const panelText = document.getElementById(`fillInPanelText${panel.pos}`);
-    return panelText && panelText.textContent === '?';
-  });
-
-  if (unrevealedPanels.length > 0) {
-    const randomIndex = Math.floor(Math.random() * unrevealedPanels.length);
-    const panel = unrevealedPanels[randomIndex];
-
-    revealLetter(panel.pos);
-
-    // Schedule next letter reveal
-    letterFlipTimeout = setTimeout(revealRandomLetter, config.timing.letterRevealInterval);
-  } else {
-    // All letters have been revealed
-    clearTimeout(letterFlipTimeout);
-    letterFlipTimeout = null;
-  }
-}
 
 /**
  * Reveal a specific letter
@@ -638,6 +601,26 @@ function revealLetter(pos) {
   if (panel && panelText) {
     // Find this letter in the panels array
     const letterInfo = state.letterPanels.find(p => p.pos === pos);
+    state.letterPanels.forEach(panel => {
+      const panelElement = document.getElementById(`fillInPanel${panel.pos}`);
+
+      if (panelElement) {
+        panelElement.style.cursor = 'pointer'; // Optional: change cursor
+
+        panelElement.addEventListener('click', () => {
+          const panelText = document.getElementById(`fillInPanelText${panel.pos}`);
+
+          // Only reveal if it's still hidden
+          if (panelText && panelText.textContent === '?') {
+            revealLetter(panel.pos);
+
+            // Optional: disable further clicks
+            panelElement.style.pointerEvents = 'none';
+          }
+        });
+      }
+    });
+
 
     if (letterInfo) {
       // Apply spin animation
@@ -655,13 +638,13 @@ function revealLetter(pos) {
 /**
  * Reveal all letters
  */
-function revealAllLetters() {
-  clearTimeout(letterFlipTimeout);
+// function revealAllLetters() {
+//   clearTimeout(letterFlipTimeout);
 
-  state.letterPanels.forEach(panel => {
-    revealLetter(panel.pos);
-  });
-}
+//   state.letterPanels.forEach(panel => {
+//     revealLetter(panel.pos);
+//   });
+// }
 
 /**
  * Select answer for multiple choice question
@@ -997,15 +980,6 @@ function submitShortResponse(answer) {
   // Update score
   updateScore(score);
 }
-//????????????????????????????????
-document.addEventListener('DOMContentLoaded', () => {
-  const quizBank = document.getElementById('quizBank');
-  if (quizBank) {
-    quizBank.querySelectorAll('button, [tabindex], input, select, textarea, a, [role="button"]').forEach(el => {
-      el.setAttribute('tabindex', '-1');
-    });
-  }
-});
 
 /**
  * Show question panel
@@ -1019,17 +993,16 @@ export function showQuestionPanel() {
 
   // Make question panel visible
   const quizBank = document.getElementById('quizBank');
-  const videoControls = document.getElementById('videoControls')
-  const scoreInfo = document.getElementById('scoreInfo')
+  //const answerBox = document.getElementById('')
+  const videoControls = document.getElementById('videoControls');
+  const scoreBox = document.getElementById('scoreBox');
+  const hideQuestionButton = document.getElementById('hideQuestionButton');
   if (quizBank) {
     quizBank.style.display = 'block';
     quizBank.classList.add('question-active');
-    quizBank.querySelectorAll('[tabindex="-1"]').forEach(el => {
-      el.setAttribute('tabindex', '0');
-    });
-    prepareQuestionScreen()
     videoControls.setAttribute('inert', '');
-    scoreInfo.setAttribute('inert', '');
+    scoreBox.setAttribute('inert', '');
+    hideQuestionButton.setAttribute('tabindex', '0');
   }
 
   // Set state
@@ -1040,6 +1013,7 @@ export function showQuestionPanel() {
   if (questionBox) {
     questionBox.classList.remove('anim_questionBoxHide');
     questionBox.classList.add('anim_questionBoxShow');
+    questionBox.removeAttribute('inert', '');
   }
 
   // Set aria attributes for accessibility
@@ -1150,15 +1124,14 @@ export function hideQuestionPanel() {
   // Hide quiz bank
   const quizBank = document.getElementById('quizBank');
   const videoControls = document.getElementById('videoControls')
-  const scoreInfo = document.getElementById('scoreInfo')
+  const scoreBox = document.getElementById('scoreBox');
+
   if (quizBank) {
     quizBank.style.display = 'none';
     quizBank.classList.remove('question-active');
-    quizBank.querySelectorAll('[tabindex], button, input, select, textarea, a, [role="button"]').forEach(el => {
-      el.setAttribute('tabindex', '-1');
-    });
     videoControls.removeAttribute('inert');
-    scoreInfo.removeAttribute('inert');
+    scoreBox.removeAttribute('inert');
+
 
 
   }
@@ -1198,6 +1171,7 @@ export function hideQuestionPanel() {
   if (questionBox) {
     questionBox.classList.remove('anim_questionBoxShow');
     questionBox.classList.add('anim_questionBoxHide');
+    questionBox.setAttribute('inert', '');
   }
 }
 
