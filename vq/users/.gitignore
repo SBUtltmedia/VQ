@@ -3,5 +3,5 @@
 !test_cn/
 !test_cn/2/
 !test_cn/2/**
-test_cn/2/media/video.mp4
+!test_cn/2/media/video.mp4
 !.gitattributes
