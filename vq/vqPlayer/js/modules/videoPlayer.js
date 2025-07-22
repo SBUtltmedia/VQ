@@ -148,6 +148,7 @@ function initPlaybackSpeedControl() {
     playbackSpeed.addEventListener('change', () => {
       if (state.video) {
         state.video.playbackRate = parseFloat(playbackSpeed.value);
+        // playbackSpeed.setAttribute('tabindex', 0);
       }
     });
 

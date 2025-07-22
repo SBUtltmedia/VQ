@@ -418,6 +418,7 @@ function setupMultipleChoiceQuestion(question) {
   if (fillInAnswer) {
     fillInAnswer.style.opacity = 0;
     fillInAnswer.style.pointerEvents = 'none';
+    fillInAnswer.tabIndex = -1;
   }
 
   // Show answer boxes for this question
@@ -458,22 +459,40 @@ function setupFillInQuestion(question) {
   const answerBoxes = document.querySelectorAll('.answerBox');
   answerBoxes.forEach(box => {
     box.style.opacity = 0;
+    box.tabIndex = -1;
     box.style.pointerEvents = 'none';
   });
+  const answerText = document.querySelectorAll('.answerText');
+  answerText.forEach(text => {
+    // text.style.opacity = 0;
+    text.style.pointerEvents = 'none';
+  });
+  
 
   // Show fill-in elements
   const fillInPanels = document.querySelectorAll('.fillInPanel');
   const fillInAnswer = document.getElementById('fillInAnswer');
 
   fillInPanels.forEach(panel => {
-    panel.style.opacity = 1;
-    panel.style.pointerEvents = 'auto';
-    panel.style.zIndex = '2000';
-  });
+    const panelText = panel.querySelector('.fillInPanelText');
+    if (panelText && panelText.textContent === '?') {
+        panel.style.opacity = 1;
+        panel.style.pointerEvents = 'all';
+        panel.tabIndex = 0;
+        panel.style.zIndex = '2000';
+    } 
+    // else {
+    //     panel.style.opacity = 0;
+    //     panel.style.pointerEvents = 'none';
+    //     panel.tabIndex = -1;
+    //     panel.style.zIndex = '0';
+    // }
+});
 
   if (fillInAnswer) {
     fillInAnswer.style.opacity = 1;
     fillInAnswer.style.pointerEvents = 'auto';
+    fillInAnswer.tabIndex = 0;
     fillInAnswer.classList.remove('anim_quickFadeOut');
   }
 
@@ -521,6 +540,12 @@ function setupFillInQuestion(question) {
             panel.addEventListener('click', () => {
               revealLetter(20 * i + j);
             });
+            panel.addEventListener('keydown', (event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault(); // Prevent scrolling on Space
+                revealLetter(20 * i + j);
+              }
+            });
 
             // Position panel
             panel.style.left = `${5 * j + 2.5 * (20 - cols)}%`;
@@ -566,6 +591,7 @@ function setupShortResponseQuestion(question) {
   fillInPanels.forEach(panel => {
     panel.style.opacity = 0;
     panel.style.pointerEvents = 'none';
+    panel.tabIndex = -1;
     panel.style.zIndex = '0';
   });
 
