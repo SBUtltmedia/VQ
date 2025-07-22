@@ -62,7 +62,7 @@ header("Location: /shib/?shibtarget=$target");
       <div id="videoPlayer">
   <video id="videoBox" playsinline>
     <source src="media/video.mp4" type="video/mp4">
-    <source src="media/video.m4v" type="video/mp4">
+    <!-- <source src="media/video.m4v" type="video/mp4"> -->
     <track kind="captions" src="media/video.vtt" srclang="en" label="English" default>
     <p class="text fs-20">Loading video...</p>
     <!-- Tracks are commented out -->
