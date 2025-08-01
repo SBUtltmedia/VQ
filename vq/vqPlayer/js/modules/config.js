@@ -33,7 +33,9 @@ export default {
     scoring: {
         maxVideoScore: 1000,      // Maximum points for watching the video
         maxQuestionScore: 1000,   // Maximum points for answering questions
-        incorrectPenalty: 0.5     // Penalty multiplier for incorrect answers
+        incorrectPenalty: 0.5, 
+        letterRevealPenalty: 0.2, // Penalty multiplier for incorrect answers
+        maxLetterPenalty: 0.5
     },
     
     /**

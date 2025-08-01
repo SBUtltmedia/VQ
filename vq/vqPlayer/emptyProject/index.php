@@ -179,7 +179,7 @@ header("Location: /shib/?shibtarget=$target");
 </div>
 
 <!-- buttonBank is now outside videoControls -->
-<div id="buttonBank"></div>
+<div id="buttonBank" role = "list"></div>
 
 
     <div id="quizBank">

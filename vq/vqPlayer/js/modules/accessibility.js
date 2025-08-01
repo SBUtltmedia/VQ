@@ -193,6 +193,7 @@ function enhanceQuestionAccessibility() {
   const scoreBox = document.getElementById('scoreBox');
   if (scoreBox) {
     scoreBox.setAttribute('role', 'complementary');
+    scoreBox.setAttribute('aria-describedby', 'scoreInfo');
   }
 
   // Answer boxes

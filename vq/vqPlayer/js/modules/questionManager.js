@@ -20,19 +20,32 @@ export function initQuestionManager() {
   // Create event listeners for question interactions
   setupEventListeners();
 
-  // Setup question buttons once questions are loaded
-  document.addEventListener('questionsLoaded', function () {
-    console.log('Questions loaded event received');
+  const setupQuestionsUI = () => {
+    // Prevent duplicate setup
+    if (state.questionsInitialized) {
+      return;
+    }
+
+    // Ensure questions are loaded before setting up
+    if (!state.questions || !state.questions.questions) {
+      return;
+    }
+
+    console.log('Setting up questions UI for the first time.');
     prepareQuestionScreen();
     makeQuestionButtons();
-  });
+    checkForCompletedQuestions();
+
+    // Mark as initialized
+    state.questionsInitialized = true;
+  };
+
+  // Setup question buttons once questions are loaded
+  document.addEventListener('questionsLoaded', setupQuestionsUI);
 
   // Also handle direct calls from app.js compatibility layer
-  if (state.questions && state.questions.questions) {
-    console.log('Questions already available, setting up immediately');
-    prepareQuestionScreen();
-    makeQuestionButtons();
-  }
+  // This will catch cases where questions are loaded before this module
+  setupQuestionsUI();
 
   console.log('Question manager initialized');
 }
@@ -135,10 +148,10 @@ export function prepareQuestionScreen() {
   }
 
   // Create question buttons once questions are loaded
-  if (state.questions && state.questions.questions) {
-    makeQuestionButtons();
-    checkForCompletedQuestions();
-  }
+  // if (state.questions && state.questions.questions) {
+  //   makeQuestionButtons();
+  //   checkForCompletedQuestions();
+  // }
 }
 
 /**
@@ -184,10 +197,15 @@ export function makeQuestionButtons() {
     const button = document.createElement('div');
     button.id = `questionButton${i}`;
     button.className = 'questionButton';
-    button.setAttribute('role', 'button');
+    button.setAttribute('role', 'listitem');
     button.setAttribute('tabindex', '0');
     button.setAttribute('aria-controls', 'questionBox');
-    button.setAttribute('aria-label', `Question ${i + 1}`);
+    button.setAttribute('aria-label', `Question ${i + 1} of ${questionCount}`);
+    button.setAttribute('aria-posinset', `${i + 1}`);
+    button.setAttribute('aria-setsize', `${questionCount}`);
+
+
+
 
     // Create button text
     const buttonText = document.createElement('div');
@@ -351,7 +369,7 @@ export function setQuestion(questionIndex) {
   }
 
   // Check for previously selected answers
-  checkForCompletedQuestions();
+  // checkForCompletedQuestions();
 }
 
 /**
@@ -386,6 +404,9 @@ function resetQuestionDisplay() {
   const fillInAnswer = document.getElementById('fillInAnswer');
   if (fillInAnswer) {
     fillInAnswer.value = '';
+    fillInAnswer.classList.remove('anim_fillInAnswerCorrect', 'correct-answer');
+    fillInAnswer.disabled = false;
+    fillInAnswer.removeAttribute('disabled');
   }
 
   // Clear any ongoing letter flip
@@ -467,7 +488,7 @@ function setupFillInQuestion(question) {
     // text.style.opacity = 0;
     text.style.pointerEvents = 'none';
   });
-  
+
 
   // Show fill-in elements
   const fillInPanels = document.querySelectorAll('.fillInPanel');
@@ -476,18 +497,18 @@ function setupFillInQuestion(question) {
   fillInPanels.forEach(panel => {
     const panelText = panel.querySelector('.fillInPanelText');
     if (panelText && panelText.textContent === '?') {
-        panel.style.opacity = 1;
-        panel.style.pointerEvents = 'all';
-        panel.tabIndex = 0;
-        panel.style.zIndex = '2000';
-    } 
+      panel.style.opacity = 1;
+      panel.style.pointerEvents = 'all';
+      panel.tabIndex = 0;
+      panel.style.zIndex = '2000';
+    }
     // else {
     //     panel.style.opacity = 0;
     //     panel.style.pointerEvents = 'none';
     //     panel.tabIndex = -1;
     //     panel.style.zIndex = '0';
     // }
-});
+  });
 
   if (fillInAnswer) {
     fillInAnswer.style.opacity = 1;
@@ -621,6 +642,7 @@ function setupShortResponseQuestion(question) {
  * @param {number} pos - Position of the letter to reveal
  */
 function revealLetter(pos) {
+  console.log(getLetterRevealProgress().remaining);
   const panel = document.getElementById(`fillInPanel${pos}`);
   const panelText = document.getElementById(`fillInPanelText${pos}`);
 
@@ -664,13 +686,41 @@ function revealLetter(pos) {
 /**
  * Reveal all letters
  */
-// function revealAllLetters() {
-//   clearTimeout(letterFlipTimeout);
+function revealAllLetters() {
+  clearTimeout(letterFlipTimeout);
 
-//   state.letterPanels.forEach(panel => {
-//     revealLetter(panel.pos);
-//   });
-// }
+  state.letterPanels.forEach(panel => {
+    revealLetter(panel.pos);
+  });
+}
+function getRevealedLettersCount() {
+  let revealedCount = 0;
+
+  state.letterPanels.forEach(panel => {
+    const panelText = document.getElementById(`fillInPanelText${panel.pos}`);
+    if (panelText && panelText.textContent !== '?') {
+      revealedCount++;
+    }
+  });
+
+  return revealedCount;
+}
+
+function getTotalLettersCount() {
+  return state.letterPanels.length;
+}
+
+function getLetterRevealProgress() {
+  const revealed = getRevealedLettersCount();
+  const total = getTotalLettersCount();
+
+  return {
+    revealed: revealed,
+    total: total,
+    percentage: Math.round((revealed / total) * 100),
+    remaining: total - revealed
+  };
+}
 
 /**
  * Select answer for multiple choice question
@@ -728,7 +778,8 @@ export function selectAnswer(answerIndex) {
 function answerCorrect(answerIndex) {
   // Mark question as correctly answered
   state.userData.answerData[state.currentQuestion].correct = true;
-
+  //currentQuestionType = question.type;
+  //const type = question.type;
   // Calculate score for this question
   const questionCount = state.questions.questions.length;
   const baseScore = Math.floor(config.scoring.maxQuestionScore / questionCount);
@@ -771,6 +822,74 @@ function answerCorrect(answerIndex) {
   updateScore(score);
 }
 
+function answerCorrectFillIn() {
+  // Mark question as correctly answered
+  state.userData.answerData[state.currentQuestion].correct = true;
+
+  // Get current question
+  const question = state.questions.questions[state.currentQuestion];
+
+  // --- Simplified Scoring Logic ---
+  const questionCount = state.questions.questions.length;
+  const baseScore = Math.floor(config.scoring.maxQuestionScore / questionCount);
+  const attempts = state.userData.answerData[state.currentQuestion].answers.length;
+
+  // Calculate penalty for incorrect attempts
+  const attemptPenalty = Math.pow(config.scoring.incorrectPenalty, Math.max(0, attempts - 1));
+
+  // Calculate penalty for revealed letters
+  const progress = getLetterRevealProgress();
+  const letterRevealPenalty = (progress.revealed / progress.total) * config.scoring.letterRevealPenalty;
+
+  // Calculate final score
+  let score = baseScore * attemptPenalty * (1 - letterRevealPenalty);
+  score = Math.max(0, Math.floor(score)); // Ensure score is not negative
+
+  // Save score
+  state.userData.answerData[state.currentQuestion].score = score;
+  console.log(`this is the score ${score}`);
+
+  // Animate the fill-in input field (show it's correct)
+  const fillInAnswer = document.getElementById('fillInAnswer') || document.querySelector('input[type="text"]');
+  if (fillInAnswer) {
+    fillInAnswer.classList.add('correct-answer');
+    fillInAnswer.classList.add('anim_fillInAnswerCorrect');
+    // Optionally disable the input
+    fillInAnswer.disabled = true;
+  }
+
+  // Animate question button
+  animateAnswerCorrect(state.currentQuestion);
+
+  // Show explanation
+  const expoBox = document.getElementById('expoBox');
+  const expoTitle = document.getElementById('expoTitle');
+  const expoText = document.getElementById('expoText');
+
+  if (expoBox && expoTitle && expoText) {
+    expoTitle.textContent = 'Correct';
+
+    // Handle explanation text for fill-in questions
+    let explanation = 'Correct answer!';
+
+    if (question.expoText) {
+      // For fill-in questions, explanation might be a string or array
+      explanation = Array.isArray(question.expoText) ? question.expoText[0] : question.expoText;
+    } else if (question.explanation) {
+      explanation = question.explanation;
+    }
+
+    expoText.innerHTML = urlify(explanation);
+    expoBox.classList.add('anim_expoFadeIn');
+  }
+
+  // Show explanation buttons
+  showExplanationButtons(true);
+
+  // Update score
+  updateScore(score);
+}
+
 /**
  * Handle incorrect answer
  * @param {number} answerIndex - Index of selected answer
@@ -801,6 +920,73 @@ function answerIncorrect(answerIndex) {
 
   // Show explanation buttons
   showExplanationButtons(false);
+}
+function answerIncorrectFillIn() {
+  // Get current question
+  const question = state.questions.questions[state.currentQuestion];
+
+  // Animate the fill-in input field (show it's incorrect)
+  const fillInInput = document.getElementById('fillInAnswer') || document.querySelector('input[type="text"]');
+  if (fillInInput) {
+    fillInInput.classList.add('incorrect-answer', 'anim_shake');
+    // Add red styling to indicate wrong answer
+    fillInInput.style.borderColor = '#f44336';
+    fillInInput.style.backgroundColor = '#ffebee';
+
+    // Remove animation class after animation completes
+    setTimeout(() => {
+      fillInInput.classList.remove('anim_shake');
+    }, 600);
+  }
+
+  // Show explanation
+  const expoBox = document.getElementById('expoBox');
+  const expoTitle = document.getElementById('expoTitle');
+  const expoText = document.getElementById('expoText');
+
+  if (expoBox && expoTitle && expoText) {
+    expoTitle.textContent = 'Incorrect';
+
+    // Handle explanation text for fill-in questions
+    let explanation = 'That is not the correct answer.';
+
+    if (question.expoText) {
+      // For fill-in questions, explanation might be a string or array
+      explanation = Array.isArray(question.expoText) ? question.expoText[0] : question.expoText;
+    } else if (question.explanation) {
+      explanation = question.explanation;
+    } else if (question.incorrectExplanation) {
+      explanation = question.incorrectExplanation;
+    }
+
+    // Optionally show the correct answer in the explanation
+    if (question.answerText && question.answerText[0]) {
+      explanation += ` The correct answer is: "${question.answerText[0]}"`;
+    }
+
+    expoText.innerHTML = urlify(explanation);
+    expoBox.classList.add('anim_expoFadeIn');
+  }
+
+  // Show explanation buttons (false indicates incorrect answer)
+  showExplanationButtons(false);
+
+  // Optionally clear the input field for another attempt
+  if (fillInInput) {
+    setTimeout(() => {
+      fillInInput.value = '';
+      fillInInput.style.borderColor = '';
+      fillInInput.style.backgroundColor = '';
+      fillInInput.classList.remove('incorrect-answer');
+      fillInInput.focus(); // Focus back on input for another attempt
+    }, 2000); // Clear after 2 seconds
+  }
+
+  // Keep submit button visible for another attempt
+  const submitButton = document.getElementById('submitFillButton') || document.querySelector('button[onclick*="submitFillAnswer"]');
+  if (submitButton) {
+    submitButton.style.display = 'block';
+  }
 }
 
 /**
@@ -940,7 +1126,7 @@ export function submitTextAnswer(answer) {
  * @param {string} answer - The submitted answer
  */
 function submitFillAnswer(answer) {
-  if (state.currentQuestion < 0 || !answer) return;
+  if (state.currentQuestion < 0 || !answer || !answer.trim()) return;
 
   const question = state.questions.questions[state.currentQuestion];
   if (!question) return;
@@ -955,20 +1141,14 @@ function submitFillAnswer(answer) {
   // Check if answer is correct
   const correct = userAnswer === correctAnswer;
 
-  // Update UI
-  const fillInAnswer = document.getElementById('fillInAnswer');
-  if (fillInAnswer) {
-    fillInAnswer.classList.add(correct ? 'anim_fillInAnswerCorrect' : 'anim_fillInAnswerIncorrect');
-  }
-
   // Reveal all letters
   revealAllLetters();
 
   // Handle correct/incorrect logic
   if (correct) {
-    answerCorrect(-1); // -1 since there's no specific answer index
+    answerCorrectFillIn(); // Use the specialized function for fill-in questions
   } else {
-    answerIncorrect(-1);
+    answerIncorrectFillIn(); // You might want to create answerIncorrectFillIn() too
   }
 }
 
@@ -1365,6 +1545,7 @@ export function resetQuiz() {
   for (let i = 0; i < state.questions.questions.length; i++) {
     const button = document.getElementById(`questionButton${i}`);
     const buttonIcon = document.getElementById(`questionButtonIcon${i}`);
+    const questionButtonText = document.getElementById(`questionButtonText${i}`);
 
     if (button) {
       button.classList.remove('questionButtonCorrect');
@@ -1372,6 +1553,12 @@ export function resetQuiz() {
 
     if (buttonIcon) {
       buttonIcon.classList.remove('questionButtonIconCorrect');
+      buttonIcon.classList.remove('iconCorrect');
+      buttonIcon.classList.remove('anim_spinButton');
+    }
+
+    if (questionButtonText) {
+      questionButtonText.style.display = 'block';
     }
   }
 
@@ -1388,14 +1575,58 @@ export function resetQuiz() {
 /**
  * Animate correct answer for a question button
  * @param {number} questionIndex - Index of the question
+ * @param {boolean} [spin=true] - Whether to play the spin animation
  */
-export function animateAnswerCorrect(questionIndex) {
+export function animateAnswerCorrect(questionIndex, spin = true) {
   const button = document.getElementById(`questionButton${questionIndex}`);
   const buttonIcon = document.getElementById(`questionButtonIcon${questionIndex}`);
+  const questionButtonText = document.getElementById(`questionButtonText${questionIndex}`);
 
   if (button && buttonIcon) {
     button.classList.add('questionButtonCorrect');
+
+    if (questionButtonText) {
+      questionButtonText.style.display = 'none';
+    }
+
     buttonIcon.classList.add('questionButtonIconCorrect');
+    buttonIcon.classList.add('iconCorrect');
+
+    // If we need to spin, add the class and then remove it after the animation.
+    if (spin) {
+      buttonIcon.classList.add('anim_spinButton');
+      // After the animation, remove the class so the iconCorrect styles persist.
+      setTimeout(() => {
+        buttonIcon.classList.remove('anim_spinButton');
+      }, 500); // Animation duration in ms
+    }
+  }
+
+  // Additional animation for fill-in questions
+  const question = state.questions && state.questions.questions && state.questions.questions[questionIndex];
+  if (question && question.type === 'fill-in') {
+    // Animate the fill-in input field
+    const fillInInput = document.getElementById('fillInAnswer') || document.querySelector('input[type="text"]');
+    if (fillInInput) {
+      fillInInput.classList.add('anim_fillInCorrect');
+      // Add green border or success styling
+      fillInInput.style.borderColor = '#4CAF50';
+      fillInInput.style.backgroundColor = '#E8F5E8';
+    }
+
+    // Animate any fill-in specific elements
+    const fillInContainer = document.getElementById('fillInContainer') || fillInInput?.parentElement;
+    if (fillInContainer) {
+      fillInContainer.classList.add('anim_correctAnswer');
+    }
+
+    // Show correct answer if it wasn't already visible
+    const correctAnswerDisplay = document.getElementById('correctAnswerDisplay');
+    if (correctAnswerDisplay && question.answerText && question.answerText[0]) {
+      correctAnswerDisplay.textContent = `Correct answer: ${question.answerText[0]}`;
+      correctAnswerDisplay.style.display = 'block';
+      correctAnswerDisplay.classList.add('anim_fadeIn');
+    }
   }
 }
 
@@ -1519,7 +1750,7 @@ function checkForCompletedQuestions() {
 
   for (let i = 0; i < state.userData.answerData.length; i++) {
     if (state.userData.answerData[i]?.correct) {
-      animateAnswerCorrect(i);
+      animateAnswerCorrect(i, false);
     }
   }
 }
