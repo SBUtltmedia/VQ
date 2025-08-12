@@ -8,6 +8,7 @@ import state from './state.js';
 import { urlify } from './utils.js';
 import videoPlayer from './videoPlayer.js';
 import { updateScore } from './videoPlayer.js';
+import { announceToScreenReader } from './accessibility.js';
 
 // Private module variables
 let currentQuestionType = null;
@@ -346,7 +347,9 @@ export function setQuestion(questionIndex) {
 
   if (questionText) {
     questionText.innerHTML = urlify(`${questionNumber}. ${question.questionText}`);
-    questionText.setAttribute('aria-label', `Question ${questionNumber}: ${question.questionText}`);
+    // questionText.setAttribute('role', 'heading');
+    // questionText.setAttribute('aria-level', '2');
+    //questionText.setAttribute('aria-label', `Question ${questionNumber}: ${question.questionText}`);
   }
 
   if (smallQuestionText) {
@@ -408,6 +411,12 @@ function resetQuestionDisplay() {
     fillInAnswer.disabled = false;
     fillInAnswer.removeAttribute('disabled');
   }
+  const fillInPanels = document.querySelectorAll('.fillInPanel');
+
+  fillInPanels.forEach(panel => {
+    panel.style.pointerEvents = 'auto';
+  });
+
 
   // Clear any ongoing letter flip
   if (letterFlipTimeout) {
@@ -491,24 +500,7 @@ function setupFillInQuestion(question) {
 
 
   // Show fill-in elements
-  const fillInPanels = document.querySelectorAll('.fillInPanel');
   const fillInAnswer = document.getElementById('fillInAnswer');
-
-  fillInPanels.forEach(panel => {
-    const panelText = panel.querySelector('.fillInPanelText');
-    if (panelText && panelText.textContent === '?') {
-      panel.style.opacity = 1;
-      panel.style.pointerEvents = 'all';
-      panel.tabIndex = 0;
-      panel.style.zIndex = '2000';
-    }
-    // else {
-    //     panel.style.opacity = 0;
-    //     panel.style.pointerEvents = 'none';
-    //     panel.tabIndex = -1;
-    //     panel.style.zIndex = '0';
-    // }
-  });
 
   if (fillInAnswer) {
     fillInAnswer.style.opacity = 1;
@@ -572,9 +564,16 @@ function setupFillInQuestion(question) {
             panel.style.left = `${5 * j + 2.5 * (20 - cols)}%`;
             panel.style.top = `${20 * i}%`;
             panel.style.opacity = 1;
+            //panel.setAttribute('aria-live', 'polite');
+            panel.style.pointerEvents = 'all';
+            panel.tabIndex = 0;
+            panel.style.zIndex = '2000';
           } else {
             // Hide panel for spaces or beyond text length
             panel.style.opacity = 0;
+            panel.style.pointerEvents = 'none';
+            panel.tabIndex = -1;
+            panel.style.zIndex = '0';
           }
         }
       }
@@ -584,10 +583,30 @@ function setupFillInQuestion(question) {
         const panel = document.getElementById(`fillInPanel${20 * i + j}`);
         if (panel) {
           panel.style.opacity = 0;
+          panel.style.pointerEvents = 'none';
+          panel.tabIndex = -1;
+          panel.style.zIndex = '0';
         }
       }
     }
   }
+  const fillInPanels = document.querySelectorAll('.fillInPanel');
+
+  // fillInPanels.forEach(panel => {
+  //   const panelText = panel.querySelector('.fillInPanelText');
+  //   if (panelText && panelText.textContent === '?') {
+  //     panel.style.opacity = 1;
+  //     panel.style.pointerEvents = 'all';
+  //     panel.tabIndex = 0;
+  //     panel.style.zIndex = '2000';
+  //   }
+    // else {
+    //     panel.style.opacity = 0;
+    //     panel.style.pointerEvents = 'none';
+    //     panel.tabIndex = -1;
+    //     panel.style.zIndex = '0';
+    // }
+  //});
 
   // Focus the answer input
   if (fillInAnswer) {
@@ -678,6 +697,8 @@ function revealLetter(pos) {
       setTimeout(() => {
         panelText.textContent = letterInfo.letter;
         panelText.style.color = 'white';
+        // Announce the revealed letter for screen readers
+        announceToScreenReader(letterInfo.letter, true);
       }, 250); // Half of animation duration
     }
   }
@@ -872,12 +893,8 @@ function answerCorrectFillIn() {
     // Handle explanation text for fill-in questions
     let explanation = 'Correct answer!';
 
-    if (question.expoText) {
-      // For fill-in questions, explanation might be a string or array
-      explanation = Array.isArray(question.expoText) ? question.expoText[0] : question.expoText;
-    } else if (question.explanation) {
-      explanation = question.explanation;
-    }
+    // Always show a simple confirmation message for fill-in correct answers
+    //explanation = 'Correct!';
 
     expoText.innerHTML = urlify(explanation);
     expoBox.classList.add('anim_expoFadeIn');
@@ -950,19 +967,19 @@ function answerIncorrectFillIn() {
     // Handle explanation text for fill-in questions
     let explanation = 'That is not the correct answer.';
 
-    if (question.expoText) {
-      // For fill-in questions, explanation might be a string or array
-      explanation = Array.isArray(question.expoText) ? question.expoText[0] : question.expoText;
-    } else if (question.explanation) {
-      explanation = question.explanation;
-    } else if (question.incorrectExplanation) {
-      explanation = question.incorrectExplanation;
-    }
+    // if (question.expoText) {
+    //   // For fill-in questions, explanation might be a string or array
+    //   explanation = Array.isArray(question.expoText) ? question.expoText[0] : question.expoText;
+    // } else if (question.explanation) {
+    //   explanation = question.explanation;
+    // } else if (question.incorrectExplanation) {
+    //   explanation = question.incorrectExplanation;
+    // }
 
-    // Optionally show the correct answer in the explanation
-    if (question.answerText && question.answerText[0]) {
-      explanation += ` The correct answer is: "${question.answerText[0]}"`;
-    }
+    // // Optionally show the correct answer in the explanation
+    // if (question.answerText && question.answerText[0]) {
+    //   explanation += ` The correct answer is: "${question.answerText[0]}"`;
+    // }
 
     expoText.innerHTML = urlify(explanation);
     expoBox.classList.add('anim_expoFadeIn');
@@ -1254,54 +1271,74 @@ function setupModalFocusTrap() {
     const quizBank = document.getElementById('quizBank');
     if (!quizBank) return;
 
-    // Get all focusable elements
     const focusableSelector = 'button, [href], input, select, textarea, [tabindex="0"], .expoButton, .answerBox[tabindex="0"]';
-    const focusableElements = Array.from(quizBank.querySelectorAll(focusableSelector))
-      .filter(el => {
-        try {
-          const style = window.getComputedStyle(el);
-          return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
-        } catch (e) {
-          return true;
+
+    // Defer initial focus to allow question setup to complete
+    setTimeout(() => {
+      const focusableElements = Array.from(quizBank.querySelectorAll(focusableSelector))
+        .filter(el => {
+          try {
+            const style = window.getComputedStyle(el);
+            return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+          } catch (e) {
+            return true;
+          }
+        });
+
+      if (focusableElements.length > 0) {
+        const firstAnswerBox = quizBank.querySelector('.answerBox[tabindex="0"]');
+        const fillInAnswer = document.getElementById('fillInAnswer');
+
+        if (firstAnswerBox && firstAnswerBox.style.opacity !== '0') {
+          firstAnswerBox.focus();
+        } else if (fillInAnswer && fillInAnswer.style.opacity !== '0') {
+          fillInAnswer.focus();
+        } else if (focusableElements.length > 0) {
+          focusableElements[0].focus();
         }
-      });
-
-    if (focusableElements.length === 0) return;
-
-    // Set initial focus to first answer button if available
-    const firstAnswerBox = quizBank.querySelector('.answerBox[tabindex="0"]');
-    if (firstAnswerBox) {
-      setTimeout(() => firstAnswerBox.focus(), 100);
-    } else if (focusableElements.length > 0) {
-      setTimeout(() => focusableElements[0].focus(), 100);
-    }
+      }
+    }, 150); // Timeout to wait for question setup
 
     // Handle tab key to trap focus
     if (!state.keydownListenerAdded) {
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Tab' && state.showingQuestion) {
-          // Updated for newer browser
+          // Recalculate focusable elements on each tab press to handle dynamic content
+          const currentFocusableElements = Array.from(quizBank.querySelectorAll(focusableSelector))
+            .filter(el => {
+              try {
+                const style = window.getComputedStyle(el);
+                return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+              } catch (err) {
+                return true;
+              }
+            });
+
+          if (currentFocusableElements.length === 0) return;
+
           const focusedElement = document.activeElement;
 
-          // If not focused within quiz bank, set focus to first element
+          // If focus is somehow outside the modal, bring it back in.
           if (!quizBank.contains(focusedElement)) {
             e.preventDefault();
-            focusableElements[0].focus();
+            currentFocusableElements[0].focus();
             return;
           }
 
           // Handle tabbing
+          const focusedIndex = currentFocusableElements.indexOf(focusedElement);
+
           if (e.shiftKey) {
             // Tab backwards
-            if (focusedElement === focusableElements[0]) {
+            if (focusedIndex <= 0) {
               e.preventDefault();
-              focusableElements[focusableElements.length - 1].focus();
+              currentFocusableElements[currentFocusableElements.length - 1].focus();
             }
           } else {
             // Tab forwards
-            if (focusedElement === focusableElements[focusableElements.length - 1]) {
+            if (focusedIndex >= currentFocusableElements.length - 1) {
               e.preventDefault();
-              focusableElements[0].focus();
+              currentFocusableElements[0].focus();
             }
           }
         } else if (e.key === 'Escape' && state.showingQuestion) {

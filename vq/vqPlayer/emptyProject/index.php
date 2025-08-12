@@ -168,7 +168,7 @@ header("Location: /shib/?shibtarget=$target");
     </form>
   </div>
 
-  <div id="muteButton" class="btn muteOff" tabindex="0"></div>
+  <div id="muteButton" class="btn mutedOff" tabindex="0"></div>
   <input id="volumeSlider" type="range" min="0" max="100" value="100" step="1">
   
   <div id="volumeSliderBG" class="fakeSlider">
@@ -186,7 +186,7 @@ header("Location: /shib/?shibtarget=$target");
   <div id="questionBox" inert role = "form">
     <div id="questionBoxContents">
       <div id="questionBoxBG" class="rounded"></div>
-      <div id="questionText" class="text fs-40" role = "heading" aria-level="2"></div>
+      <div id="questionText" class="text fs-40"></div>
       <div id="fillInPanels"></div>
       <textarea id="fillInAnswer" class="rounded text fs-50"></textarea>
       <div id="expoBox" class="rounded">

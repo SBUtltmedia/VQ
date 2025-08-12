@@ -522,26 +522,21 @@ function handleVolumeChange() {
   if (!state.video) return;
 
   const volumeSlider = document.getElementById('volumeSlider');
-  const volumeTrack = document.getElementById('volumeSliderTrack');
 
   if (volumeSlider) {
-    const volume = parseFloat(volumeSlider.value) / 100;
-    state.video.volume = volume;
+    const newVolume = parseFloat(volumeSlider.value) / 100;
+    state.video.volume = newVolume;
 
-    // Store volume preference
+    // If user drags the slider, it should unmute unless they drag to 0
+    state.video.muted = newVolume === 0;
+
     try {
       localStorage.setItem('videoVolume', volumeSlider.value);
     } catch (e) {
       console.warn('Could not save volume preference:', e.message);
     }
 
-    // Update mute button state
-    updateMuteButton(volume === 0);
-
-    // Update volume slider appearance
-    if (volumeTrack) {
-      volumeTrack.style.width = `${volumeSlider.value}%`;
-    }
+    updateMuteButton();
   }
 }
 
@@ -551,41 +546,43 @@ function handleVolumeChange() {
 function toggleMute() {
   if (!state.video) return;
 
-  const volumeSlider = document.getElementById('volumeSlider');
-  const wasMuted = state.video.volume === 0 || state.video.muted;
+  state.video.muted = !state.video.muted;
 
-  if (wasMuted) {
-    // Unmute
-    state.video.muted = false;
-    if (volumeSlider && parseInt(volumeSlider.value) === 0) {
-      // If slider is at 0, set to 50
-      volumeSlider.value = 50;
-    }
-  } else {
-    // Mute
-    state.video.muted = true;
+  // If unmuting and volume is 0, set to a default value
+  if (!state.video.muted && state.video.volume === 0) {
+    state.video.volume = 0.5; // 50% volume
   }
 
-  // Apply the volume from slider
-  handleVolumeChange();
-  updateMuteButton(!wasMuted);
+  updateMuteButton();
 }
 
 /**
- * Update mute button appearance
- * @param {boolean} muted - Whether the video is muted
+ * Update mute button and volume slider appearance
  */
-function updateMuteButton(muted) {
+function updateMuteButton() {
+  if (!state.video) return;
+
   const muteButton = document.getElementById('muteButton');
+  const volumeSlider = document.getElementById('volumeSlider');
+  const volumeTrack = document.getElementById('volumeSliderTrack');
+  const isMuted = state.video.muted || state.video.volume === 0;
 
   if (muteButton) {
-    if (muted) {
-      muteButton.classList.add('muted');
-      muteButton.classList.remove('unmuted');
+    if (isMuted) {
+      muteButton.classList.remove('muteOff');
+      muteButton.classList.add('muteOn');
     } else {
-      muteButton.classList.add('unmuted');
-      muteButton.classList.remove('muted');
+      muteButton.classList.remove('muteOn');
+      muteButton.classList.add('muteOff');
     }
+  }
+
+  // Update volume slider to reflect the actual volume
+  if (volumeSlider) {
+    volumeSlider.value = state.video.volume * 100;
+  }
+  if (volumeTrack) {
+    volumeTrack.style.width = `${state.video.volume * 100}%`;
   }
 }
 

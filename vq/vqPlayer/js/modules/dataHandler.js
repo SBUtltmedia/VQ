@@ -254,6 +254,7 @@ async function loadQuizData() {
  * @returns {Promise} Promise that resolves when user data is loaded
  */
 async function loadUserData() {
+  console.log("loadUserData called");
   try {
     // Check for URL override for local development
     if (state.urlVars && state.urlVars.local) {
@@ -299,7 +300,14 @@ function loadLocalData() {
     const data = localStorage.getItem("quizUserData");
 
     if (data) {
-      updateUserDataFromServer(JSON.parse(data));
+      // updateUserDataFromServer(JSON.parse(data));
+      updateUserDataFromServer({
+        watchData: [],
+        attempts: [],
+        answerData: [],
+        bestScore: 0,
+        dataVersion: 1,
+      });
       return state.userData;
     }
   } catch (error) {
@@ -339,7 +347,6 @@ function initializeNewUserData() {
  */
 function updateUserDataFromServer(data) {
   if (!data) return;
-
   // Update user data fields
   state.userData.watchData = data.watchData || [];
   state.userData.attempts = data.attempts || [];
@@ -448,7 +455,7 @@ async function saveWatchData() {
     const userEmail = document.querySelector('meta[name="user-email"]')?.content;
 
     if (userEmail) {
-      const response = await fetch("/saveUserData.php", {
+      const response = await fetch("./saveUserData.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -489,7 +496,8 @@ async function saveUserData(isComplete = false, finalScore = 0) {
     console.warn("No user data available to save.");
     return;
   }
-  console.log("saveUserData called", { isComplete, finalScore });
+  console.log("saveUserData called", { isComplete, finalScore, state });
+
   try {
     // Update last saved timestamp
     state.lastSaved = Date.now();
