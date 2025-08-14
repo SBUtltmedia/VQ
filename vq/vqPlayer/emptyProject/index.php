@@ -18,7 +18,11 @@ if(array_key_exists("lis_person_name_given", $_POST)){
 EOT;
 }
 #else if(array_key_exists("mail",$_SESSION)){
-else if(isset($_SESSION['mail'])){
+else if(isset($_SERVER['mail'])){
+  $_SESSION['mail']= $_SERVER['mail'];
+  $_SESSION['givenName']= $_SERVER['givenName'];
+  $_SESSION['nickname']= $_SERVER['nickname'];
+  $_SESSION['sn']= $_SERVER['sn'];
 }
 else{
   if (!isset($_SERVER['cn']) && file_exists(".htaccess")){

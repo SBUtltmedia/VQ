@@ -261,25 +261,39 @@ async function loadUserData() {
       return loadLocalData();
     }
 
-    // Try to load from server
-    const userEmail = document.querySelector(
-      'meta[name="user-email"]',
-    )?.content;
+    // 1) Try server endpoint first (session-aware like legacy app.js)
+    try {
+      const serverResponse = await fetch("loadUserData.php", {
+        credentials: "same-origin",
+      });
 
+      if (serverResponse.ok) {
+        const serverData = await serverResponse.json();
+        if (serverData && Object.keys(serverData).length > 0) {
+          updateUserDataFromServer(serverData);
+          return state.userData;
+        }
+      }
+    } catch (serverError) {
+      console.warn("loadUserData.php request failed:", serverError);
+    }
+
+    // 2) Legacy fallback: flat-file by email under ./data/
+    const userEmail = document.querySelector('meta[name="user-email"]')?.content;
     if (userEmail) {
-      const response = await fetch(`data/${encodeURIComponent(userEmail)}`);
-
-      if (response.ok) {
-        const data = await response.json();
-
-        // Update user data
-        updateUserDataFromServer(data);
-
-        return state.userData;
+      try {
+        const response = await fetch(`data/${encodeURIComponent(userEmail)}`);
+        if (response.ok) {
+          const data = await response.json();
+          updateUserDataFromServer(data);
+          return state.userData;
+        }
+      } catch (emailLoadError) {
+        console.warn("Fallback data/<email> load failed:", emailLoadError);
       }
     }
 
-    // If server load fails or no email, try local storage
+    // 3) If all else fails, try local storage
     return loadLocalData();
   } catch (error) {
     console.warn("Error loading user data, using defaults:", error);
@@ -298,16 +312,8 @@ function loadLocalData() {
 
   try {
     const data = localStorage.getItem("quizUserData");
-
     if (data) {
-      // updateUserDataFromServer(JSON.parse(data));
-      updateUserDataFromServer({
-        watchData: [],
-        attempts: [],
-        answerData: [],
-        bestScore: 0,
-        dataVersion: 1,
-      });
+      updateUserDataFromServer(JSON.parse(data));
       return state.userData;
     }
   } catch (error) {
@@ -351,6 +357,7 @@ function updateUserDataFromServer(data) {
   state.userData.watchData = data.watchData || [];
   state.userData.attempts = data.attempts || [];
   state.userData.bestScore = data.bestScore || 0;
+  state.userData.responses = data.responses || {};
 
   // Update answer data, ensuring we have the right number of entries
   if (state.questions && state.questions.questions) {

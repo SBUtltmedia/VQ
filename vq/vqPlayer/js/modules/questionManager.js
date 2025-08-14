@@ -198,10 +198,10 @@ export function makeQuestionButtons() {
     const button = document.createElement('div');
     button.id = `questionButton${i}`;
     button.className = 'questionButton';
-    button.setAttribute('role', 'listitem');
+    button.setAttribute('role', 'button');
     button.setAttribute('tabindex', '0');
     button.setAttribute('aria-controls', 'questionBox');
-    button.setAttribute('aria-label', `Question ${i + 1} of ${questionCount}`);
+    //button.setAttribute('aria-label', `Question ${i + 1} of ${questionCount}`);
     button.setAttribute('aria-posinset', `${i + 1}`);
     button.setAttribute('aria-setsize', `${questionCount}`);
 
@@ -211,6 +211,7 @@ export function makeQuestionButtons() {
     // Create button text
     const buttonText = document.createElement('div');
     buttonText.id = `questionButtonText${i}`;
+    //buttonText.setAttribute('role', 'button');
     buttonText.className = 'questionButtonText text fs-30';
     buttonText.textContent = i + 1;
     // After creating buttonText
@@ -1586,6 +1587,7 @@ export function resetQuiz() {
 
     if (button) {
       button.classList.remove('questionButtonCorrect');
+      button.removeAttribute('aria-label');
     }
 
     if (buttonIcon) {
@@ -1621,6 +1623,7 @@ export function animateAnswerCorrect(questionIndex, spin = true) {
 
   if (button && buttonIcon) {
     button.classList.add('questionButtonCorrect');
+    button.setAttribute('aria-label', 'Correct');
 
     if (questionButtonText) {
       questionButtonText.style.display = 'none';
