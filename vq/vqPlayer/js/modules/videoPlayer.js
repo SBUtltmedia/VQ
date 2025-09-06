@@ -319,77 +319,83 @@ function handleTimeUpdate() {
   updateScore();
 }
 
-export function updateScore() {
-  const video = document.getElementById('videoBox');
-  if (!video || isNaN(video.duration)) return;
-
-  const floorDuration = Math.floor(video.duration || 1);
-  const maxVideoScore = config.scoring.maxVideoScore || 1000;
-  const maxQuestionScore = config.scoring.maxQuestionScore || 1000;
-  const maxScore = maxVideoScore + maxQuestionScore;
-
-  // --- Initialize watchedSecondsArray ---
-  if (!userData.watchedSecondsArray || userData.watchedSecondsArray.length !== floorDuration) {
-    userData.watchedSecondsArray = new Array(floorDuration).fill(0);
-  }
-
-  // --- Calculate video score ---
-  let watchedSeconds = 0;
-  for (let i = 0; i < floorDuration; i++) {
-    if (userData.watchedSecondsArray[i] > 0) watchedSeconds++;
-  }
-  const videoScore = Math.round((watchedSeconds / floorDuration) * maxVideoScore);
-
-  // --- Calculate quiz score ---
-  let quizScore = 0;
-  if (questions && Array.isArray(questions.questions) && questions.questions.length > 0) {
-    const questionCount = questions.questions.length;
-    let totalRawScore = 0;
-
-    if (Array.isArray(userData.answerData)) {
-      for (let i = 0; i < userData.answerData.length; i++) {
-        let rawScore = userData.answerData[i]?.score || 0;
-
-        // Normalize score if raw scale is over 1 (e.g., 0–10)
-        if (rawScore > 1) rawScore = rawScore / 10;
-
-        // Clamp to 0–1 to avoid overcounting
-        rawScore = Math.max(0, Math.min(1, rawScore));
-
-        totalRawScore += rawScore;
+export function updateScore(points = 0, targetScore = null) {
+  // If targetScore is provided, use it directly (for quiz completion)
+  if (targetScore !== null) {
+    state.userScore = targetScore;
+  } else if (points > 0) {
+    // Add points to current score
+    state.userScore += points;
+  } else {
+    // Recalculate total score from user data
+    let totalScore = 0;
+    
+    // Add question scores
+    if (state.userData && Array.isArray(state.userData.answerData)) {
+      for (let i = 0; i < state.userData.answerData.length; i++) {
+        totalScore += state.userData.answerData[i]?.score || 0;
       }
     }
-
-    const normalizedScore = totalRawScore / questionCount;
-    quizScore = Math.round(normalizedScore * maxQuestionScore);
-    userData.quizScore = Math.round(quizScore / 10);
+    
+    // Add video score if available
+    if (state.userData && state.userData.watchedSecondsArray) {
+      const video = document.getElementById('videoBox');
+      const maxVideoScore = config.scoring.maxVideoScore || 1000;
+      
+      // Calculate watched seconds from watchedSecondsArray
+      let watchedSeconds = 0;
+      const watchedArray = state.userData.watchedSecondsArray;
+      
+      for (let i = 0; i < watchedArray.length; i++) {
+        if (watchedArray[i] > 0) watchedSeconds++;
+      }
+      
+      // Use the length of watchedSecondsArray as the total duration if video duration is not available
+      const totalDuration = video && !isNaN(video.duration) ? Math.floor(video.duration) : watchedArray.length;
+      const videoScore = Math.round((watchedSeconds / totalDuration) * maxVideoScore);
+      totalScore += videoScore;
+    }
+    
+    state.userScore = totalScore;
   }
 
-  // --- Calculate total score (clamped to max) ---
-  const combinedScore = Math.min(videoScore + quizScore, maxScore);
-  state.userScore = combinedScore;
-
-  // --- Update score display ---
+  // Update score display
   const scoreNum = document.getElementById('scoreNum');
   if (scoreNum) {
     scoreNum.textContent = state.userScore;
   }
 
+  // Update score bar
   const scoreBar = document.getElementById('scoreBar');
   if (scoreBar) {
-    const percent = Math.floor((state.userScore / maxScore) * 100);
-    scoreBar.style.width = `${Math.min(percent, 100)}%`;
+    const maxScore = config.scoring.maxVideoScore + config.scoring.maxQuestionScore;
+    const percent = Math.min(100, Math.floor((state.userScore / maxScore) * 100));
+    scoreBar.style.width = `${percent}%`;
   }
 
-  // --- Best score tracking ---
-  if (!userData.bestScore || state.userScore > userData.bestScore) {
-    userData.bestScore = state.userScore;
+  // Update best score if needed
+  if (state.userData && (!state.userData.bestScore || state.userScore > state.userData.bestScore)) {
+    state.userData.bestScore = state.userScore;
   }
 
-  // --- Trigger any follow-up medal updates ---
-  if (typeof updateMedals === 'function') {
-    updateMedals();
+  // Show points bubble if points were added
+  if (points > 0) {
+    const scoreBubble = document.getElementById('scoreBubble');
+    const scoreBubbleText = document.getElementById('scoreBubbleText');
+
+    if (scoreBubble && scoreBubbleText) {
+      scoreBubbleText.textContent = `+${points}`;
+      scoreBubble.classList.remove('anim_scoreBubble');
+
+      // Force reflow to restart animation
+      void scoreBubble.offsetWidth;
+
+      scoreBubble.classList.add('anim_scoreBubble');
+    }
   }
+
+  // Update medals
+  updateMedals();
 }
 
 // export function updateScore() {
@@ -732,23 +738,22 @@ function recordTimeWatched() {
   // Only record short jumps (under 30s)
   if (end > start && end - start < 30) {
     // Push detailed watch log
-    userData.watchData.push({
-      start,
-      end,
-      timestamp: Date.now()
-    });
+    if (!state.userData.watchData) {
+      state.userData.watchData = [];
+    }
+    
 
     // Update watchedSecondsArray
     const floorStart = Math.floor(start);
     const floorEnd = Math.floor(end);
     const videoDuration = Math.floor(state.video.duration || 1);
 
-    if (!userData.watchedSecondsArray || userData.watchedSecondsArray.length !== videoDuration) {
-      userData.watchedSecondsArray = new Array(videoDuration).fill(0);
+    if (!state.userData.watchedSecondsArray || state.userData.watchedSecondsArray.length !== videoDuration) {
+      state.userData.watchedSecondsArray = new Array(videoDuration).fill(0);
     }
 
-    for (let i = floorStart; i <= floorEnd && i < userData.watchedSecondsArray.length; i++) {
-      userData.watchedSecondsArray[i] = 1;
+    for (let i = floorStart; i <= floorEnd && i < state.userData.watchedSecondsArray.length; i++) {
+      state.userData.watchedSecondsArray[i] = 1;
     }
   }
 

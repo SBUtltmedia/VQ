@@ -3141,3 +3141,18 @@ export default {
 //     letterFlipTimeout = null;
 //   }
 // }
+// Show explanation
+  const expoBox = document.getElementById('expoBox');
+  const expoTitle = document.getElementById('expoTitle');
+  const expoText = document.getElementById('expoText');
+
+  if (expoBox && expoTitle && expoText) {
+    expoTitle.textContent = 'Correct';
+
+    // Use explanation text if available
+    const question = state.questions.questions[state.currentQuestion];
+    const explanation = question.expoText[answerIndex] || 'Correct answer!';
+
+    expoText.innerHTML = urlify(explanation);
+    expoBox.classList.add('anim_expoFadeIn');
+  }
