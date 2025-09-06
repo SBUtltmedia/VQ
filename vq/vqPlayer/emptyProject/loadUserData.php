@@ -1,26 +1,32 @@
+
 <?php
 session_start();
-// Get netID
-clearstatcache();
-$netID = $_SESSION['mail'] ?? $_SERVER['mail'];
-if ($netID=="") $netID= "japalmeri";
-// Make directory for that netID if it does not exist already
-$dataPath="./data/" . $netID;
-if(file_exists($dataPath))
-{
-$rawData=file_get_contents($dataPath);
+header("Content-Type: application/json");
+
+// Determine user identity
+$netID = $_SESSION['mail'] ?? $_SERVER['mail'] ?? "";
+if ($netID === "") {
+    $netID = "guest_" . time();
 }
-else{
-$rawData='{"watchData":[],"attempts":[]}';
+
+$dataPath = "./data/" . $netID;
+
+if (file_exists($dataPath)) {
+    $rawData = file_get_contents($dataPath);
+} else {
+    // default empty userData schema
+    $rawData = '{"watchData":[],"attempts":[],"answerData":[],"bestScore":0,"dataVersion":1}';
 }
-//if (!file_exists($dataPath)) {
-//    file_put_contents($dataPath, '{"watchData": [],"attempts": []}');
-//}
-// Get student data
+
+// Decode existing user data JSON
 $a = json_decode($rawData);
-$a -> netID =  $_SESSION['mail'] ?? $_SERVER['mail'];
-$a -> firstname = $_SESSION['givenName'] ?? $_SERVER['givenName'];
-$a -> nickname = $_SESSION['nickname'] ?? $_SERVER['nickname'];
-$a -> lastname = $_SESSION['sn'] ?? $_SERVER['sn'];
-print json_encode($a);
+
+// Add session info dynamically
+$a->netID     = $_SESSION['mail'] ?? $_SERVER['mail'] ?? $netID;
+$a->firstname = $_SESSION['givenName'] ?? $_SERVER['givenName'] ?? "";
+$a->nickname  = $_SESSION['nickname'] ?? $_SERVER['nickname'] ?? "";
+$a->lastname  = $_SESSION['sn'] ?? $_SERVER['sn'] ?? "";
+
+echo json_encode($a);
 ?>
+

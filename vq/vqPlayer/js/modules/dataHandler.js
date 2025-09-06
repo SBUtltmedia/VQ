@@ -6,6 +6,7 @@
 import config from "./config.js";
 import state from "./state.js";
 import { getUrlVars, canAccessLocalStorage } from "./utils.js";
+import { updateScore } from "./videoPlayer.js";
 
 /**
  * Initialize the data handler
@@ -19,14 +20,15 @@ export function initDataHandler() {
     .then(() => {
       // Only proceed if the user has permission to view the quiz
       if (state.canView) {
-        // Load quiz data
-        return loadQuizData();
+        // Load quiz data first, then user data
+        return loadQuizData().then(() => {
+          return loadUserData().then(userData => {
+            resumeVideoFromServer(userData);
+            return userData;
+          });
+        });
       }
       return Promise.reject("No view permission");
-    })
-    .then(() => {
-      // Load user data
-      return loadUserData();
     })
     .then(() => {
       // Dispatch event to signal data is loaded
@@ -39,7 +41,7 @@ export function initDataHandler() {
 
   // Set up event listeners for data saving
   setupEventListeners();
-  setupVideoAutoSave();
+  //setupVideoAutoSave();
 }
 
 /**
@@ -73,41 +75,69 @@ function setupEventListeners() {
 /**
  * Set up auto-saving watch data based on video playback
  */
-function setupVideoAutoSave() {
+// function setupVideoAutoSave() {
+//   const video = document.getElementById("videoBox");
+
+//   if (!video) {
+//     console.warn("Video element not found for autosave.");
+//     return;
+//   }
+
+//   video.addEventListener("timeupdate", () => {
+//     const now = Date.now();
+//     const currentTime = Math.floor(video.currentTime);
+
+//     // Ensure userData and watchData are initialized
+//     if (!state.userData) return;
+//     if (!Array.isArray(state.userData.watchData)) {
+//       state.userData.watchData = [];
+//     }
+
+//     // Mark this second as watched
+//     state.userData.watchData[currentTime] = 1;
+
+//     // Update last watched timestamp
+//     state.lastWatched = now;
+
+//     // Save every 60 seconds
+//     if (!state.lastSaved || now - state.lastSaved > 60000) {
+//       saveWatchData();
+//       state.lastSaved = now;
+//     }
+//   });
+
+//   // Optional: Save on pause or end
+//   video.addEventListener("pause", saveWatchData);
+//   video.addEventListener("ended", saveWatchData);
+// }
+
+function resumeVideoFromServer(userData) {
   const video = document.getElementById("videoBox");
+  if (!video) return;
 
-  if (!video) {
-    console.warn("Video element not found for autosave.");
-    return;
+  // Check for lastPosition in userData
+  const lastPosition = userData?.lastPosition || state.userData?.lastPosition;
+  
+  if (lastPosition && typeof lastPosition === 'number') {
+    // Wait for video metadata to load to get duration
+    if (video.duration && !isNaN(video.duration)) {
+      // Video already loaded
+      if (lastPosition < video.duration) {
+        video.currentTime = lastPosition;
+        console.log("Resumed video at:", lastPosition, "seconds");
+      }
+    } else {
+      // Wait for metadata to load
+      video.addEventListener("loadedmetadata", () => {
+        if (lastPosition < video.duration) {
+          video.currentTime = lastPosition;
+          console.log("Resumed video at:", lastPosition, "seconds");
+        }
+      }, { once: true });
+    }
   }
-
-  video.addEventListener("timeupdate", () => {
-    const now = Date.now();
-    const currentTime = Math.floor(video.currentTime);
-
-    // Ensure userData and watchData are initialized
-    if (!state.userData) return;
-    if (!Array.isArray(state.userData.watchData)) {
-      state.userData.watchData = [];
-    }
-
-    // Mark this second as watched
-    state.userData.watchData[currentTime] = 1;
-
-    // Update last watched timestamp
-    state.lastWatched = now;
-
-    // Save every 60 seconds
-    if (!state.lastSaved || now - state.lastSaved > 60000) {
-      saveWatchData();
-      state.lastSaved = now;
-    }
-  });
-
-  // Optional: Save on pause or end
-  video.addEventListener("pause", saveWatchData);
-  video.addEventListener("ended", saveWatchData);
 }
+
 
 
 /**
@@ -159,7 +189,7 @@ async function loadPermissions() {
       state.canView = true;
     } else {
       // If not explicitly public or unlocked by "locked":"false", use authentication logic.
-      state.canView = checkUserAuthentication();
+    state.canView = checkUserAuthentication();
     }
   } catch (error) {
     console.error("Error in loadPermissions:", error);
@@ -180,6 +210,42 @@ async function loadPermissions() {
   }
 
   return state.permissionData;
+}
+
+/**
+ * Recompute view permission using legacy logic (like app.js)
+ */
+function recomputeCanView() {
+  try {
+    let canView = false;
+    const perm = state.permissionData || {};
+    const user = state.userData || {};
+
+    // Legacy logic: if not explicitly private, allow view
+    if (perm.isPrivate !== true) {
+      canView = true;
+    } else {
+      const netId = user.netID;
+      const canAccessList = Array.isArray(perm.canAccessData) ? perm.canAccessData : [];
+      const canViewQuizList = Array.isArray(perm.canViewQuiz) ? perm.canViewQuiz : [];
+
+      if (netId && (canAccessList.includes(netId) || canViewQuizList.includes(netId))) {
+        canView = true;
+      }
+
+      if (!canView && netId && window.location && typeof window.location.href === 'string') {
+        if (window.location.href.indexOf(netId) !== -1) {
+          canView = true;
+        }
+      }
+    }
+
+    state.canView = canView;
+    // Update blocker visibility immediately when this changes
+    updateBlockerVisibility();
+  } catch (e) {
+    console.warn('recomputeCanView failed:', e);
+  }
 }
 
 /**
@@ -256,50 +322,27 @@ async function loadQuizData() {
 async function loadUserData() {
   console.log("loadUserData called");
   try {
-    // Check for URL override for local development
-    if (state.urlVars && state.urlVars.local) {
-      return loadLocalData();
-    }
+    const serverResponse = await fetch("loadUserData.php", {
+      credentials: "same-origin",
+    });
 
-    // 1) Try server endpoint first (session-aware like legacy app.js)
-    try {
-      const serverResponse = await fetch("loadUserData.php", {
-        credentials: "same-origin",
-      });
-
-      if (serverResponse.ok) {
-        const serverData = await serverResponse.json();
-        if (serverData && Object.keys(serverData).length > 0) {
-          updateUserDataFromServer(serverData);
-          return state.userData;
-        }
-      }
-    } catch (serverError) {
-      console.warn("loadUserData.php request failed:", serverError);
-    }
-
-    // 2) Legacy fallback: flat-file by email under ./data/
-    const userEmail = document.querySelector('meta[name="user-email"]')?.content;
-    if (userEmail) {
-      try {
-        const response = await fetch(`data/${encodeURIComponent(userEmail)}`);
-        if (response.ok) {
-          const data = await response.json();
-          updateUserDataFromServer(data);
-          return state.userData;
-        }
-      } catch (emailLoadError) {
-        console.warn("Fallback data/<email> load failed:", emailLoadError);
+    if (serverResponse.ok) {
+      const serverData = await serverResponse.json();
+      if (serverData && Object.keys(serverData).length > 0) {
+        updateUserDataFromServer(serverData);
+        return state.userData;
       }
     }
 
-    // 3) If all else fails, try local storage
-    return loadLocalData();
+    console.warn("Server returned no data, initializing new userData.");
+    return initializeNewUserData();
   } catch (error) {
-    console.warn("Error loading user data, using defaults:", error);
+    console.warn("Error loading user data:", error);
     return initializeNewUserData();
   }
 }
+
+
 
 /**
  * Load data from local storage
@@ -353,11 +396,19 @@ function initializeNewUserData() {
  */
 function updateUserDataFromServer(data) {
   if (!data) return;
-  // Update user data fields
-  state.userData.watchData = data.watchData || [];
-  state.userData.attempts = data.attempts || [];
-  state.userData.bestScore = data.bestScore || 0;
-  state.userData.responses = data.responses || {};
+  
+  // Shallow merge: data overwrites client, but keep any client-only fields
+  state.userData = {
+    ...state.userData,
+    ...data,
+  };
+
+  console.log("User data synced from server:", state.userData);
+
+  // Carry over identity fields if provided by server
+  if (data.nickname) state.userData.nickname = data.nickname;
+  if (data.lastname) state.userData.lastname = data.lastname;
+  if (data.netID) state.userData.netID = data.netID;
 
   // Update answer data, ensuring we have the right number of entries
   if (state.questions && state.questions.questions) {
@@ -383,7 +434,8 @@ function updateUserDataFromServer(data) {
   // Ensure version number is set
   state.userData.dataVersion = data.dataVersion || 1;
 
-  // Update UI to reflect loaded data
+  // Recompute canView with newly available user identity and update UI
+  recomputeCanView();
   updateUIFromUserData();
 }
 
@@ -392,36 +444,20 @@ function updateUserDataFromServer(data) {
  */
 function updateUIFromUserData() {
   // Update score display
-  const scoreNum = document.getElementById("scoreNum");
-  if (scoreNum) {
-    // Calculate current score
-    let totalScore = 0;
-
-    // Add question scores
-    for (let i = 0; i < state.userData.answerData.length; i++) {
-      totalScore += state.userData.answerData[i].score || 0;
-    }
-
-    // Update displayed score
-    state.userScore = totalScore;
-    scoreNum.textContent = totalScore;
-
-    // Update score bar
-    const scoreBar = document.getElementById("scoreBar");
-    if (scoreBar) {
-      const maxScore =
-        config.scoring.maxVideoScore + config.scoring.maxQuestionScore;
-      const percent = Math.min(100, Math.floor((totalScore / maxScore) * 100));
-      scoreBar.style.width = `${percent}%`;
-    }
-  }
+  updateScore();
 
   // Update user info display
   const userInfoLogin = document.getElementById("userInfoLogin");
   if (userInfoLogin) {
-    const userEmail =
-      document.querySelector('meta[name="user-email"]')?.content || "Guest";
-    userInfoLogin.textContent = `Signed in as ${userEmail}`;
+    const email = document.querySelector('meta[name="user-email"]')?.content;
+    const { nickname, lastname, netID } = state.userData || {};
+    if (nickname || lastname || netID) {
+      const namePart = [nickname, lastname].filter(Boolean).join(' ');
+      const idPart = netID ? ` (${netID})` : '';
+      userInfoLogin.textContent = `Signed in as ${namePart}${idPart}`;
+    } else {
+      userInfoLogin.textContent = `Signed in as ${email || 'Guest'}`;
+    }
   }
 
   // Update completion status
@@ -443,6 +479,20 @@ function updateUIFromUserData() {
       userInfoComplete.textContent = "You have not completed this quiz yet.";
     }
   }
+
+  // Mirror legacy toggle/visibility behavior
+  const toggleButton = document.getElementById('toggleQuestionButton');
+  if (Array.isArray(state.userData.attempts) && state.userData.attempts.length > 0) {
+    state.questionToggleEnabled = true;
+  } else if (state.quizComplete) {
+    state.questionToggleEnabled = false;
+  } else {
+    state.questionToggleEnabled = false;
+  }
+
+  if (toggleButton) {
+    toggleButton.style.visibility = state.questionToggleEnabled ? 'visible' : 'hidden';
+  }
 }
 
 /**
@@ -451,6 +501,7 @@ function updateUIFromUserData() {
  */
 async function saveWatchData() {
   console.log("saveWatchData called", state.userData?.watchData, state.lastWatched);
+
   const watchData = state.userData?.watchData;
   const lastWatched = state.lastWatched;
   const WATCH_DATA_TIMEOUT = 60000;
@@ -458,16 +509,25 @@ async function saveWatchData() {
   if (!Array.isArray(watchData) || watchData.length === 0) return;
   if (!lastWatched || Date.now() - lastWatched > WATCH_DATA_TIMEOUT) return;
 
+  const video = document.getElementById("videoBox");
+  if (video) {
+    state.userData.lastPosition = Math.floor(video.currentTime);
+  }
+
   try {
     const userEmail = document.querySelector('meta[name="user-email"]')?.content;
 
     if (userEmail) {
+      const formData = new URLSearchParams();
+      formData.append("user", userEmail);
+      formData.append("userData", JSON.stringify(state.userData));
+
       const response = await fetch("./saveUserData.php", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: JSON.stringify({ user: userEmail, watchData }),
+        body: formData.toString(),
       });
 
       if (!response.ok) {
@@ -477,19 +537,12 @@ async function saveWatchData() {
       console.info("User email not found; skipping server save.");
     }
 
-    if (canAccessLocalStorage()) {
-      localStorage.setItem("quizUserData", JSON.stringify(state.userData));
-    }
-
     state.lastWatched = Date.now();
   } catch (error) {
     console.warn("Error saving watch data:", error);
-
-    if (canAccessLocalStorage()) {
-      localStorage.setItem("quizUserData", JSON.stringify(state.userData));
-    }
   }
 }
+
 
 
 /**
@@ -503,24 +556,25 @@ async function saveUserData(isComplete = false, finalScore = 0) {
     console.warn("No user data available to save.");
     return;
   }
+
+  const video = document.getElementById("videoBox");
+  if (video) {
+    state.userData.lastPosition = Math.floor(video.currentTime);
+  }
+
   console.log("saveUserData called", { isComplete, finalScore, state });
 
   try {
-    // Update last saved timestamp
     state.lastSaved = Date.now();
 
-    
-    const userEmail = document.querySelector(
-      'meta[name="user-email"]',
-    )?.content;
+    const userEmail = document.querySelector('meta[name="user-email"]')?.content;
 
     if (userEmail) {
-      const data = {
-        user: userEmail,
-        userData: state.userData,
-        isComplete: isComplete,
-        finalScore: finalScore,
-      };
+      const formData = new URLSearchParams();
+      formData.append("user", userEmail);
+      formData.append("userData", JSON.stringify(state.userData));
+      formData.append("isComplete", isComplete);
+      formData.append("finalScore", finalScore);
 
       const response = await fetch("saveUserData.php", {
         method: "POST",
@@ -528,26 +582,19 @@ async function saveUserData(isComplete = false, finalScore = 0) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(userData),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString(),
       });
 
       if (!response.ok) {
         throw new Error("Failed to save user data to server");
       }
     }
-
-    // Also save to local storage as backup
-    if (canAccessLocalStorage()) {
-      localStorage.setItem("quizUserData", JSON.stringify(state.userData));
-    }
   } catch (error) {
     console.warn("Error saving user data:", error);
-
-    // Fallback to local storage
-    if (canAccessLocalStorage()) {
-      localStorage.setItem("quizUserData", JSON.stringify(state.userData));
-    }
   }
 }
+
 
 /**
  * Clear user data
@@ -581,6 +628,56 @@ export function clearUserData() {
   // Dispatch event to notify that user data was reset
   document.dispatchEvent(new CustomEvent("userDataReset"));
 }
+
+// /**
+//  * Reset user progress (fresh start with 0 score)
+//  */
+// export async function resetUserProgress() {
+//   const userEmail = document.querySelector('meta[name="user-email"]')?.content;
+  
+//   if (!userEmail) {
+//     console.warn("No user email found for reset");
+//     return false;
+//   }
+
+//   try {
+//     // Call the reset endpoint
+//     const response = await fetch(`saveUserData.php?reset=1&user=${encodeURIComponent(userEmail)}`);
+//     const result = await response.json();
+    
+//     if (result.status === "success") {
+//       console.log("User progress reset successfully");
+      
+//       // Reset local state
+//       initializeNewUserData();
+      
+//       // Clear local storage
+//       if (canAccessLocalStorage()) {
+//         localStorage.removeItem("quizUserData");
+//       }
+      
+//       // Reset video position
+//       const video = document.getElementById("videoBox");
+//       if (video) {
+//         video.currentTime = 0;
+//       }
+      
+//       // Update UI
+//       updateUIFromUserData();
+      
+//       // Dispatch reset event
+//       document.dispatchEvent(new CustomEvent("userDataReset"));
+      
+//       return true;
+//     } else {
+//       console.error("Reset failed:", result.message);
+//       return false;
+//     }
+//   } catch (error) {
+//     console.error("Error resetting user progress:", error);
+//     return false;
+//   }
+// }
 
 /**
  * Show error message to user
@@ -635,5 +732,6 @@ export default {
   saveUserData,
   saveWatchData,
   clearUserData,
+  //resetUserProgress,
   getGrade,
 };
