@@ -36,6 +36,9 @@ export function initVideoPlayer(videoElement) {
   videoElement.addEventListener('loadedmetadata', handleMetadataLoaded);
   videoElement.addEventListener('ended', handleVideoEnded);
   videoElement.addEventListener('timeupdate', handleTimeUpdate);
+  
+  // Listen for custom event to create markers when questions are loaded after video
+  document.addEventListener('createQuestionMarkers', createQuestionMarkers);
 
   // Set up controls
   initPlayPauseButton();
@@ -741,7 +744,6 @@ function recordTimeWatched() {
     if (!state.userData.watchData) {
       state.userData.watchData = [];
     }
-    
 
     // Update watchedSecondsArray
     const floorStart = Math.floor(start);

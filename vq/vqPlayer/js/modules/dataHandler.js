@@ -578,10 +578,6 @@ async function saveUserData(isComplete = false, finalScore = 0) {
 
       const response = await fetch("saveUserData.php", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: formData.toString(),
       });
