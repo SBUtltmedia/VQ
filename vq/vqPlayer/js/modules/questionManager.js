@@ -1609,7 +1609,7 @@ export function resetQuiz() {
   }
 
   // Reset score
-  updateScore(0, 0);
+  updateScore(0, videoScore);
 
   // Update user info
   const userInfoComplete = document.getElementById('userInfoComplete');
