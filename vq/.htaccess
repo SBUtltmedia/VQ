@@ -27,6 +27,9 @@ Header always unset X-Frame-Options
     SetEnv sn test_sn
     SetEnv mail test_mail@stonybrook.edu
 </If>
+<Else>
+
+</Else>
 
 #conditionally set session save path for local and non-local environments
 <If "env('ENVIRONMENT') == 'local'">
@@ -35,6 +38,10 @@ Header always unset X-Frame-Options
 </If>
 <Else>
     # NON-LOCAL environment: Set session path for production
+    AuthType shibboleth
+ShibRequestSetting requireSession 1
+require shibboleth
+
     SetEnv PHP_VALUE "session.save_path=/home/tltsecure/apache2/htdocs/userData/sessionData"
 </Else>
 
