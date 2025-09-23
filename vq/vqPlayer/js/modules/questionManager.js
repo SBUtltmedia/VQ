@@ -39,6 +39,13 @@ export function initQuestionManager() {
 
     // Mark as initialized
     state.questionsInitialized = true;
+    
+    // Try to create question markers if video is already loaded
+    // This handles the case where questions load after video metadata
+    if (state.video && state.video.duration) {
+      // Dispatch a custom event to trigger marker creation
+      document.dispatchEvent(new CustomEvent('createQuestionMarkers'));
+    }
   };
 
   // Setup question buttons once questions are loaded
