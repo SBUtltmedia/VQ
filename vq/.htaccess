@@ -39,7 +39,7 @@ Header always unset X-Frame-Options
 <Else>
     # NON-LOCAL environment: Set session path for production
     AuthType shibboleth
-ShibRequestSetting requireSession 1
+ShibRequestSetting requireSession false
 require shibboleth
 
     SetEnv PHP_VALUE "session.save_path=/home/tltsecure/apache2/htdocs/userData/sessionData"
