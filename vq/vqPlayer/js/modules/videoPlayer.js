@@ -37,6 +37,26 @@ export function initVideoPlayer(videoElement) {
   videoElement.addEventListener('ended', handleVideoEnded);
   videoElement.addEventListener('timeupdate', handleTimeUpdate);
   
+  // Some browsers may have metadata ready before listeners attach (e.g., cached source)
+  // If metadata is already available, trigger handler immediately
+  try {
+    if (videoElement.readyState >= (HTMLMediaElement?.HAVE_METADATA || 1)) {
+      handleMetadataLoaded();
+    }
+  } catch (e) {
+    // Fallback without HTMLMediaElement enum
+    if (videoElement.readyState >= 1) {
+      handleMetadataLoaded();
+    }
+  }
+
+  // As a resilience fallback, also react to duration changes which imply metadata
+  videoElement.addEventListener('durationchange', () => {
+    if (!isNaN(videoElement.duration) && videoElement.duration > 0) {
+      handleMetadataLoaded();
+    }
+  });
+  
   // Listen for custom event to create markers when questions are loaded after video
   document.addEventListener('createQuestionMarkers', createQuestionMarkers);
 
