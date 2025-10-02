@@ -38,9 +38,9 @@ Header always unset X-Frame-Options
 </If>
 <Else>
     # NON-LOCAL environment: Set session path for production
-#     AuthType shibboleth
-# ShibRequestSetting requireSession 1
-# require shibboleth
+    AuthType shibboleth
+ShibRequestSetting requireSession 1
+require shibboleth
 
     SetEnv PHP_VALUE "session.save_path=/home/tltsecure/apache2/htdocs/userData/sessionData"
 </Else>
