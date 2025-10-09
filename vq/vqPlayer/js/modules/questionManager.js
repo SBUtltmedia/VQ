@@ -1022,8 +1022,10 @@ function showExplanationButtons(correct) {
   const reviewButton = document.getElementById('expoButtonReview');
   const retryButton = document.getElementById('expoButtonRetry');
   const continueButton = document.getElementById('expoButtonContinue');
+  //const answerBox = document.getElementById('answerBox');
 
   if (reviewButton && retryButton && continueButton) {
+    //nswerBox.setAttribute('tabindaex', '-1');
     // For correct answers, show review and continue
     if (correct) {
       reviewButton.style.visibility = 'visible';
