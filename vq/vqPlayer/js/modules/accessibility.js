@@ -248,52 +248,60 @@ function enhanceQuestionAccessibility() {
     scoreBubble.setAttribute('aria-atomic', 'true');
   }
 
-  // When expoBox is active, make the entire question box and its children unfocusable
-  const questionBoxNode = document.getElementById('questionBox');
-  const expoBoxFull = document.getElementById('expoBox');
-  if (questionBoxNode && expoBoxFull) {
-    const updateQuestionBoxTabindex = () => {
-      const expoVisible = (expoBoxFull.style.display && expoBoxFull.style.display !== 'none') ||
-        window.getComputedStyle(expoBoxFull).display !== 'none';
+  // // When expoBox is active, make the entire question box and its children unfocusable
+  // const questionBoxNode = document.getElementById('questionBox');
+  // const expoBoxFull = document.getElementById('expoBox');
+  // if (questionBoxNode && expoBoxFull) {
+  //   const updateQuestionBoxTabindex = () => {
+  //     const expoVisible = (
+  //       (expoBoxFull.style.display && expoBoxFull.style.display !== 'none') ||
+  //       window.getComputedStyle(expoBoxFull).display !== 'none' ||
+  //       // Consider the fade-in animation class as visible during animation
+  //       expoBoxFull.classList.contains('anim_expoFadeIn')
+  //     );
 
-      const allElements = Array.from(questionBoxNode.querySelectorAll('*')).concat([questionBoxNode]);
+  //     const allElements = Array.from(questionBoxNode.querySelectorAll('*')).concat([questionBoxNode]);
 
-      allElements.forEach(el => {
-        // Skip elements that are part of the expoBox itself (defensive)
-        if (expoBoxFull.contains(el)) return;
+  //     allElements.forEach(el => {
+  //       // Skip elements that are part of the expoBox itself (defensive)
+  //       if (expoBoxFull.contains(el)) return;
 
-        if (expoVisible) {
-          // Save previous tabindex if not already saved
-          if (!el.hasAttribute('data-prev-tabindex')) {
-            if (el.hasAttribute('tabindex')) {
-              el.setAttribute('data-prev-tabindex', el.getAttribute('tabindex'));
-            } else {
-              el.setAttribute('data-prev-tabindex', '__none__');
-            }
-          }
+  //       if (expoVisible) {
+  //         // Save previous tabindex if not already saved
+  //         if (!el.hasAttribute('data-prev-tabindex')) {
+  //           if (el.hasAttribute('tabindex')) {
+  //             el.setAttribute('data-prev-tabindex', el.getAttribute('tabindex'));
+  //           } else {
+  //             el.setAttribute('data-prev-tabindex', '__none__');
+  //           }
+  //         }
 
-          // Set to -1 to remove from tab order
-          el.setAttribute('tabindex', '-1');
-        } else {
-          // Restore previous tabindex if present
-          if (el.hasAttribute('data-prev-tabindex')) {
-            const prev = el.getAttribute('data-prev-tabindex');
-            if (prev === '__none__') {
-              el.removeAttribute('tabindex');
-            } else {
-              el.setAttribute('tabindex', prev);
-            }
-            el.removeAttribute('data-prev-tabindex');
-          }
-        }
-      });
-    };
+  //         // Set to -1 to remove from tab order
+  //         el.setAttribute('tabindex', '-1');
+  //       } else {
+  //         // Restore previous tabindex if present
+  //         if (el.hasAttribute('data-prev-tabindex')) {
+  //           const prev = el.getAttribute('data-prev-tabindex');
+  //           if (prev === '__none__') {
+  //             el.removeAttribute('tabindex');
+  //           } else {
+  //             el.setAttribute('tabindex', prev);
+  //           }
+  //           el.removeAttribute('data-prev-tabindex');
+  //         }
+  //       }
+  //     });
+  //   };
 
     // Initial update and observe expoBox display changes
-    updateQuestionBoxTabindex();
-    const qObserver = new MutationObserver(updateQuestionBoxTabindex);
-    qObserver.observe(expoBoxFull, { attributes: true, attributeFilter: ['style', 'class'] });
-  }
+    //updateQuestionBoxTabindex();
+  //const qObserver = new MutationObserver(updateQuestionBoxTabindex);
+  // qObserver.observe(expoBoxFull, { attributes: true, attributeFilter: ['style', 'class', 'aria-hidden', 'hidden'] });
+
+  // // Also update when known custom events fire (some code uses events to show/hide panels)
+  // document.addEventListener('questionShown', updateQuestionBoxTabindex);
+  // document.addEventListener('hideQuestionPanel', updateQuestionBoxTabindex);
+  // }
 }
 
 /**
