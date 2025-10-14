@@ -212,6 +212,22 @@ function enhanceQuestionAccessibility() {
   if (fillInAnswer) {
     fillInAnswer.setAttribute('aria-label', 'Your Answer');
     fillInAnswer.setAttribute('aria-multiline', 'true');
+      // Set tabindex to -1 when expoBox is visible
+      // const expoBox = document.getElementById('expoBox');
+      // if (expoBox) {
+      //   const updateTabIndex = () => {
+      //     if (expoBox.style.display !== 'none') {
+      //       fillInAnswer.setAttribute('tabindex', '-1');
+      //     } else {
+      //       fillInAnswer.removeAttribute('tabindex');
+      //     }
+      //   };
+      //   // Initial check
+      //   updateTabIndex();
+      //   // Listen for display changes (using MutationObserver for robustness)
+      //   const observer = new MutationObserver(updateTabIndex);
+      //   observer.observe(expoBox, { attributes: true, attributeFilter: ['style'] });
+      // }
   }
 
   // Explanation box
@@ -230,6 +246,53 @@ function enhanceQuestionAccessibility() {
   const scoreBubble = document.getElementById('scoreBubble');
   if (scoreBubble) {
     scoreBubble.setAttribute('aria-atomic', 'true');
+  }
+
+  // When expoBox is active, make the entire question box and its children unfocusable
+  const questionBoxNode = document.getElementById('questionBox');
+  const expoBoxFull = document.getElementById('expoBox');
+  if (questionBoxNode && expoBoxFull) {
+    const updateQuestionBoxTabindex = () => {
+      const expoVisible = (expoBoxFull.style.display && expoBoxFull.style.display !== 'none') ||
+        window.getComputedStyle(expoBoxFull).display !== 'none';
+
+      const allElements = Array.from(questionBoxNode.querySelectorAll('*')).concat([questionBoxNode]);
+
+      allElements.forEach(el => {
+        // Skip elements that are part of the expoBox itself (defensive)
+        if (expoBoxFull.contains(el)) return;
+
+        if (expoVisible) {
+          // Save previous tabindex if not already saved
+          if (!el.hasAttribute('data-prev-tabindex')) {
+            if (el.hasAttribute('tabindex')) {
+              el.setAttribute('data-prev-tabindex', el.getAttribute('tabindex'));
+            } else {
+              el.setAttribute('data-prev-tabindex', '__none__');
+            }
+          }
+
+          // Set to -1 to remove from tab order
+          el.setAttribute('tabindex', '-1');
+        } else {
+          // Restore previous tabindex if present
+          if (el.hasAttribute('data-prev-tabindex')) {
+            const prev = el.getAttribute('data-prev-tabindex');
+            if (prev === '__none__') {
+              el.removeAttribute('tabindex');
+            } else {
+              el.setAttribute('tabindex', prev);
+            }
+            el.removeAttribute('data-prev-tabindex');
+          }
+        }
+      });
+    };
+
+    // Initial update and observe expoBox display changes
+    updateQuestionBoxTabindex();
+    const qObserver = new MutationObserver(updateQuestionBoxTabindex);
+    qObserver.observe(expoBoxFull, { attributes: true, attributeFilter: ['style', 'class'] });
   }
 }
 
