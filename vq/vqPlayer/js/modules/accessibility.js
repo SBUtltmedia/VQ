@@ -235,6 +235,53 @@ function enhanceQuestionAccessibility() {
   if (expoBox) {
     expoBox.setAttribute('role', 'alert');
     expoBox.setAttribute('aria-live', 'polite');
+
+    // Helper to determine visibility; prefers class but falls back to computed style
+    const isExpoVisible = () => {
+      if (expoBox.classList.contains('anim_expoFadeIn')) return true;
+      if (expoBox.classList.contains('anim_expoFadeOut')) return false;
+      const style = window.getComputedStyle(expoBox);
+      return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+    };
+
+    // When expoBox is active, make specific question elements unfocusable
+    const toggleQuestionElementsFocus = (active) => {
+      const targets = [];
+      const questionText = document.getElementById('questionText');
+      if (questionText) targets.push(questionText);
+      const fillInAnswer = document.getElementById('fillInAnswer');
+      if (fillInAnswer) targets.push(fillInAnswer);
+      document.querySelectorAll('.fillInPanel').forEach(el => targets.push(el));
+      document.querySelectorAll('.answerBox').forEach(el => targets.push(el));
+
+      targets.forEach(el => {
+        if (active) {
+          if (el.dataset.prevTabindex === undefined) {
+            const current = el.getAttribute('tabindex');
+            el.dataset.prevTabindex = current !== null ? String(current) : '';
+          }
+          el.setAttribute('tabindex', '-1');
+        } else {
+          if (el.dataset.prevTabindex !== undefined) {
+            if (el.dataset.prevTabindex === '') {
+              el.removeAttribute('tabindex');
+            } else {
+              el.setAttribute('tabindex', el.dataset.prevTabindex);
+            }
+            delete el.dataset.prevTabindex;
+          }
+        }
+      });
+    };
+
+    // Initial state
+    toggleQuestionElementsFocus(isExpoVisible());
+
+    // Observe changes to class/style to toggle inert accordingly
+    const expoObserver = new MutationObserver(() => {
+      toggleQuestionElementsFocus(isExpoVisible());
+    });
+    expoObserver.observe(expoBox, { attributes: true, attributeFilter: ['class', 'style'] });
   }
 
   // Explanation buttons
@@ -247,61 +294,6 @@ function enhanceQuestionAccessibility() {
   if (scoreBubble) {
     scoreBubble.setAttribute('aria-atomic', 'true');
   }
-
-  // // When expoBox is active, make the entire question box and its children unfocusable
-  // const questionBoxNode = document.getElementById('questionBox');
-  // const expoBoxFull = document.getElementById('expoBox');
-  // if (questionBoxNode && expoBoxFull) {
-  //   const updateQuestionBoxTabindex = () => {
-  //     const expoVisible = (
-  //       (expoBoxFull.style.display && expoBoxFull.style.display !== 'none') ||
-  //       window.getComputedStyle(expoBoxFull).display !== 'none' ||
-  //       // Consider the fade-in animation class as visible during animation
-  //       expoBoxFull.classList.contains('anim_expoFadeIn')
-  //     );
-
-  //     const allElements = Array.from(questionBoxNode.querySelectorAll('*')).concat([questionBoxNode]);
-
-  //     allElements.forEach(el => {
-  //       // Skip elements that are part of the expoBox itself (defensive)
-  //       if (expoBoxFull.contains(el)) return;
-
-  //       if (expoVisible) {
-  //         // Save previous tabindex if not already saved
-  //         if (!el.hasAttribute('data-prev-tabindex')) {
-  //           if (el.hasAttribute('tabindex')) {
-  //             el.setAttribute('data-prev-tabindex', el.getAttribute('tabindex'));
-  //           } else {
-  //             el.setAttribute('data-prev-tabindex', '__none__');
-  //           }
-  //         }
-
-  //         // Set to -1 to remove from tab order
-  //         el.setAttribute('tabindex', '-1');
-  //       } else {
-  //         // Restore previous tabindex if present
-  //         if (el.hasAttribute('data-prev-tabindex')) {
-  //           const prev = el.getAttribute('data-prev-tabindex');
-  //           if (prev === '__none__') {
-  //             el.removeAttribute('tabindex');
-  //           } else {
-  //             el.setAttribute('tabindex', prev);
-  //           }
-  //           el.removeAttribute('data-prev-tabindex');
-  //         }
-  //       }
-  //     });
-  //   };
-
-    // Initial update and observe expoBox display changes
-    //updateQuestionBoxTabindex();
-  //const qObserver = new MutationObserver(updateQuestionBoxTabindex);
-  // qObserver.observe(expoBoxFull, { attributes: true, attributeFilter: ['style', 'class', 'aria-hidden', 'hidden'] });
-
-  // // Also update when known custom events fire (some code uses events to show/hide panels)
-  // document.addEventListener('questionShown', updateQuestionBoxTabindex);
-  // document.addEventListener('hideQuestionPanel', updateQuestionBoxTabindex);
-  // }
 }
 
 /**
