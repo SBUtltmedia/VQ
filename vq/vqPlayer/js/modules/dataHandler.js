@@ -334,11 +334,11 @@ async function loadUserData() {
       }
     }
 
-    console.warn("Server returned no data, initializing new userData.");
-    return initializeNewUserData();
+    console.warn("Server returned no data, attempting to load from local storage.");
+    return loadLocalData();
   } catch (error) {
-    console.warn("Error loading user data:", error);
-    return initializeNewUserData();
+    console.warn("Error loading user data:", error, "— attempting to load from local storage.");
+    return loadLocalData();
   }
 }
 
@@ -412,8 +412,10 @@ function updateUserDataFromServer(data) {
 
   // Update answer data, ensuring we have the right number of entries
   if (state.questions && state.questions.questions) {
-    // Start with server data
-    state.userData.answerData = data.answerData || [];
+    // Prefer server answers if present; otherwise preserve existing answers
+    const existingAnswers = Array.isArray(state.userData.answerData) ? state.userData.answerData : [];
+    const serverAnswers = Array.isArray(data.answerData) ? data.answerData : null;
+    state.userData.answerData = serverAnswers || existingAnswers || [];
 
     // Ensure we have the right number of entries
     if (state.userData.answerData.length !== state.questions.questions.length) {
@@ -578,6 +580,10 @@ async function saveUserData(isComplete = false, finalScore = 0) {
 
       const response = await fetch("saveUserData.php", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: formData.toString(),
       });

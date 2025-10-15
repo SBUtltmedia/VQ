@@ -53,4 +53,3 @@ if (isset($_POST['user']) && isset($_POST['userData'])) {
     echo json_encode(["status" => "error", "message" => "Missing parameters"]);
 }
 ?>
-

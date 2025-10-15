@@ -29,4 +29,3 @@ $a->lastname  = $_SESSION['sn'] ?? $_SERVER['sn'] ?? "";
 
 echo json_encode($a);
 ?>
-
