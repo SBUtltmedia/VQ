@@ -26,7 +26,7 @@ if (array_key_exists('lis_person_name_given', $_POST) || $isLocal) {
       "tool_consumer_instance_contact_email":"",
       "tool_consumer_info_version":"20.25.10.19559",
       "tool_consumer_info_product_family_code":"desire2learn",
-      "context_id":"1337366","context_title":"Perry Tran Sandbox  Course",
+      "context_id":"1337366","context_title":"static title",
       "context_label":"NOTERM-VVTRAN-SANDBOX",
       "context_type":"CourseOffering",
       "resource_link_title":"Live_Ver",
