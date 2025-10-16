@@ -7,11 +7,11 @@ error_reporting(E_ALL);
 session_start();
 
 // Environment detection
-$env = $_ENV['ENVIRONMENT'] ?? null;
-$isLocal = $env === null;
+ 
+
 
 // If LTI POST or running locally, capture identity fields
-if (array_key_exists('lis_person_name_given', $_POST) || $isLocal) {
+if (array_key_exists('lis_person_name_given', $_POST))  {
   $_SESSION['mail'] = $_POST['lis_person_contact_email_primary'] ?? '';
   $_SESSION['givenName'] = $_POST['lis_person_name_given'] ?? '';
   $_SESSION['nickname'] = $_POST['lis_person_name_given'] ?? '';
@@ -20,47 +20,12 @@ if (array_key_exists('lis_person_name_given', $_POST) || $isLocal) {
   $JSON_POST = json_encode($_POST);
 
   // Provide a local sample payload if running in local env
-  if ($env === 'local') {
-    $JSON_POST = '{"launch_presentation_locale":"EN-US",
-      "tool_consumer_instance_guid":"key_NSlctxPORqrIGspICqtDA8UqFvTHcqrxo96XLGgSMdmmnnVBfPXElvFy6B","tool_consumer_instance_name":"","tool_consumer_instance_description":"",
-      "tool_consumer_instance_contact_email":"",
-      "tool_consumer_info_version":"20.25.10.19559",
-      "tool_consumer_info_product_family_code":"desire2learn",
-      "context_id":"1337366","context_title":"static title",
-      "context_label":"NOTERM-VVTRAN-SANDBOX",
-      "context_type":"CourseOffering",
-      "resource_link_title":"Live_Ver",
-      "resource_link_id":"EA3A8341-CCC6-4845-BAB9-C661ECF2C83F-30469577_1337366",
-      "resource_link_description":"",
-      "lis_outcome_service_url":"https:\/\/mycourses.stonybrook.edu\/d2l\/le\/lti\/Outcome",
-      "lti_version":"LTI-1p0","lti_message_type":"basic-lti-launch-request","lis_course_offering_sourcedid":"mycourses.stonybrook.edu:NOTERM-VVTRAN-SANDBOX",
-      "lis_course_section_sourcedid":"mycourses.stonybrook.edu:NOTERM-VVTRAN-SANDBOX",
-      "user_id":"01f902e5-bbbc-4130-8c8b-153196c4a832_458157",
-      "roles":"urn:lti:instrole:ims\/lis\/Faculty,Faculty, urn:lti:instrole:ims\/lis\/Instructor,Instructor",
-      "lis_person_name_given":"Perry","lis_person_name_family":"Tran",
-      "lis_person_name_full":"Perry Tran",
-      "lis_person_contact_email_primary":"VietHongPhuc.Tran@stonybrook.edu",
-      "ext_d2l_link_id":"3030225","ext_d2l_orgdefinedid":"115836947",
-      "lis_person_sourcedid":"115836947","ext_d2l_tenantid":"6465da00-bb02-484a-b768-91b6ce00588c",
-      "ext_tc_profile_url":"https:\/\/mycourses.stonybrook.edu\/d2l\/api\/ext\/1.0\/lti\/tcservices",
-      "ext_d2l_context_id_history":"",
-      "ext_d2l_resource_link_id_history":"",
-      "lis_result_sourcedid":"28e5d81b-c083-49c8-962e-3a592c1372a1",
-      "ext_completion_url":"",
-      "oauth_version":"1.0","oauth_nonce":"661bbc66-ca7d-43f7-8f0f-32086435cdee","oauth_timestamp":"1760471660",
-      "oauth_signature_method":"HMAC-SHA1","oauth_consumer_key":"key_NSlctxPORqrIGspICqtDA8UqFvTHcqrxo96XLGgSMdmmnnVBfPXElvFy6B","oauth_callback":"about:blank","oauth_signature":"auroR6XFvMbR2+YeBAG\/D1xj\/vw=","ext_basiclti_submit":"Launch Endpoint with BasicLTI Data"}';
-  }
 
-  print <<<EOT
-    <script src="js/grading.js"></script>
-    <script>
-        var  ses=$JSON_POST;
-  </script>
-EOT;
 
-} elseif (array_key_exists('mail', $_SESSION)) {
+
+} elseif (!array_key_exists('mail', $_SESSION) && array_key_exists('mail', $_SERVER) ) {
   // session already has mail value; nothing to do
-} elseif (isset($_SERVER['mail'])) {
+
   $_SESSION['mail'] = $_SERVER['mail'];
   $_SESSION['givenName'] = $_SERVER['givenName'] ?? '';
   $_SESSION['nickname'] = $_SERVER['nickname'] ?? '';
@@ -74,8 +39,22 @@ EOT;
     exit;
   }
 }
+ $isLocal  = $_ENV['ENVIRONMENT'] ?? null;
+if ($isLocal){
+     $JSON_POST = '{}';
+}
 
-?>
+if ($JSON_POST){
+
+print <<<EOT
+    <script src="js/grading.js"></script>
+    <script>
+        var  ses=$JSON_POST;
+  </script>
+  EOT;
+
+}
+  ?> 
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
