@@ -44,7 +44,7 @@ if ($isLocal){
      $JSON_POST = '{}';
 }
 
-if ($JSON_POST){
+if (isset($JSON_POST)){
 
 print <<<EOT
     <script src="js/grading.js"></script>
