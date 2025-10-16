@@ -5,18 +5,23 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 //IVQ outside of bookMaker
 session_start();
-$isLocal=false;
-if (!array_key_exists('ENVIRONMENT', $_ENV)){
-  $isLocal=true;
-}
-if(array_key_exists("lis_person_name_given", $_POST) || $isLocal){
-  $_SESSION['mail']= $_POST['lis_person_contact_email_primary'];
-  $_SESSION['givenName']= $_POST['lis_person_name_given'];
-  $_SESSION['nickname']=  $_POST['lis_person_name_given'];;
-  $_SESSION['sn']=  $_POST['lis_person_name_family'];
-  $JSON_POST=json_encode($_POST);
-  if ($_ENV['ENVIRONMENT'] == 'local' ){
-      $JSON_POST= '{"launch_presentation_locale":"EN-US",
+
+// Environment detection
+$env = $_ENV['ENVIRONMENT'] ?? null;
+$isLocal = $env === null;
+
+// If LTI POST or running locally, capture identity fields
+if (array_key_exists('lis_person_name_given', $_POST) || $isLocal) {
+  $_SESSION['mail'] = $_POST['lis_person_contact_email_primary'] ?? '';
+  $_SESSION['givenName'] = $_POST['lis_person_name_given'] ?? '';
+  $_SESSION['nickname'] = $_POST['lis_person_name_given'] ?? '';
+  $_SESSION['sn'] = $_POST['lis_person_name_family'] ?? '';
+
+  $JSON_POST = json_encode($_POST);
+
+  // Provide a local sample payload if running in local env
+  if ($env === 'local') {
+    $JSON_POST = '{"launch_presentation_locale":"EN-US",
       "tool_consumer_instance_guid":"key_NSlctxPORqrIGspICqtDA8UqFvTHcqrxo96XLGgSMdmmnnVBfPXElvFy6B","tool_consumer_instance_name":"","tool_consumer_instance_description":"",
       "tool_consumer_instance_contact_email":"",
       "tool_consumer_info_version":"20.25.10.19559",
@@ -31,8 +36,7 @@ if(array_key_exists("lis_person_name_given", $_POST) || $isLocal){
       "lti_version":"LTI-1p0","lti_message_type":"basic-lti-launch-request","lis_course_offering_sourcedid":"mycourses.stonybrook.edu:NOTERM-VVTRAN-SANDBOX",
       "lis_course_section_sourcedid":"mycourses.stonybrook.edu:NOTERM-VVTRAN-SANDBOX",
       "user_id":"01f902e5-bbbc-4130-8c8b-153196c4a832_458157",
-      "roles":"urn:lti:instrole:ims\/lis\/Faculty,Faculty,
-      urn:lti:instrole:ims\/lis\/Instructor,Instructor",
+      "roles":"urn:lti:instrole:ims\/lis\/Faculty,Faculty, urn:lti:instrole:ims\/lis\/Instructor,Instructor",
       "lis_person_name_given":"Perry","lis_person_name_family":"Tran",
       "lis_person_name_full":"Perry Tran",
       "lis_person_contact_email_primary":"VietHongPhuc.Tran@stonybrook.edu",
@@ -45,29 +49,30 @@ if(array_key_exists("lis_person_name_given", $_POST) || $isLocal){
       "ext_completion_url":"",
       "oauth_version":"1.0","oauth_nonce":"661bbc66-ca7d-43f7-8f0f-32086435cdee","oauth_timestamp":"1760471660",
       "oauth_signature_method":"HMAC-SHA1","oauth_consumer_key":"key_NSlctxPORqrIGspICqtDA8UqFvTHcqrxo96XLGgSMdmmnnVBfPXElvFy6B","oauth_callback":"about:blank","oauth_signature":"auroR6XFvMbR2+YeBAG\/D1xj\/vw=","ext_basiclti_submit":"Launch Endpoint with BasicLTI Data"}';
-   
   }
-     
+
   print <<<EOT
     <script src="js/grading.js"></script>
     <script>
         var  ses=$JSON_POST;
   </script>
 EOT;
-}
-#else if(array_key_exists("mail",$_SESSION)){
-else if(isset($_SERVER['mail'])){
-  $_SESSION['mail']= $_SERVER['mail'];
-  $_SESSION['givenName']= $_SERVER['givenName'];
-  $_SESSION['nickname']= $_SERVER['nickname'];
-  $_SESSION['sn']= $_SERVER['sn'];
-}
-else{
-  if (!isset($_SERVER['cn']) && file_exists(".htaccess")){
-    $server= $_SERVER['SERVER_NAME'];
-    $target = "https://${server}${_SERVER['REQUEST_URI']}";
-header("Location: /shib/?shibtarget=$target");        
-}
+
+} elseif (array_key_exists('mail', $_SESSION)) {
+  // session already has mail value; nothing to do
+} elseif (isset($_SERVER['mail'])) {
+  $_SESSION['mail'] = $_SERVER['mail'];
+  $_SESSION['givenName'] = $_SERVER['givenName'] ?? '';
+  $_SESSION['nickname'] = $_SERVER['nickname'] ?? '';
+  $_SESSION['sn'] = $_SERVER['sn'] ?? '';
+} else {
+  if (!isset($_SERVER['cn']) && file_exists('.htaccess')) {
+    $server = $_SERVER['SERVER_NAME'] ?? '';
+    $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+    $target = "https://{$server}{$request_uri}";
+    header('Location: /shib/?shibtarget=' . rawurlencode($target));
+    exit;
+  }
 }
 
 ?>
