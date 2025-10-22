@@ -5,7 +5,7 @@
 
 import config from './config.js';
 import state from './state.js';
-import { urlify } from './utils.js';
+import { urlify, formatTime } from './utils.js';
 import videoPlayer from './videoPlayer.js';
 import { updateScore } from './videoPlayer.js';
 import { announceToScreenReader } from './accessibility.js';
@@ -242,6 +242,8 @@ export function makeQuestionButtons() {
     // Add click event
     button.addEventListener('click', () => {
       setQuestion(i);
+      // Move video to question start time
+      moveVideoToQuestion(i);
     });
 
     // Add keyboard support
@@ -249,6 +251,8 @@ export function makeQuestionButtons() {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         setQuestion(i);
+        // Move video to question start time
+        moveVideoToQuestion(i);
       }
     });
 
@@ -297,6 +301,84 @@ function optimizeQuestionButtonsTabOrder() {
   questionButtons.forEach((button, index) => {
     button.setAttribute('tabindex', '0');
   });
+}
+
+/**
+ * Move video to question start time
+ * @param {number} questionIndex - Index of the question
+ */
+function moveVideoToQuestion(questionIndex) {
+  if (!state.questions || !state.questions.questions || !state.video) return;
+  
+  const question = state.questions.questions[questionIndex];
+  if (!question || typeof question.startTime !== 'number') return;
+  
+  // Move video to question start time
+  state.video.currentTime = question.startTime;
+  
+  // Update seek bar and time display
+  const seekSlider = document.getElementById('seekSlider');
+  if (seekSlider) {
+    seekSlider.value = question.startTime;
+  }
+  
+  // Update seek bar track
+  const seekTrack = document.getElementById('seekSliderTrack');
+  if (seekTrack && state.video.duration) {
+    const percent = (question.startTime / state.video.duration) * 100;
+    seekTrack.style.width = `${percent}%`;
+  }
+  
+  // Update time display
+  const timeDisplay = document.getElementById('timeDisplayText');
+  if (timeDisplay) {
+    const currentTime = formatTime(question.startTime);
+    timeDisplay.textContent = currentTime;
+  }
+  
+  // Announce the time change to screen readers
+  if (window.announce) {
+    window.announce(`Moved to ${formatTime(question.startTime)}`);
+  }
+}
+
+/**
+ * Jump to a question's start time without showing the question panel
+ * @param {number} questionIndex - Index of the question to jump to
+ */
+export function jumpToQuestionTime(questionIndex) {
+  if (!state.questions || !state.questions.questions || !state.video) return;
+  
+  const question = state.questions.questions[questionIndex];
+  if (!question || typeof question.startTime !== 'number') return;
+  
+  // Move video to question start time
+  state.video.currentTime = question.startTime;
+  
+  // Update seek bar and time display
+  const seekSlider = document.getElementById('seekSlider');
+  if (seekSlider) {
+    seekSlider.value = question.startTime;
+  }
+  
+  // Update seek bar track
+  const seekTrack = document.getElementById('seekSliderTrack');
+  if (seekTrack && state.video.duration) {
+    const percent = (question.startTime / state.video.duration) * 100;
+    seekTrack.style.width = `${percent}%`;
+  }
+  
+  // Update time display
+  const timeDisplay = document.getElementById('timeDisplayText');
+  if (timeDisplay) {
+    const currentTime = formatTime(question.startTime);
+    timeDisplay.textContent = currentTime;
+  }
+  
+  // Announce the time change to screen readers
+  if (window.announce) {
+    window.announce(`Jumped to question ${questionIndex + 1} at ${formatTime(question.startTime)}`);
+  }
 }
 
 /**
@@ -474,7 +556,7 @@ function setupMultipleChoiceQuestion(question) {
           answerBox.style.pointerEvents = 'all';
           answerBox.setAttribute('tabindex', '0');
           answerBox.setAttribute('role', 'button');
-          answerBox.setAttribute('aria-label', `${i + 1}: ${question.answerText[i]}`);
+          answerBox.setAttribute('aria-label', `${question.answerText[i]}`);
         } else {
           // This answer option doesn't exist, so hide it
           answerText.textContent = '';
@@ -1257,16 +1339,20 @@ export function showQuestionPanel() {
     }
   });
 
-  // Announce to screen readers
-  const liveRegion = document.createElement('div');
-  liveRegion.setAttribute('aria-live', 'assertive');
-  liveRegion.classList.add('sr-only');
-  liveRegion.textContent = `Question ${state.currentQuestion + 1} displayed: ${state.questions.questions[state.currentQuestion]?.questionText || ''}`;
-  document.body.appendChild(liveRegion);
-
-  setTimeout(() => {
-    liveRegion.remove();
-  }, 1000);
+  // Announce question text to screen readers and move focus to it
+  const questionTextEl = document.getElementById('questionText');
+  if (questionTextEl) {
+    const msg = questionTextEl.textContent?.trim() || '';
+    if (msg) {
+      announceToScreenReader(msg, true);
+    }
+    // Ensure question text is first in tab order and focus it
+    questionTextEl.setAttribute('tabindex', '0');
+    questionTextEl.setAttribute('data-initial-focus', 'true');
+    setTimeout(() => {
+      try { questionTextEl.focus({ preventScroll: true }); } catch (e) { /* no-op */ }
+    }, 10);
+  }
 
   // Focus trap for modal dialog
   setupModalFocusTrap();
@@ -1818,5 +1904,6 @@ export default {
   checkFinished,
   completeQuiz,
   resetQuiz,
-  updateScore
+  updateScore,
+  jumpToQuestionTime
 };

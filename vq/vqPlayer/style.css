@@ -698,6 +698,7 @@ input:focus {
     /* Not needed with flexbox */
     display: flex;
     align-items: center;
+    pointer-events: none !important;
 }
 
 #fillInPanels {

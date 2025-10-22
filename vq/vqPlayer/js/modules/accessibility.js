@@ -19,7 +19,7 @@ export function initAccessibility() {
   addFocusIndicators();
 
   // Add screen reader announcements
-  setupScreenReaderAnnouncements();
+  //setupScreenReaderAnnouncements();
 
   console.log('Accessibility features initialized');
 }
@@ -204,7 +204,7 @@ function enhanceQuestionAccessibility() {
     // Get the text content of this answer
     const textElement = box.querySelector('.answerText');
     const text = textElement ? textElement.textContent.trim() : '';
-    box.setAttribute('aria-label', `${index + 1}${text ? ': ' + text : ''}`);
+    box.setAttribute('aria-label', `${text ? ': ' + text : ''}`);
   });
 
   // Fill in answer
@@ -230,6 +230,36 @@ function enhanceQuestionAccessibility() {
       // }
   }
 
+  // When expoBox is active, make specific question elements unfocusable
+  const toggleQuestionElementsFocus = (active) => {
+    const targets = [];
+    const questionText = document.getElementById('questionText');
+    if (questionText) targets.push(questionText);
+    const fillInAnswer = document.getElementById('fillInAnswer');
+    if (fillInAnswer) targets.push(fillInAnswer);
+    document.querySelectorAll('.fillInPanel').forEach(el => targets.push(el));
+    document.querySelectorAll('.answerBox').forEach(el => targets.push(el));
+
+    targets.forEach(el => {
+      if (active) {
+        if (el.dataset.prevTabindex === undefined) {
+          const current = el.getAttribute('tabindex');
+          el.dataset.prevTabindex = current !== null ? String(current) : '';
+        }
+        el.setAttribute('tabindex', '-1');
+      } else {
+        if (el.dataset.prevTabindex !== undefined) {
+          if (el.dataset.prevTabindex === '') {
+            el.removeAttribute('tabindex');
+          } else {
+            el.setAttribute('tabindex', el.dataset.prevTabindex);
+          }
+          delete el.dataset.prevTabindex;
+        }
+      }
+    });
+  };
+
   // Explanation box
   const expoBox = document.getElementById('expoBox');
   if (expoBox) {
@@ -242,36 +272,6 @@ function enhanceQuestionAccessibility() {
       if (expoBox.classList.contains('anim_expoFadeOut')) return false;
       const style = window.getComputedStyle(expoBox);
       return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
-    };
-
-    // When expoBox is active, make specific question elements unfocusable
-    const toggleQuestionElementsFocus = (active) => {
-      const targets = [];
-      const questionText = document.getElementById('questionText');
-      if (questionText) targets.push(questionText);
-      const fillInAnswer = document.getElementById('fillInAnswer');
-      if (fillInAnswer) targets.push(fillInAnswer);
-      document.querySelectorAll('.fillInPanel').forEach(el => targets.push(el));
-      document.querySelectorAll('.answerBox').forEach(el => targets.push(el));
-
-      targets.forEach(el => {
-        if (active) {
-          if (el.dataset.prevTabindex === undefined) {
-            const current = el.getAttribute('tabindex');
-            el.dataset.prevTabindex = current !== null ? String(current) : '';
-          }
-          el.setAttribute('tabindex', '-1');
-        } else {
-          if (el.dataset.prevTabindex !== undefined) {
-            if (el.dataset.prevTabindex === '') {
-              el.removeAttribute('tabindex');
-            } else {
-              el.setAttribute('tabindex', el.dataset.prevTabindex);
-            }
-            delete el.dataset.prevTabindex;
-          }
-        }
-      });
     };
 
     // Initial state
@@ -289,6 +289,17 @@ function enhanceQuestionAccessibility() {
   expoButtons.forEach(button => {
     button.setAttribute('role', 'button');
     button.setAttribute('tabindex', '0');
+    button.addEventListener('click', () => {
+      // Manually trigger focus restoration and focus the first answer element.
+      // This provides a better user experience and a fallback if the MutationObserver is slow or fails.
+      toggleQuestionElementsFocus(false);
+      setTimeout(() => {
+        const firstAnswer = document.getElementById('fillInAnswer') || document.querySelector('.answerBox');
+        if (firstAnswer) {
+          firstAnswer.focus();
+        }
+      }, 50);
+    });
   });
   const scoreBubble = document.getElementById('scoreBubble');
   if (scoreBubble) {
@@ -393,69 +404,69 @@ function addFocusIndicators() {
 /**
  * Setup screen reader announcements
  */
-function setupScreenReaderAnnouncements() {
-  // Create live regions for announcements
-  const createLiveRegion = (id, ariaLive) => {
-    const existing = document.getElementById(id);
-    if (existing) return existing;
+// function setupScreenReaderAnnouncements() {
+//   // Create live regions for announcements
+//   const createLiveRegion = (id, ariaLive) => {
+//     const existing = document.getElementById(id);
+//     if (existing) return existing;
 
-    const region = document.createElement('div');
-    region.id = id;
-    region.className = 'sr-only';
-    region.setAttribute('aria-live', ariaLive);
-    region.setAttribute('aria-atomic', 'true');
-    document.body.appendChild(region);
-    return region;
-  };
+//     const region = document.createElement('div');
+//     region.id = id;
+//     region.className = 'sr-only';
+//     region.setAttribute('aria-live', ariaLive);
+//     region.setAttribute('aria-atomic', 'true');
+//     document.body.appendChild(region);
+//     return region;
+//   };
 
-  // Create polite and assertive announcement regions
-  const politeAnnouncer = createLiveRegion('polite-announcer', 'polite');
-  const assertiveAnnouncer = createLiveRegion('assertive-announcer', 'assertive');
+//   // Create polite and assertive announcement regions
+//   const politeAnnouncer = createLiveRegion('polite-announcer', 'polite');
+//   const assertiveAnnouncer = createLiveRegion('assertive-announcer', 'assertive');
 
-  // Function to make announcements
-  window.announce = (message, assertive = false) => {
-    const announcer = assertive ? assertiveAnnouncer : politeAnnouncer;
-    announcer.textContent = '';
+//   // Function to make announcements
+//   window.announce = (message, assertive = false) => {
+//     const announcer = assertive ? assertiveAnnouncer : politeAnnouncer;
+//     announcer.textContent = '';
 
-    // Force browser to recognize the content change
-    setTimeout(() => {
-      announcer.textContent = message;
-    }, 50);
-  };
+//     // Force browser to recognize the content change
+//     setTimeout(() => {
+//       announcer.textContent = message;
+//     }, 50);
+//   };
 
-  // Listen for events that should make announcements
-  document.addEventListener('questionShown', (e) => {
-    if (e.detail && e.detail.questionText) {
-      window.announce(`Question: ${e.detail.questionText}`, true);
-    }
-  });
+//   // Listen for events that should make announcements
+//   document.addEventListener('questionShown', (e) => {
+//     if (e.detail && e.detail.questionText) {
+//       window.announce(`Question: ${e.detail.questionText}`, true);
+//     }
+//   });
 
-  document.addEventListener('answerCorrect', () => {
-    window.announce('Correct answer!', true);
-  });
+//   document.addEventListener('answerCorrect', () => {
+//     window.announce('Correct answer!', true);
+//   });
 
-  document.addEventListener('answerIncorrect', () => {
-    window.announce('Incorrect answer. Try again.', true);
-  });
+//   document.addEventListener('answerIncorrect', () => {
+//     window.announce('Incorrect answer. Try again.', true);
+//   });
 
-  document.addEventListener('quizCompleted', (e) => {
-    if (e.detail && e.detail.score !== undefined) {
-      window.announce(`Quiz completed! Your final score is ${e.detail.score} points.`, true);
-    } else {
-      window.announce('Quiz completed!', true);
-    }
-  });
-  document.addEventListener('blockerDialogVisibilityChanged', (e) => {
-    if (window.announce) {
-      window.announce(e.detail.visible ? 'Dialog opened' : 'Dialog closed');
-    }
-  });
-  // Show dialog
-  document.dispatchEvent(new CustomEvent('blockerDialogVisibilityChanged', { detail: { visible: true } }));
+//   document.addEventListener('quizCompleted', (e) => {
+//     if (e.detail && e.detail.score !== undefined) {
+//       window.announce(`Quiz completed! Your final score is ${e.detail.score} points.`, true);
+//     } else {
+//       window.announce('Quiz completed!', true);
+//     }
+//   });
+//   document.addEventListener('blockerDialogVisibilityChanged', (e) => {
+//     if (window.announce) {
+//       window.announce(e.detail.visible ? 'Dialog opened' : 'Dialog closed');
+//     }
+//   });
+//   // Show dialog
+//   document.dispatchEvent(new CustomEvent('blockerDialogVisibilityChanged', { detail: { visible: true } }));
 
-  // Hide dialog
-  document.dispatchEvent(new CustomEvent('blockerDialogVisibilityChanged', { detail: { visible: false } }));
-}
+//   // Hide dialog
+//   document.dispatchEvent(new CustomEvent('blockerDialogVisibilityChanged', { detail: { visible: false } }));
+// }
 
 /**
  * Update accessibility for an element
