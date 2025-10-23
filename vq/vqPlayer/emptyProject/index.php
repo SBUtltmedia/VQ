@@ -205,7 +205,7 @@ print <<<EOT
 </div>
 
 <!-- buttonBank is now outside videoControls -->
-<div id="buttonBank" role = "list"></div>
+<ol id="buttonBank" role = "list"></ol>
 
 
     <div id="quizBank">

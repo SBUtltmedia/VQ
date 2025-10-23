@@ -516,6 +516,16 @@ input:focus {
         -webkit-filter: none;
     }
 }
+ol {
+    list-style-type: none; /* Removes the default numbers */
+    padding: 0;           /* Resets default padding */
+    margin: 0;            /* Resets default margin */
+  }
+  
+  li {
+    padding: 0;           /* Resets default padding for list items */
+    margin: 0;            /* Resets default margin for list items */
+  }
 
 #questionBox {
     width: 90%;

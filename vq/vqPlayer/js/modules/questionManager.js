@@ -202,7 +202,7 @@ export function makeQuestionButtons() {
     state.answerData.push(questionAnswerData);
 
     // Create the question button
-    const button = document.createElement('div');
+    const button = document.createElement('li');
     button.id = `questionButton${i}`;
     button.className = 'questionButton';
     button.setAttribute('role', 'button');
