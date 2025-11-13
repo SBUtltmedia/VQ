@@ -641,6 +641,7 @@ function setupFillInQuestion(question) {
 
             // Add click event listener to reveal letter
             panel.addEventListener('click', () => {
+              console.log(i,j);
               revealLetter(20 * i + j);
             });
             panel.addEventListener('keydown', (event) => {
@@ -950,7 +951,7 @@ function answerCorrectFillIn() {
 
   // Calculate penalty for revealed letters
   const progress = getLetterRevealProgress();
-  const letterRevealPenalty = (progress.revealed / progress.total) * config.scoring.letterRevealPenalty;
+  const letterRevealPenalty = (progress.revealed / progress.total);
 
   // Calculate final score
   let score = baseScore * attemptPenalty * (1 - letterRevealPenalty);
