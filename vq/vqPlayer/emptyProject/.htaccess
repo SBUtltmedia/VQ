@@ -1,10 +1,13 @@
 
 RewriteEngine On
-#php_admin_value session.save_path "/home/tltsecure/apache2/htdocs/userData/sessionData"
-#ShibRequestSetting requireSession true 
-#require valid-user
 
+
+<IfModule mod_name.c>
+
+    # Set env vars only if LOCAL=true
+php_admin_value session.save_path "/home/tltsecure/apache2/htdocs/userData/sessionData"
+ShibRequestSetting requireSession true 
+require valid-user
+        SetEnv PHP_VALUE "session.save_path=/var/www/html"
+</IfModule>
 # Check if Environment is set to "local"
-RewriteCond %{ENV:ENVIRONMENT} ^local$
-# If true, set the environment variables
-RewriteRule ^ - [E=cn:test_cn,E=nickname:test_nickname,E=sn:test_sn,E=mail:michael.kawwa@stonybrook.edu]

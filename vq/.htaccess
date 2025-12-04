@@ -18,17 +18,22 @@ Header always unset X-Frame-Options
 
 <Else>
     # NON-LOCAL environment: Set session path for production
-
+    <IfModule mod_shibboleth.c>
     AuthType shibboleth
 ShibRequestSetting requireSession false
 require shibboleth
-
+</IfModule>
     SetEnv PHP_VALUE "session.save_path=/home/tltsecure/apache2/htdocs/userData/sessionData"
 </Else>
 
 
 
-
+<IfModule mod_shibboleth.c>
+    # Rules here only apply if mod_shibboleth is loaded
+    AuthType shibboleth
+    ShibRequestSetting requireSession false
+    Require shibboleth
+</IfModule>
 
 RewriteCond %{REQUEST_URI} !.*users.*
 RewriteCond %{REQUEST_URI} \.json$
