@@ -1,6 +1,6 @@
-#AuthType shibboleth
-#ShibRequestSetting requireSession 1
-#require valid-user
+AuthType shibboleth
+ShibRequestSetting requireSession 1
+require valid-user
 <FilesMatch "some*">
 AuthType None
 Require all granted
