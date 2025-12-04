@@ -1,6 +1,8 @@
+<IfModule mod_shib>
 AuthType shibboleth
 ShibRequestSetting requireSession 1
 require valid-user
+</IfModule>
 <FilesMatch "some*">
 AuthType None
 Require all granted
