@@ -2,7 +2,6 @@
 // Get netID
 $resources = "../vqPlayer/emptyProjectLink";
 $netID = $_SERVER['cn'];
-
 // Count files
 $dir = scandir("../users/" . $netID);
 sort($dir, SORT_NUMERIC);
@@ -21,6 +20,7 @@ while ($ok == false) {
 
 // Path to move file to
 $path = "../users/$netID/$numFiles";
+///print(" --- $path --- ");
 $mediaPath = $path."/media/";
 $fileName = $mediaPath . "video.";
 //$path="/home/tltsecure/apache2/htdocs/vq/users/tryme";
