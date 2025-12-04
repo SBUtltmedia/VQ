@@ -2,12 +2,12 @@
 RewriteEngine On
 
 
-<IfModule mod_name.c>
+# <IfModule mod_name.c>
 
-    # Set env vars only if LOCAL=true
-php_admin_value session.save_path "/home/tltsecure/apache2/htdocs/userData/sessionData"
-ShibRequestSetting requireSession true 
-require valid-user
-        SetEnv PHP_VALUE "session.save_path=/var/www/html"
-</IfModule>
-# Check if Environment is set to "local"
+#     # Set env vars only if LOCAL=true
+# php_admin_value session.save_path "/home/tltsecure/apache2/htdocs/userData/sessionData"
+# ShibRequestSetting requireSession true 
+# require valid-user
+#         SetEnv PHP_VALUE "session.save_path=/var/www/html"
+# </IfModule>
+# # Check if Environment is set to "local"
