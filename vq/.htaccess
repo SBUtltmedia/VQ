@@ -9,7 +9,7 @@ Header always unset X-Frame-Options
     # Set env vars only if LOCAL=true
     SetEnv cn test_cn
     SetEnv nickname test_nickname
-    SetEnv give0jhhgjnName test_givenName
+    SetEnv givenName test_givenName
     SetEnv sn test_sn
     SetEnv mail test_mail@stonybrook.edu
         SetEnv PHP_VALUE "session.save_path=/var/www/html"
@@ -18,7 +18,7 @@ Header always unset X-Frame-Options
 
 <Else>
     # NON-LOCAL environment: Set session path for production
-    <IfModule mod_shib>
+    <IfModule mod_shib.c>
     AuthType shibboleth
 ShibRequestSetting requireSession false
 require shibboleth
@@ -28,7 +28,7 @@ require shibboleth
 
 
 
-<IfModule mod_shibboleth.c>
+<IfModule mod_shib.c>
     # Rules here only apply if mod_shibboleth is loaded
     AuthType shibboleth
     ShibRequestSetting requireSession false
